@@ -1,6 +1,6 @@
 {
   "channel": "Fun Stuff (@funstuff-67)",
-  "note": "publishAt is UTC. First 3 go live Sunday evening 25/10 (17h, 19h, 21h New York). Videos without publishAt get the next free US peak slot from upload.py.",
+  "note": "Batch 1. 4 videos scheduled on 25/10 (see uploaded.json). lava.mp4 (62.6 s; Shorts accept up to 3 min) goes out Wed 28/10 12h New York.",
   "videos": [
     {
       "file": "physics_simulations.mp4",
@@ -16,8 +16,7 @@
         "chaos theory",
         "ranking"
       ],
-      "categoryId": "28",
-      "publishAt": "2026-10-25T21:00:00Z"
+      "categoryId": "28"
     },
     {
       "file": "lava.mp4",
@@ -33,8 +32,8 @@
         "lava experiment"
       ],
       "categoryId": "28",
-      "publishAt": "2026-10-25T23:00:00Z",
-      "url": "https://remotionlambda-useast1-2ei5ch6f3q.s3.us-east-1.amazonaws.com/renders/cnylf0wax1/out.mp4?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=ASIAQLTYEZQZUIC6KSTN%2F20261025%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20261025T171412Z&X-Amz-Expires=43200&X-Amz-Security-Token=IQoJb3JpZ2luX2VjEPr%2F%2F%2F%2F%2F%2F%2F%2F%2F%2FwEaCXVzLWVhc3QtMSJIMEYCIQChPmqh5kFCUza4gyufvcxNRCjbkneriNknAS84WBaLhgIhAP0PWQr8cEMs5JTE5Z6uts6iy3GvU5Vi5xybxijK8KYDKokFCML%2F%2F%2F%2F%2F%2F%2F%2F%2F%2FwEQABoMMDI0OTQ4MDM0NjExIgxFfILa%2BChUyjKFZAgq3QRYJDRk29zq3GgleBX1rw7qTduvb%2FhZSD5QIyyxcfYcH6rMau%2Bcvyjj%2BUU6eNHBPlfj2e9PGm4LzjwANYC0pG4YvJE%2FnHZRJSClbsurbavsSlO8YNJe%2FJdWHX0az%2BaAnq6blHm5RqfHYaQngNpb3jAdRtJ%2B4978AwDwwb%2BzUgw4bdYhKa%2F7I1c%2BQGSGgkApRLjNnmVXqkoeX9gcoADc0tvORLXMSQbNNbDU20fRIQoOvUbAqen871IUHWCkY0vrTJ2gcD6kjUOPKZCa%2BDfbECcNuP7%2BGPTP%2FXIgel7GRAnywbb20ImZcQcm%2F98XYBj4NVUQGxHMkKznclNT%2F5hmGYVBCCWXhEqTjoQCkGVvfPnDsmfd9cEwARDgQf9Mat5LPSr25rWoo0EhMi5OMpXKEHRNXhARidmo7YZ%2FXfJ9GALdsCKooki609whuJWlwS%2FEjDFKhSGuAGPBYc%2BKMk8O591Ae7VG56rFaL1Z2xYka8rSF0MJxc4VS126SvEvYXqdbCImCQDjtT%2BMrCgpWB5viAGcmK41nQYJbRbfT5jqqYXppsPHjKsqZPenS5jD%2FH%2BZSOvgO4OEi3oz%2BZdxVfPj0TBQHo0m2hlr8MXIeoqwZ9ej8k%2B1x4Ii7A0W0G%2FznoJ%2Fd3SGUlzkMNgTLo5UMNFh80282LqSGQUFGvCQtIb%2BdfmEknBuwdQ3EhCqBlvKu2iJGO0GVLEL3VSSWazS72qyYMeft4e8MSht4Uzm2%2F04f1NX%2BOP9oXyRlHUO1%2F%2BDzs0wSBP2OdSkcAvG0Y%2BYpa0Zle2xnFDiBJvkurReKC6HXTDk8fjWBjqXAWc7nR%2FdUqNP6AOyoGDGGetGPU5Tl2pORNxYdKttmSlc8805v1djQy6L258h3nOQi7Z%2FpMSfcdfsSfuazUEpHRWenc%2FeqPhpC4B5Ik3ItYIctbiH85ln%2FicKlD6zTswGlXdNn9Ncjo1qHZXFDAe5%2FF0BqQmTZzgdv96MMBsqyAL1PVUpWHRkbyXNWvz6UE4Pg%2BSHvxitQrg%3D&X-Amz-Signature=a7a5e320e945062c3af651c6ed65b674a27185ee93b2cedddbeb220be04f2685&X-Amz-SignedHeaders=host&x-amz-checksum-mode=ENABLED&x-id=GetObject"
+      "url": "https://remotionlambda-useast1-2ei5ch6f3q.s3.us-east-1.amazonaws.com/renders/cnylf0wax1/out.mp4?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=ASIAQLTYEZQZUIC6KSTN%2F20261025%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20261025T171412Z&X-Amz-Expires=43200&X-Amz-Security-Token=IQoJb3JpZ2luX2VjEPr%2F%2F%2F%2F%2F%2F%2F%2F%2F%2FwEaCXVzLWVhc3QtMSJIMEYCIQChPmqh5kFCUza4gyufvcxNRCjbkneriNknAS84WBaLhgIhAP0PWQr8cEMs5JTE5Z6uts6iy3GvU5Vi5xybxijK8KYDKokFCML%2F%2F%2F%2F%2F%2F%2F%2F%2F%2FwEQABoMMDI0OTQ4MDM0NjExIgxFfILa%2BChUyjKFZAgq3QRYJDRk29zq3GgleBX1rw7qTduvb%2FhZSD5QIyyxcfYcH6rMau%2Bcvyjj%2BUU6eNHBPlfj2e9PGm4LzjwANYC0pG4YvJE%2FnHZRJSClbsurbavsSlO8YNJe%2FJdWHX0az%2BaAnq6blHm5RqfHYaQngNpb3jAdRtJ%2B4978AwDwwb%2BzUgw4bdYhKa%2F7I1c%2BQGSGgkApRLjNnmVXqkoeX9gcoADc0tvORLXMSQbNNbDU20fRIQoOvUbAqen871IUHWCkY0vrTJ2gcD6kjUOPKZCa%2BDfbECcNuP7%2BGPTP%2FXIgel7GRAnywbb20ImZcQcm%2F98XYBj4NVUQGxHMkKznclNT%2F5hmGYVBCCWXhEqTjoQCkGVvfPnDsmfd9cEwARDgQf9Mat5LPSr25rWoo0EhMi5OMpXKEHRNXhARidmo7YZ%2FXfJ9GALdsCKooki609whuJWlwS%2FEjDFKhSGuAGPBYc%2BKMk8O591Ae7VG56rFaL1Z2xYka8rSF0MJxc4VS126SvEvYXqdbCImCQDjtT%2BMrCgpWB5viAGcmK41nQYJbRbfT5jqqYXppsPHjKsqZPenS5jD%2FH%2BZSOvgO4OEi3oz%2BZdxVfPj0TBQHo0m2hlr8MXIeoqwZ9ej8k%2B1x4Ii7A0W0G%2FznoJ%2Fd3SGUlzkMNgTLo5UMNFh80282LqSGQUFGvCQtIb%2BdfmEknBuwdQ3EhCqBlvKu2iJGO0GVLEL3VSSWazS72qyYMeft4e8MSht4Uzm2%2F04f1NX%2BOP9oXyRlHUO1%2F%2BDzs0wSBP2OdSkcAvG0Y%2BYpa0Zle2xnFDiBJvkurReKC6HXTDk8fjWBjqXAWc7nR%2FdUqNP6AOyoGDGGetGPU5Tl2pORNxYdKttmSlc8805v1djQy6L258h3nOQi7Z%2FpMSfcdfsSfuazUEpHRWenc%2FeqPhpC4B5Ik3ItYIctbiH85ln%2FicKlD6zTswGlXdNn9Ncjo1qHZXFDAe5%2FF0BqQmTZzgdv96MMBsqyAL1PVUpWHRkbyXNWvz6UE4Pg%2BSHvxitQrg%3D&X-Amz-Signature=a7a5e320e945062c3af651c6ed65b674a27185ee93b2cedddbeb220be04f2685&X-Amz-SignedHeaders=host&x-amz-checksum-mode=ENABLED&x-id=GetObject",
+      "publishAt": "2026-10-28T16:00:00Z"
     },
     {
       "file": "math_patterns.mp4",
@@ -50,8 +49,7 @@
         "spirograph",
         "ranking"
       ],
-      "categoryId": "28",
-      "publishAt": "2026-10-26T01:00:00Z"
+      "categoryId": "28"
     },
     {
       "file": "ice.mp4",

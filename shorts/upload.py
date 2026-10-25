@@ -71,6 +71,37 @@ def access_token():
         return json.load(r)["access_token"]
 
 
+def api_get(token, path, **params):
+    url = "https://www.googleapis.com/youtube/v3/" + path + "?" + urllib.parse.urlencode(params)
+    with urllib.request.urlopen(urllib.request.Request(url, headers={"Authorization": f"Bearer {token}"})) as r:
+        return json.load(r)
+
+
+def channel_videos(token):
+    """Title -> {id, publishAt} for every video already on the channel, scheduled ones included.
+
+    The channel itself is the source of truth, so a run that could not push uploaded.json
+    never causes a duplicate upload.
+    """
+    channel = api_get(token, "channels", part="contentDetails", mine="true")["items"][0]
+    uploads = channel["contentDetails"]["relatedPlaylists"]["uploads"]
+    ids, page = [], None
+    while True:
+        params = {"part": "contentDetails", "playlistId": uploads, "maxResults": 50}
+        if page:
+            params["pageToken"] = page
+        res = api_get(token, "playlistItems", **params)
+        ids += [i["contentDetails"]["videoId"] for i in res["items"]]
+        page = res.get("nextPageToken")
+        if not page:
+            break
+    found = {}
+    for i in range(0, len(ids), 50):
+        for v in api_get(token, "videos", part="snippet,status", id=",".join(ids[i:i + 50]))["items"]:
+            found[v["snippet"]["title"]] = {"id": v["id"], "publishAt": v["status"].get("publishAt")}
+    return found
+
+
 def upload(token, path, body):
     size = os.path.getsize(path)
     req = urllib.request.Request(
@@ -105,11 +136,24 @@ def main():
     done = json.load(open(log_path, encoding="utf-8")) if os.path.exists(log_path) else {}
     taken = taken_slots()
     earliest = dt.datetime.now(dt.timezone.utc) + MIN_LEAD
-    token, sent = None, 0
+    token, sent, on_channel = None, 0, {}
+    if not dry:
+        token = access_token()
+        on_channel = channel_videos(token)
+        taken.update(v["publishAt"] for v in on_channel.values() if v["publishAt"])
     for v in manifest["videos"]:
         print(f"\n== {v['title']}")
         if v["file"] in done:
             print(f"  already uploaded: {done[v['file']]['url']}")
+            continue
+        existing = on_channel.get(v["title"][:100])
+        if existing:
+            vid = existing["id"]
+            done[v["file"]] = {"id": vid, "url": f"https://youtube.com/shorts/{vid}",
+                               "publishAt": existing["publishAt"] or ""}
+            with open(log_path, "w", encoding="utf-8") as f:
+                json.dump(done, f, indent=2)
+            print(f"  already on the channel: https://youtube.com/shorts/{vid} (recorded)")
             continue
         if limit is not None and sent >= limit:
             print("  left for a later run (--limit)")
@@ -143,7 +187,6 @@ def main():
         print(f"  file: {v['file']} ({os.path.getsize(path) / 1e6:.1f} MB) · goes public at {when} UTC")
         if dry:
             continue
-        token = token or access_token()
         vid = upload(token, path, body)
         done[v["file"]] = {"id": vid, "url": f"https://youtube.com/shorts/{vid}", "publishAt": when}
         with open(log_path, "w", encoding="utf-8") as f:
