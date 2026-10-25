@@ -50,7 +50,7 @@ Use um access token (`upload.py` tem `access_token`) e `search.list` com `type=v
 
 ## 6. Publicação
 
-- Crie `shorts/lote-AAAA-MM-DD/videos.json` no mesmo formato do lote 01: title ≤ 100 caracteres, descrição com créditos e hashtags, tags, `publishAt` = os horários que o `--free-slots` devolveu, um por vídeo, `containsSyntheticMedia` correto.
+- Crie `shorts/lote-AAAA-MM-DD/videos.json` no mesmo formato do lote 01: title ≤ 100 caracteres, **descrição curta** (1 linha de gancho, a lista do ranking se houver, 1 pergunta para comentários, "Animation: Fun Stuff · Voiceover: AI voice." e 4 a 6 hashtags; sem lista de links; se usar cenas de banco de imagens, só 1 linha "Footage: Pixabay (free license)"), tags, `publishAt` = os horários que o `--free-slots` devolveu, um por vídeo, `containsSyntheticMedia` correto.
 - Rode `python3 shorts/upload.py shorts/lote-AAAA-MM-DD`.
 - Adicione em `shorts/historico.md` a data, o tópico, o subtema e o formato de cada vídeo.
 - **Commit:** só o que é leve (`videos.json`, `uploaded.json`, roteiros, tendências, histórico, pipeline). Os `.mp4` estão no `.gitignore`. Se o upload não aconteceu, adicione-os com `git add -f` para a próxima execução enviar. Faça push para `claude/focused-einstein-6l079f`.

@@ -48,7 +48,7 @@ O que mais derruba canais como este na revisão do YPP é **"conteúdo reutiliza
 3. **Cada vídeo com subtema, formato e roteiro diferentes.** Os 3 do dia dividem o tópico, mas nunca o subtema nem o formato. Nenhum subtema se repete em 30 dias, nem o padrão de título em dias seguidos. O título precisa cumprir o que promete.
 4. **Música:** só original ou sintetizada pelo próprio pipeline. **Nunca** música com direitos autorais.
 5. **IA:** voz de IA não exige aviso. Se algum vídeo tiver imagens realistas geradas por IA (pessoas, lugares ou eventos que parecem reais), marcar `containsSyntheticMedia: true`.
-6. **"Made for kids": não.** Descrição com créditos, hashtags `#shorts` + 3 ou 4 do tema.
+6. **"Made for kids": não.** Descrição curta, sem lista de links: gancho, pergunta para comentários, hashtags `#shorts` + 3 ou 4 do tema.
 7. **Duração de 20 a 60 s** (o YouTube aceita Shorts de até 3 min, mas curto retém melhor), gancho no primeiro segundo, final que emenda no começo (loop).
 8. **Toda semana**, olhar quais vídeos do canal foram melhor e dar mais espaço aos temas que funcionam. Formato que fica abaixo da média por 2 semanas sai do rodízio.
 
