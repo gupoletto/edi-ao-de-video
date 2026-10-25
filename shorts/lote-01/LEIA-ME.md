@@ -1,6 +1,6 @@
 # Upload automático dos 5 Shorts (Fun Stuff)
 
-O script `upload_shorts.py` sobe os vídeos pela API oficial do YouTube, já com título, descrição, tags e categoria. Cada um fica **agendado** para virar público sozinho, um por dia, às **15h de Brasília** (18:00 UTC):
+O script `upload_shorts.py` sobe os vídeos pela API oficial do YouTube, já com título, descrição, tags e categoria. Cada um fica **agendado** para virar público sozinho, um por dia, às **16h de Brasília** (19:00 UTC → 16h de Brasília):
 
 | Data | Vídeo |
 |---|---|
