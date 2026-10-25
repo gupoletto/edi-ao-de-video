@@ -57,4 +57,6 @@ Use um access token (`upload.py` tem `access_token`) e `search.list` com `type=v
 
 ## 7. Relatório final (curto, em português)
 
+**Notificação no celular (obrigatório, o usuário pediu):** carregue a ferramenta `PushNotification` com `ToolSearch` (`select:PushNotification`) e envie um resumo de 1 a 2 linhas, por exemplo: "Fun Stuff: 3 Shorts agendados para amanhã (tópico: Espaço) · 13h, 16h, 20h. Tudo certo." Em caso de falha, a notificação diz o que falhou. Se a ferramenta não existir, registre isso no relatório.
+
 Liste os vídeos agendados (título, horário em Brasília, link), o tópico do dia e por quê, mudanças no top 10 (se houve), como foram os vídeos anteriores e qualquer falha.
