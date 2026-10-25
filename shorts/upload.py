@@ -9,8 +9,10 @@ No third-party packages needed.
 
 Each batch folder holds videos.json (same format as lote-01) and the .mp4 files.
 Uploads are recorded in <batch>/uploaded.json and skipped on later runs.
-A video whose publishAt is missing, too close (< 2h), or already taken by another
-upload is moved to the next free slot (SLOTS_UTC, one video per slot).
+A video whose publishAt is missing, too close (< 30 min), or already taken by another
+upload is moved to the next free peak slot (one video per slot). Slots follow US peak
+viewing hours in New York time, so they track daylight saving automatically.
+--limit=N uploads at most N videos in this run.
 """
 import datetime as dt
 import glob
@@ -19,10 +21,14 @@ import os
 import sys
 import urllib.parse
 import urllib.request
+from zoneinfo import ZoneInfo
 
 SHORTS = os.path.dirname(os.path.abspath(__file__))
-SLOTS_UTC = [15, 19, 23]  # 12h, 16h, 20h Brasilia · 11h, 15h, 19h New York (EDT)
-MIN_LEAD = dt.timedelta(hours=2)
+AUDIENCE_TZ = ZoneInfo("America/New_York")
+# Go live shortly before each US Shorts peak: lunch, after school/work, evening.
+SLOTS_WEEKDAY = [12, 15, 19]
+SLOTS_WEEKEND = [10, 14, 19]
+MIN_LEAD = dt.timedelta(minutes=30)
 
 
 def iso(t):
@@ -42,10 +48,10 @@ def taken_slots():
 
 
 def next_free_slot(after, taken):
-    day = after.replace(hour=0, minute=0, second=0, microsecond=0)
+    day = after.astimezone(AUDIENCE_TZ).date()
     while True:
-        for h in SLOTS_UTC:
-            t = day.replace(hour=h)
+        for h in SLOTS_WEEKEND if day.weekday() >= 5 else SLOTS_WEEKDAY:
+            t = dt.datetime(day.year, day.month, day.day, h, tzinfo=AUDIENCE_TZ).astimezone(dt.timezone.utc)
             if t >= after and iso(t) not in taken:
                 return t
         day += dt.timedelta(days=1)
@@ -92,17 +98,21 @@ def main():
     if len(args) != 1:
         sys.exit(__doc__)
     batch, dry = os.path.abspath(args[0]), "--dry-run" in sys.argv
+    limit = next((int(a.split("=", 1)[1]) for a in sys.argv if a.startswith("--limit=")), None)
     with open(os.path.join(batch, "videos.json"), encoding="utf-8") as f:
         manifest = json.load(f)
     log_path = os.path.join(batch, "uploaded.json")
     done = json.load(open(log_path, encoding="utf-8")) if os.path.exists(log_path) else {}
     taken = taken_slots()
     earliest = dt.datetime.now(dt.timezone.utc) + MIN_LEAD
-    token = None
+    token, sent = None, 0
     for v in manifest["videos"]:
         print(f"\n== {v['title']}")
         if v["file"] in done:
             print(f"  already uploaded: {done[v['file']]['url']}")
+            continue
+        if limit is not None and sent >= limit:
+            print("  left for a later run (--limit)")
             continue
         path = os.path.join(batch, v["file"])
         if not os.path.exists(path):
@@ -113,6 +123,7 @@ def main():
             when = iso(next_free_slot(earliest, taken))
             print(f"  rescheduled to {when}")
         taken.add(when)
+        sent += 1
         body = {
             "snippet": {
                 "title": v["title"][:100],

@@ -32,7 +32,7 @@ O código de produção fica em `shorts/pipeline/`. Se ainda não existir (prime
 
 ## 4. Escolha dos 3 vídeos de amanhã
 
-- Um de cada tipo: A (15:00 UTC), B (19:00 UTC), C (23:00 UTC).
+- Um de cada tipo: A, B e C (veja a agenda no PLANO).
 - Consulte `shorts/historico.md` (crie se não existir): nada de repetir tema em 14 dias, nem padrão de título em dias seguidos.
 - Dê preferência a temas em alta, com a sua própria versão original. Nunca copie o vídeo de outro canal.
 
@@ -45,7 +45,7 @@ O código de produção fica em `shorts/pipeline/`. Se ainda não existir (prime
 
 ## 6. Publicação
 
-- Crie `shorts/lote-AAAA-MM-DD/videos.json` no mesmo formato do lote 01: title ≤ 100 caracteres, descrição com créditos e hashtags, tags, `publishAt` nos horários de amanhã, `containsSyntheticMedia` correto.
+- Crie `shorts/lote-AAAA-MM-DD/videos.json` no mesmo formato do lote 01: title ≤ 100 caracteres, descrição com créditos e hashtags, tags, **sem `publishAt`** (o `upload.py` coloca cada vídeo no próximo horário de pico livre), `containsSyntheticMedia` correto.
 - Rode `python3 shorts/upload.py shorts/lote-AAAA-MM-DD`.
 - Adicione os temas em `shorts/historico.md`.
 - **Commit:** só o que é leve (`videos.json`, `uploaded.json`, roteiros, tendências, histórico, pipeline). Os `.mp4` estão no `.gitignore`. Se o upload não aconteceu, adicione-os com `git add -f` para a próxima execução enviar. Faça push para `claude/focused-einstein-6l079f`.

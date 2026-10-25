@@ -1,6 +1,6 @@
 {
   "channel": "Fun Stuff (@funstuff-67)",
-  "note": "publishAt is UTC. 19:00 UTC = 16:00 Brasilia = 15:00 New York (EDT).",
+  "note": "publishAt is UTC. First 3 go live Sunday evening 25/10 (17h, 19h, 21h New York). Videos without publishAt get the next free US peak slot from upload.py.",
   "videos": [
     {
       "file": "physics_simulations.mp4",
@@ -17,7 +17,7 @@
         "ranking"
       ],
       "categoryId": "28",
-      "publishAt": "2026-10-26T19:00:00Z"
+      "publishAt": "2026-10-25T21:00:00Z"
     },
     {
       "file": "lava.mp4",
@@ -33,7 +33,7 @@
         "lava experiment"
       ],
       "categoryId": "28",
-      "publishAt": "2026-10-27T19:00:00Z",
+      "publishAt": "2026-10-25T23:00:00Z",
       "url": "https://remotionlambda-useast1-2ei5ch6f3q.s3.us-east-1.amazonaws.com/renders/cnylf0wax1/out.mp4?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=ASIAQLTYEZQZUIC6KSTN%2F20261025%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20261025T171412Z&X-Amz-Expires=43200&X-Amz-Security-Token=IQoJb3JpZ2luX2VjEPr%2F%2F%2F%2F%2F%2F%2F%2F%2F%2FwEaCXVzLWVhc3QtMSJIMEYCIQChPmqh5kFCUza4gyufvcxNRCjbkneriNknAS84WBaLhgIhAP0PWQr8cEMs5JTE5Z6uts6iy3GvU5Vi5xybxijK8KYDKokFCML%2F%2F%2F%2F%2F%2F%2F%2F%2F%2FwEQABoMMDI0OTQ4MDM0NjExIgxFfILa%2BChUyjKFZAgq3QRYJDRk29zq3GgleBX1rw7qTduvb%2FhZSD5QIyyxcfYcH6rMau%2Bcvyjj%2BUU6eNHBPlfj2e9PGm4LzjwANYC0pG4YvJE%2FnHZRJSClbsurbavsSlO8YNJe%2FJdWHX0az%2BaAnq6blHm5RqfHYaQngNpb3jAdRtJ%2B4978AwDwwb%2BzUgw4bdYhKa%2F7I1c%2BQGSGgkApRLjNnmVXqkoeX9gcoADc0tvORLXMSQbNNbDU20fRIQoOvUbAqen871IUHWCkY0vrTJ2gcD6kjUOPKZCa%2BDfbECcNuP7%2BGPTP%2FXIgel7GRAnywbb20ImZcQcm%2F98XYBj4NVUQGxHMkKznclNT%2F5hmGYVBCCWXhEqTjoQCkGVvfPnDsmfd9cEwARDgQf9Mat5LPSr25rWoo0EhMi5OMpXKEHRNXhARidmo7YZ%2FXfJ9GALdsCKooki609whuJWlwS%2FEjDFKhSGuAGPBYc%2BKMk8O591Ae7VG56rFaL1Z2xYka8rSF0MJxc4VS126SvEvYXqdbCImCQDjtT%2BMrCgpWB5viAGcmK41nQYJbRbfT5jqqYXppsPHjKsqZPenS5jD%2FH%2BZSOvgO4OEi3oz%2BZdxVfPj0TBQHo0m2hlr8MXIeoqwZ9ej8k%2B1x4Ii7A0W0G%2FznoJ%2Fd3SGUlzkMNgTLo5UMNFh80282LqSGQUFGvCQtIb%2BdfmEknBuwdQ3EhCqBlvKu2iJGO0GVLEL3VSSWazS72qyYMeft4e8MSht4Uzm2%2F04f1NX%2BOP9oXyRlHUO1%2F%2BDzs0wSBP2OdSkcAvG0Y%2BYpa0Zle2xnFDiBJvkurReKC6HXTDk8fjWBjqXAWc7nR%2FdUqNP6AOyoGDGGetGPU5Tl2pORNxYdKttmSlc8805v1djQy6L258h3nOQi7Z%2FpMSfcdfsSfuazUEpHRWenc%2FeqPhpC4B5Ik3ItYIctbiH85ln%2FicKlD6zTswGlXdNn9Ncjo1qHZXFDAe5%2FF0BqQmTZzgdv96MMBsqyAL1PVUpWHRkbyXNWvz6UE4Pg%2BSHvxitQrg%3D&X-Amz-Signature=a7a5e320e945062c3af651c6ed65b674a27185ee93b2cedddbeb220be04f2685&X-Amz-SignedHeaders=host&x-amz-checksum-mode=ENABLED&x-id=GetObject"
     },
     {
@@ -51,7 +51,7 @@
         "ranking"
       ],
       "categoryId": "28",
-      "publishAt": "2026-10-28T19:00:00Z"
+      "publishAt": "2026-10-26T01:00:00Z"
     },
     {
       "file": "ice.mp4",
@@ -67,7 +67,6 @@
         "ranking"
       ],
       "categoryId": "28",
-      "publishAt": "2026-10-29T19:00:00Z",
       "url": "https://remotionlambda-useast1-2ei5ch6f3q.s3.us-east-1.amazonaws.com/renders/t52hmajth0/out.mp4?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=ASIAQLTYEZQZ2HXKQJ5S%2F20261025%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20261025T171907Z&X-Amz-Expires=43200&X-Amz-Security-Token=IQoJb3JpZ2luX2VjEPr%2F%2F%2F%2F%2F%2F%2F%2F%2F%2FwEaCXVzLWVhc3QtMSJHMEUCIBNQQQx29Hr6XBn%2B4QZNvmzMuX3m%2BS4egS%2Bhe2TdL%2F2sAiEA51gFc9vSSmHyYWsKnZmq9P5jkZTyJA%2BMRLsqMdl3OMAqiQUIwv%2F%2F%2F%2F%2F%2F%2F%2F%2F%2FARAAGgwwMjQ5NDgwMzQ2MTEiDClbEn6QG7fH3JUcnirdBEQA6W0a9EKF%2F4glsFeqHI7f7%2FuozR4no42%2Bc%2FPO1PDDS%2F1Z8Nnhdz6kaaL6PQjCosXudaiVM0gvx8N97VqcKQoOGo4me2pFS7amynm8ocLzy2A86nguaelsotj81nPSGK8wtG%2BlfvjMRUk%2BDn74OUI1A86NYKyrVKeJGEj%2BhhWuywawJUiUUfFRDuKGFjVfbrIlPuxmBSJz0mUtCu2GTmm3qVBZ%2FzvS8nOhiSeXtDm0xIR1xWUdZUOjK5%2BdJea6%2FhZd2b%2F3eTUJrHdgWA2FrNAl%2ByhLwJa4lT64nKlC6eoItVbow%2BA%2FRWVp%2Fse1f3tyR6C1rlsLseJZMLicYhKJTEw%2FUD3LaetQ2h1DAxnrj90DCWDEiR5m7bP%2FpBl4oJN11k9AnX3lBCR3dZvrPmrwJ6oTDKOn39qluW5wYl1aLQLcLBUc5e4n4baWZeYyQO%2F4qviVNKz39smXXlTTsZI5hmT%2F0V2ELXqa%2FgLi6pOb52YZeWbjj5yn7iKw1iZS9YyEtE0YkhcdFxiEvDWbTzKNSN4vn%2FNoxWEd%2BgVv82dmFVUCHSj8Y15RSkehOf3WJNnAanq7hx8u65JcMikWr8qa%2BcN2AESYHjAgfFqMAvT2pUgwUVanCCDXSM2AcKEjpHTFlDS4Kjq1onQ91SOTHjPAVN3dTcrE3TRgzzS79oZurtjsVBJ%2FzD2co%2BlAt2aMPJZgQW6NLz5Q%2BlEBa8GlD3wwW1UnSu8BIhnWQgfCrb6ZXFwLRKalRWPYe1jmxeRI2rRuIoiL2KL0LxwjqaaAFrc7DmAQd8%2B2nWQPsx8weGHWMIv0%2BNYGOpgByuRFAtyNIEO9ZCfdo13BaoGarevkTylvNoXTfvDhhHlf0wDIP4cy%2F5c1slGKR0V%2B7ZAq6A%2BIkreS%2BHruMBrI1N6i7TpOG5qMV8POjcE31YKAgWgS%2BYzBqOudJjZ0cD%2B7cNTNxJ%2Bh1egSunQ4xmGJHXtFAvE%2BLl13%2FlRrmidXuQk0hIAk0OLoEZiRAkSKUL9AdH9HRBE7qmE%3D&X-Amz-Signature=21527c5a31772618cf17512bbd4f6ca6c626e6f9315f292ad55b0c978964d393&X-Amz-SignedHeaders=host&x-amz-checksum-mode=ENABLED&x-id=GetObject"
     },
     {
@@ -84,7 +83,6 @@
         "ranking"
       ],
       "categoryId": "28",
-      "publishAt": "2026-10-30T19:00:00Z",
       "url": "https://remotionlambda-useast1-2ei5ch6f3q.s3.us-east-1.amazonaws.com/renders/jomparby97/out.mp4?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=ASIAQLTYEZQZSTPYJ5TV%2F20261025%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20261025T171910Z&X-Amz-Expires=43200&X-Amz-Security-Token=IQoJb3JpZ2luX2VjEPr%2F%2F%2F%2F%2F%2F%2F%2F%2F%2FwEaCXVzLWVhc3QtMSJHMEUCIQCfJTO5Rg8L7mdHneIUkVge70CvwgIUAS7j2KpzaqiGTAIgcsU9G1UJqyGJjYEAIIozF0HJs5jtRLHfkIaGcfjhH%2BsqiQUIwv%2F%2F%2F%2F%2F%2F%2F%2F%2F%2FARAAGgwwMjQ5NDgwMzQ2MTEiDCQMJf7X8TTBwAGiMCrdBMs6ugmhGN4%2FhZGxsWIVFvuwqSHNFI8Wr%2FsGcLF2UBAVW7sHEBl%2F%2FD7aizGRHy4SDP6%2BAVKlJ0un%2Br%2BY0ZC4%2FuyvqMiVrGk7%2BBcE%2B%2BasnsfhbU4o73DoYbNjBIRHkAXQ3Zy5EvjWBooDxvfDtxE5kS1lGZpJ42ZuuUxPmRgkfPYfjbwuPW3vQKE3r%2BphWklzt2xKOhlHQ%2BgHKhxKChTUg2ViljtzclaSBXZ9rWmP5AqDZxL4aNKHvmFqMLnJlIC%2FmX87HCqI3UUOWc6tibuDwwwnt1SEFgjXncWPoVcA2LUxqZnU%2BxBy98%2FlKeQXREa0hiRJV%2BDM9uYhl8WGy4cb9J9wrpvZcaDiVOQ0l%2FX2XmXk15cTeMOCceVcaAtZ58SZburzeqvOQWSzQltODleV9S%2F45A9%2FL%2Bdc7jILqgfWZutSwNijT2eRMvetVXqLYQ42DadMhYFCXy%2BYTOHdlUMqqvYMQbfnUFrsi8TDglBCKvPNSmsJjwbADlVg%2FtKVGzhicaA%2BOU5%2FggcT%2Bl%2Bi9bngFrkgEMAuiiXtj4V5q9aq66FuWDXvYSzN8y6AN5fqEk4%2Fo4%2B9DRaNGcBI8BGnrvDQ4RETvueP4EYUiNU4DqTGMH3XAXiN3dHIGeuUMgD2fkASeOt2k3o1D7e68c4xjb%2FNRkdxTBWOnPSd4AghGhnBU4RvoecHp2JOxmnn4n1hEY1F64BZAaa64adn9uCwWap4mX6W8BHipf9CZQDmWqM3Ni9Mf%2FSCqjLZ09E7bO%2B4RApZp0X3TMj0wEwjVHz0dows4O0yJuzCqtm7tTht9MTPMI70%2BNYGOpgBgKeNtFBsY8v%2B7L7foREgs4ai%2BwmVQjZirQdx6pQFm1%2BD4DdP5kFYXF8VoHf60%2B9MpERiQPpkJUjlrqp%2BuCsttS5dCQHvR4vwLAqIYto2Uui1aE8H79VCoTHueqQBmDy8wMrgEDOvrE8Ws1TCNtAcjiedRuBvWlCBgE4oyyupF3%2BKPOtTG5I11rlBm9y4%2FzqlaCX8RLAp33I%3D&X-Amz-Signature=f3f1123bef802e3604124d20e281daeaf66af966c77b14a235c073b5e5e0ecbb&X-Amz-SignedHeaders=host&x-amz-checksum-mode=ENABLED&x-id=GetObject"
     }
   ]

@@ -10,16 +10,18 @@ Shorts em inglês para público dos EUA, no formato "Ranking the most satisfying
 
 ## Agenda de publicação
 
-3 Shorts por dia, todos os dias, nestes horários (UTC):
+3 Shorts por dia, sempre um pouco antes dos **picos de audiência do YouTube nos EUA** (horário de Nova York; o `upload.py` ajusta sozinho o horário de verão americano):
 
-| Horário UTC | Brasília | Nova York (EDT) | Tipo de vídeo |
+| Dia | Horários (Nova York) | Em Brasília (até 31/10) | Em Brasília (a partir de 1/11) |
 |---|---|---|---|
-| 15:00 | 12h | 11h | **A — simulação original** (física, caos, bolinhas, "will it escape?") |
-| 19:00 | 16h | 15h | **B — tema em alta** (ranking com cenas do Pexels, roteiro e dados próprios) |
-| 23:00 | 20h | 19h | **C — matemática/visual original** ou quiz ("wait for #1", "guess which…") |
+| Seg–sex | 12h · 15h · 19h | 13h · 16h · 20h | 14h · 17h · 21h |
+| Sáb–dom | 10h · 14h · 19h | 11h · 15h · 20h | 12h · 16h · 21h |
 
-- A produção roda todo dia de manhã (05:47 em Brasília) e já agenda os vídeos do **dia seguinte**. Assim sempre sobra um dia de folga: se algo falhar, nenhum horário fica vazio, e você pode conferir ou cancelar no YouTube Studio antes de o vídeo ir ao ar.
-- O lote 1 (os 5 vídeos já prontos) sai às 19:00 UTC, de 26/10 a 30/10.
+- Os picos são o almoço, a saída da escola ou do trabalho e a noite. No fim de semana, o pico da manhã começa mais cedo.
+- Rodízio de tipos de vídeo, um de cada por dia: **A — simulação original** (física, caos, bolinhas, "will it escape?"), **B — tema em alta** (ranking com cenas do Pexels, roteiro e dados próprios) e **C — matemática/visual original** ou quiz ("wait for #1", "guess which…").
+- A produção roda todo dia de manhã (05:47 em Brasília) e agenda os vídeos nos próximos horários livres, normalmente os do dia seguinte. Assim sempre sobra folga para conferir ou cancelar no YouTube Studio.
+- Lote 1: física, lava e matemática vão ao ar no domingo, 25/10, às 17h, 19h e 21h de Nova York (18h, 20h e 22h em Brasília). Gelo e fábrica entram nos próximos horários livres.
+- Quando houver dados do próprio canal, a rotina ajusta esses horários pelo horário de pico real da audiência.
 
 ## O que está em alta (pesquisa de 25/10 no vidIQ)
 
