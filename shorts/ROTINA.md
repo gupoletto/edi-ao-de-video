@@ -10,7 +10,7 @@ Leia `shorts/PLANO.md` antes de começar. As regras de monetização dele valem 
 
 ## 1. Pendências
 
-Para cada `shorts/lote-*/` com vídeo que ainda não está no `uploaded.json`, rode `python3 shorts/upload.py <lote>`. O script remarca sozinho para o próximo horário livre os vídeos com data já passada.
+Para cada `shorts/lote-*/` com vídeo que ainda não está no `uploaded.json`, rode `python3 shorts/upload.py <lote>`. O script coloca no próximo horário de pico livre os vídeos sem data ou com data já passada.
 
 ## 2. Pipeline
 
