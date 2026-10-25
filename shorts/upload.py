@@ -13,12 +13,15 @@ A video whose publishAt is missing, too close (< 30 min), or already taken by an
 upload is moved to the next free peak slot (one video per slot). Slots follow US peak
 viewing hours in New York time, so they track daylight saving automatically.
 --limit=N uploads at most N videos in this run.
+
+    python3 shorts/upload.py --free-slots 2026-10-27   # that day's peak slots still free (UTC)
 """
 import datetime as dt
 import glob
 import json
 import os
 import sys
+import urllib.error
 import urllib.parse
 import urllib.request
 from zoneinfo import ZoneInfo
@@ -47,11 +50,15 @@ def taken_slots():
     return taken
 
 
+def day_slots(day):
+    hours = SLOTS_WEEKEND if day.weekday() >= 5 else SLOTS_WEEKDAY
+    return [dt.datetime(day.year, day.month, day.day, h, tzinfo=AUDIENCE_TZ).astimezone(dt.timezone.utc) for h in hours]
+
+
 def next_free_slot(after, taken):
     day = after.astimezone(AUDIENCE_TZ).date()
     while True:
-        for h in SLOTS_WEEKEND if day.weekday() >= 5 else SLOTS_WEEKDAY:
-            t = dt.datetime(day.year, day.month, day.day, h, tzinfo=AUDIENCE_TZ).astimezone(dt.timezone.utc)
+        for t in day_slots(day):
             if t >= after and iso(t) not in taken:
                 return t
         day += dt.timedelta(days=1)
@@ -124,7 +131,33 @@ def upload(token, path, body):
         return json.load(r)["id"]
 
 
+def pending_slots():
+    """publishAt of videos already planned in some batch but not uploaded yet."""
+    pending = set()
+    for manifest in glob.glob(os.path.join(SHORTS, "*", "videos.json")):
+        log = os.path.join(os.path.dirname(manifest), "uploaded.json")
+        done = json.load(open(log, encoding="utf-8")) if os.path.exists(log) else {}
+        with open(manifest, encoding="utf-8") as f:
+            pending.update(v["publishAt"] for v in json.load(f)["videos"] if v.get("publishAt") and v["file"] not in done)
+    return pending
+
+
+def free_slots(day_str):
+    taken = taken_slots() | pending_slots()
+    if all(os.environ.get(k) for k in ("YT_CLIENT_ID", "YT_CLIENT_SECRET", "YT_REFRESH_TOKEN")):
+        try:
+            taken.update(v["publishAt"] for v in channel_videos(access_token()).values() if v["publishAt"])
+        except urllib.error.HTTPError as e:
+            print(f"warning: could not read the channel ({e}); using uploaded.json only", file=sys.stderr)
+    earliest = dt.datetime.now(dt.timezone.utc) + MIN_LEAD
+    for t in day_slots(dt.date.fromisoformat(day_str)):
+        if t >= earliest and iso(t) not in taken:
+            print(iso(t))
+
+
 def main():
+    if "--free-slots" in sys.argv:
+        return free_slots(sys.argv[sys.argv.index("--free-slots") + 1])
     args = [a for a in sys.argv[1:] if not a.startswith("--")]
     if len(args) != 1:
         sys.exit(__doc__)
