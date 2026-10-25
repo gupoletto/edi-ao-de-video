@@ -5,8 +5,8 @@ Leia `shorts/PLANO.md` antes de começar. As regras de monetização dele valem 
 ## 0. Preparação
 
 - Trabalhe na branch `claude/focused-einstein-6l079f` (`git fetch origin claude/focused-einstein-6l079f && git checkout claude/focused-einstein-6l079f`) e faça push só nela.
-- Credenciais (variáveis de ambiente): `YT_CLIENT_ID`, `YT_CLIENT_SECRET`, `YT_REFRESH_TOKEN` (escopos `youtube.upload` + `youtube.readonly`), `PEXELS_API_KEY`. Opcionais: `ELEVENLABS_API_KEY` ou `OPENAI_API_KEY` para a voz.
-- Falta alguma? Produza assim mesmo o que der (sem Pexels: só os tipos A e C) e avise no relatório final o que está faltando.
+- Credenciais (variáveis de ambiente): `YT_CLIENT_ID`, `YT_CLIENT_SECRET`, `YT_REFRESH_TOKEN` (escopos `youtube.upload` + `youtube.readonly`), Opcional: `PIXABAY_API_KEY` para cenas reais (a Pexels suspendeu novas chaves). A rede do ambiente bloqueia Pexels, Pixabay, ElevenLabs, OpenAI e Hugging Face, a menos que o usuário libere o domínio. GitHub, PyPI, npm e googleapis funcionam.
+- Sem `PIXABAY_API_KEY` ou sem acesso a pixabay.com: os 3 vídeos do dia são originais (A, B-original e C, veja abaixo). Avise no relatório o que está faltando só se afetar o resultado.
 
 ## 1. Pendências
 
@@ -19,8 +19,8 @@ O código de produção fica em `shorts/pipeline/`. Se ainda não existir (prime
 - **Roteiro → cenas → voz → legendas → render** em 1080×1920, 30 fps, 20–60 s, H.264 + AAC, volume em −14 LUFS, arquivo < 40 MB.
 - Os 5 vídeos de `shorts/lote-01/` são a referência de estilo: título do ranking no topo, número grande em cada item (#5 → #1), legenda palavra por palavra, voz animada em inglês.
 - **Tipo A/C** (original): simulação e animação geradas por código (numpy + renderização de quadros + ffmpeg, ou Remotion local; Chromium está instalado). Física de verdade (integração numérica), não animação fingida.
-- **Tipo B** (Pexels): API `https://api.pexels.com/videos/search` com `PEXELS_API_KEY`. Guarde autor + URL de cada clipe para a descrição.
-- **Voz:** ElevenLabs/OpenAI se houver chave; senão Piper (TTS offline, voz `en_US`).
+- **Tipo B**: se `PIXABAY_API_KEY` existir e pixabay.com responder, use cenas da API `https://pixabay.com/api/videos/` sobre o tema em alta (guarde autor + URL para a descrição). Senão, faça a versão **original** do tema em alta: simulação procedural "satisfying" ligada a ele (ex.: "lava" → simulação de partículas de lava engolindo objetos; "gelo" → rachaduras se propagando; "fábrica" → esteira e máquinas animadas; bolinha em espiral, dominós, areia, fluidos, ordenação de cores).
+- **Voz:** Kokoro, TTS gratuito e de boa qualidade que roda offline. `pip install kokoro-onnx soundfile` e baixe do GitHub `https://github.com/thewh1teagle/kokoro-onnx/releases/download/model-files-v1.0/kokoro-v1.0.onnx` e `voices-v1.0.bin` (o Hugging Face está bloqueado). Voz animada em inglês americano, como `am_michael` ou `af_heart`; use sempre a mesma no canal. Cache dos modelos em `~/.cache/kokoro` (fora do Git).
 - **Música:** sintetizada pelo próprio pipeline ou nenhuma. Nunca use música baixada.
 
 ## 3. Tendências

@@ -18,7 +18,7 @@ Shorts em inglês para público dos EUA, no formato "Ranking the most satisfying
 | Sáb–dom | 10h · 14h · 19h | 11h · 15h · 20h | 12h · 16h · 21h |
 
 - Os picos são o almoço, a saída da escola ou do trabalho e a noite. No fim de semana, o pico da manhã começa mais cedo.
-- Rodízio de tipos de vídeo, um de cada por dia: **A — simulação original** (física, caos, bolinhas, "will it escape?"), **B — tema em alta** (ranking com cenas do Pexels, roteiro e dados próprios) e **C — matemática/visual original** ou quiz ("wait for #1", "guess which…").
+- Rodízio de tipos de vídeo, um de cada por dia: **A — simulação original** (física, caos, bolinhas, "will it escape?"), **B — tema em alta** (versão original por simulação; com cenas reais do Pixabay se a chave e o domínio forem liberados) e **C — matemática/visual original** ou quiz ("wait for #1", "guess which…").
 - A produção roda todo dia de manhã (05:47 em Brasília) e agenda os vídeos nos próximos horários livres, normalmente os do dia seguinte. Assim sempre sobra folga para conferir ou cancelar no YouTube Studio.
 - Lote 1: física, lava e matemática vão ao ar no domingo, 25/10, às 17h, 19h e 21h de Nova York (18h, 20h e 22h em Brasília). Gelo e fábrica entram nos próximos horários livres.
 - Quando houver dados do próprio canal, a rotina ajusta esses horários pelo horário de pico real da audiência.
@@ -44,7 +44,7 @@ Formatos "Ranking …" estourando em canais pequenos nas últimas 2 semanas:
 O que mais derruba canais como este na revisão do YPP é **"conteúdo reutilizado"** e **"conteúdo inautêntico"** (produzido em massa, repetitivo). Por isso:
 
 1. **Nunca usar clipes de outros criadores**, nem de canais concorrentes, TikTok ou "compilações". Muitos canais de ranking fazem isso e não são aprovados, ou perdem a monetização depois.
-2. **No máximo 1 vídeo por dia com cenas de banco de imagens** (Pexels). E sempre com roteiro próprio, dados reais (temperaturas, números), edição, legendas e créditos na descrição.
+2. **No máximo 1 vídeo por dia com cenas de banco de imagens** (Pixabay; a Pexels suspendeu novas chaves). E sempre com roteiro próprio, dados reais (temperaturas, números), edição, legendas e créditos na descrição.
 3. **Cada vídeo com tema e roteiro diferentes.** Nada de repetir o mesmo tema em menos de 14 dias, nem o mesmo padrão de título dois dias seguidos. O título precisa cumprir o que promete.
 4. **Música:** só original ou sintetizada pelo próprio pipeline. **Nunca** música com direitos autorais.
 5. **IA:** voz de IA não exige aviso. Se algum vídeo tiver imagens realistas geradas por IA (pessoas, lugares ou eventos que parecem reais), marcar `containsSyntheticMedia: true`.
