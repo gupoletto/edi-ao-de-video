@@ -276,7 +276,7 @@ def d_sumario(ctx, st, e, t, W, H):
     itens, atual = e.get("itens", []), e.get("atual", 0)
     tam = H * (0.05 if W > H else 0.034)
     x0 = W * (0.3 if W > H else 0.12)
-    y = H * 0.5 - len(itens) * tam * 0.85
+    y = H * 0.5 - (len(itens) - 1) * tam * 0.85 + tam * 0.35  # bloco centrado na tela
     if e.get("texto"):
         fonte(ctx, *st["corpo"], tam * 0.5)
         ctx.set_source_rgb(*st["destaque"])

@@ -214,14 +214,19 @@ def montar(fonte, previa=False, trecho=None, crf=20):
     # 1. linha do tempo: abertura (gancho) + trechos mantidos, vídeo e áudio juntos
     g, a_g = [], []
     if abertura:
-        g.append("[0:v]split=2[sa][sb]")
-        g.append(f"[sa]select='{entre(abertura)}',setpts=N/FRAME_RATE/TB[va]")
-        g.append(f"[sb]select='{entre(manter)}',setpts=N/FRAME_RATE/TB[vm]")
-        a_g.append("[0:a]asplit=2[xa][xb]")
-        a_g.append(f"[xa]aselect='{entre(abertura)}',asetpts=N/SR/TB[aa]")
-        a_g.append(f"[xb]aselect='{entre(manter)}',asetpts=N/SR/TB[am]")
-        a_g.append("[aa][am]concat=n=2:v=0:a=1[alin]")
-        g.append("[va][vm]concat=n=2:v=1:a=0[lin]")
+        # cada trecho da abertura é uma entrada própria (na ordem do plano, não na do bruto; um split
+        # guardaria o vídeo todo na memória), recortado com -ss/-t e emendado antes dos trechos mantidos
+
+        for k, (a, b) in enumerate(abertura):
+            entradas += ["-ss", f"{a:.3f}", "-t", f"{b - a:.3f}", "-i", plano["fonte"]]
+            g.append(f"[{idx}:v]setpts=PTS-STARTPTS[va{k}]")
+            a_g.append(f"[{idx}:a]asetpts=PTS-STARTPTS[aa{k}]")
+            idx += 1
+        g.append(f"[0:v]select='{entre(manter)}',setpts=N/FRAME_RATE/TB[vm]")
+        a_g.append(f"[0:a]aselect='{entre(manter)}',asetpts=N/SR/TB[am]")
+        # concat precisa de vídeo e áudio juntos: aqui só vídeo e só áudio, cada um com seu concat
+        g.append("".join(f"[va{k}]" for k in range(len(abertura))) + f"[vm]concat=n={len(abertura) + 1}:v=1:a=0[lin]")
+        a_g.append("".join(f"[aa{k}]" for k in range(len(abertura))) + f"[am]concat=n={len(abertura) + 1}:v=0:a=1[alin]")
     else:
         g.append(f"[0:v]select='{entre(manter)}',setpts=N/FRAME_RATE/TB[lin]")
         a_g.append(f"[0:a]aselect='{entre(manter)}',asetpts=N/SR/TB[alin]")
