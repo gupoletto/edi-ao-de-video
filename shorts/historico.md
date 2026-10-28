@@ -9,3 +9,6 @@
 | 27/10/2026 | Satisfying (lote 1) | Máquinas de fábrica | Ranking | "Ranking The Most Satisfying …" | lote-01/factory.mp4 |
 | 27/10/2026 | Ilusões de ótica | Ilusões geométricas e de movimento (Müller-Lyer, Ebbinghaus, Hering, café wall, stepping feet) | Ranking | "5 X That Break Your Brain (#1 Is …)" | lote-2026-10-27/illusions_ranking.mp4 |
 | 27/10/2026 | Ilusões de ótica | Ilusões de cor e brilho (contraste simultâneo, White, Munker) | Interativo (quiz) | "Same X or Not? Test Your Eyes (N Questions)" | lote-2026-10-27/illusions_same_color.mp4 |
+| 28/10/2026 | Espaço | Lua 2x mais perto (simulação de órbita, marés) | What if | "What If the X Were Twice as Close? (Real … Simulation)" | lote-2026-10-28/space_moon_closer.mp4 |
+| 28/10/2026 | Espaço | Planetas mais extremos (Marte, Netuno, Júpiter, Mercúrio, Vênus) | Ranking | "Ranking the 5 Most Extreme X in Our Y" | lote-2026-10-28/space_extreme_planets.mp4 |
+| 28/10/2026 | Espaço | Comparação de tamanho (Terra/Vênus, Lua/Plutão, Mercúrio/Ganimedes, Urano/Netuno) | Interativo (quiz) | "Which Is Bigger? X Edition (N Questions)" | lote-2026-10-28/space_which_bigger.mp4 |
