@@ -1,0 +1,57 @@
+# Edição dos seus vídeos pessoais
+
+O mesmo método dos vídeos de referência (veja `ESTILO.md`): você grava e pede; a IA transcreve, planeja,
+cria os elementos, monta e renderiza. Tudo roda aqui, sem programa de edição, com ffmpeg + Python.
+
+## Pastas
+
+| Pasta | O que vai nela |
+|---|---|
+| `bruto/` | o vídeo como você gravou |
+| `estilo/` | suas referências visuais (logo, prints de vídeos que você gosta) — opcional |
+| `trabalho/<nome>/` | transcrição, plano, elementos e prévia (gerados) |
+| `final/` | o vídeo pronto |
+
+Os vídeos e arquivos gerados não vão para o Git.
+
+## Pedindo ao Claude
+
+Coloque o arquivo em `edicao/bruto/` e peça, por exemplo:
+
+> Edite o vídeo `bruto/viagem.mp4` no estilo editorial, horizontal, para o YouTube.
+
+> Transforme `bruto/receita.mp4` num Reels vertical no estilo dinâmico, com legendas.
+
+O Claude segue as etapas e para duas vezes para você aprovar: **no plano** e **na prévia**.
+
+## Etapas (se quiser rodar à mão)
+
+```bash
+python3 edicao/ferramentas/transcrever.py edicao/bruto/viagem.mp4          # 2. transcrição com tempos
+python3 edicao/ferramentas/planejar.py    edicao/bruto/viagem.mp4 --estilo editorial --formato horizontal
+#   3. revise edicao/trabalho/viagem/plano.md; os elementos visuais entram em plano.json -> "elementos"
+python3 edicao/ferramentas/elementos.py   edicao/bruto/viagem.mp4 --amostra # 4. um quadro de cada elemento
+python3 edicao/ferramentas/elementos.py   edicao/bruto/viagem.mp4           #    renderiza os elementos
+python3 edicao/ferramentas/montar.py      edicao/bruto/viagem.mp4 --previa  # 5. prévia rápida (540p)
+python3 edicao/ferramentas/montar.py      edicao/bruto/viagem.mp4           # 6. final -> edicao/final/
+```
+
+Dependências: `pip install sherpa-onnx pycairo numpy` e ffmpeg. Na primeira transcrição o modelo
+Whisper small (~640 MB, do GitHub do sherpa-onnx) é baixado para `~/.cache/sherpa`; as fontes (OFL)
+vão para `~/.local/share/fonts`.
+
+## Ajustes no plano (`trabalho/<nome>/plano.json`)
+
+- `manter`: trechos do bruto que ficam (em segundos). Apague ou mude um trecho para cortar/manter algo.
+- `cortes`: o que foi tirado e por quê (pausas, regravações) — só informativo.
+- `zooms`: trechos com zoom de 110 % no rosto. `foco`: onde está o rosto (fração da largura e da altura).
+- `legendas`: liga/desliga. `correcoes`: palavras que a transcrição errou, para as legendas.
+- `elementos`: `titulo`, `lista`, `numero`, `letreiro` (campos em `ferramentas/elementos.py`).
+  Os tempos `de`/`ate` são do vídeo **bruto**; o montador converte para o editado.
+
+## Limites desta versão
+
+- O tempo de cada palavra é estimado dentro da frase (a frase em si tem tempo exato), então a legenda
+  palavra a palavra pode adiantar ou atrasar um pouco em frases longas.
+- Ainda não faz: tela dividida, gravação de tela com câmera em miniatura, recorte do fundo atrás de você
+  e música. Dá para acrescentar quando você precisar.

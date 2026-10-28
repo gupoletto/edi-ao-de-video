@@ -2,3 +2,10 @@ client_secret.json
 token.json
 *.mp4
 __pycache__/
+# edição pessoal: vídeos e arquivos gerados ficam só no computador
+edicao/bruto/*
+edicao/estilo/*
+edicao/trabalho/
+edicao/final/*
+!edicao/*/.gitkeep
+*.mov
