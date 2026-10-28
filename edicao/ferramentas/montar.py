@@ -114,9 +114,9 @@ def montar(fonte, previa=False):
         mov = os.path.join(pasta, "elementos", f"E{i:02d}_{e['tipo']}.mov")
         if not os.path.exists(mov):
             raise SystemExit(f"falta {mov}: rode elementos.py antes")
-        a = saida(plano, e["de"])
+        a, b = saida(plano, e["de"]), saida(plano, e["ate"])
         entradas += ["-itsoffset", f"{a:.3f}", "-i", mov]
-        g.append(f"[{atual}][{i}:v]overlay=eof_action=pass:enable='between(t,{a:.3f},{a + e['ate'] - e['de']:.3f})'[v{i}]")
+        g.append(f"[{atual}][{i}:v]overlay=eof_action=pass:enable='between(t,{a:.3f},{b:.3f})'[v{i}]")
         atual = f"v{i}"
     if plano.get("legendas"):
         ass = os.path.join(pasta, "legendas.ass")

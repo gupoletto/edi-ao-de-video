@@ -7,7 +7,8 @@
 
 Tipos (campos em plano.json -> "elementos"; "de"/"ate" em segundos do vídeo BRUTO):
   titulo   tela cheia: "texto", "destaque" (palavra em cor), "rotulo" opcional (ex.: "PASSO 2 DE 5")
-  lista    tela cheia: "texto" (título), "itens" [..], "marca": "check" | "x" | "numero"
+  lista    tela cheia: "texto" (título), "itens" [..], "marca": "check" | "x" | "numero",
+           "tempos" opcional [..] (instante no bruto em que cada item entra)
   letreiro sobre o rosto: "itens" [..] em pílulas que entram uma a uma, "lado": "esquerda" | "direita"
   numero   tela cheia: "texto" (o número, ex.: "R$ 12 mil"), "legenda"
 """
@@ -20,6 +21,7 @@ import cairo
 import numpy as np
 
 from comum import ler, pasta_trabalho, preparar
+from planejar import saida
 
 FPS = 30
 ESTILOS = {
@@ -154,8 +156,10 @@ def d_lista(ctx, st, e, t, W, H):
     fam, neg = st["corpo"]
     ti = tam * 0.62
     y += ti * 0.8
+    tempos = e.get("tempos")  # opcional: instante (no bruto) em que cada item é falado
     for i, it in enumerate(itens):
-        k = ease((t - 0.4 - i * passo) / 0.35)
+        ini = tempos[i] - e["de"] if tempos else 0.4 + i * passo
+        k = ease((t - ini) / 0.35)
         if k <= 0:
             break
         ctx.save()
@@ -249,6 +253,14 @@ def quadro(st, e, t, W, H):
     return surf
 
 
+def no_editado(plano, e):
+    """Elemento com os tempos convertidos para o vídeo editado (os cortes encolhem a duração)."""
+    e = dict(e, de=saida(plano, e["de"]), ate=saida(plano, e["ate"]))
+    if e.get("tempos"):
+        e["tempos"] = [saida(plano, t) for t in e["tempos"]]
+    return e
+
+
 def resolucao(plano):
     return (1080, 1920) if plano["formato"] == "vertical" else (1920, 1080)
 
@@ -262,6 +274,7 @@ def renderizar(fonte_video, amostra=False):
     out_dir = os.path.join(pasta, "elementos")
     os.makedirs(out_dir, exist_ok=True)
     for i, e in enumerate(plano["elementos"], 1):
+        e = no_editado(plano, e)
         nome = f"E{i:02d}_{e['tipo']}"
         dur = e["ate"] - e["de"]
         if amostra:
