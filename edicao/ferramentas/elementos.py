@@ -33,17 +33,21 @@ from comum import ler, pasta_trabalho, preparar
 from planejar import saida
 
 FPS = 30
+def hexrgb(h):
+    return tuple(int(h[i:i + 2], 16) / 255 for i in (1, 3, 5))
+
+
+# Paleta do canal (28/10/2026): marinho #01103A, creme #F8EDD9, cinza-azulado #919FA8, taupe #B19F92.
+# Fundo marinho com texto creme, como na referência; taupe e cinza-azulado têm contraste sobre o marinho
+# (não sobre o creme), por isso são destaque e cor secundária, e nunca texto em fundo claro.
+MARINHO, CREME, CINZA, TAUPE = "#01103A", "#F8EDD9", "#919FA8", "#B19F92"
+PALETA = {
+    "fundo": hexrgb(MARINHO), "tinta": hexrgb(CREME), "suave": hexrgb(CINZA), "destaque": hexrgb(TAUPE),
+    "ok": hexrgb(CINZA), "nao": hexrgb(TAUPE), "cartao": hexrgb("#0E2152"),  # marinho um tom acima, p/ cartões
+}
 ESTILOS = {
-    "editorial": {  # aprendido do vídeo do Marcos Lemos: janelas do Claude, papel creme, serifa
-        "fundo": (0.957, 0.949, 0.925), "tinta": (0.12, 0.118, 0.114), "suave": (0.42, 0.40, 0.38),
-        "destaque": (0.788, 0.392, 0.259), "ok": (0.24, 0.55, 0.33), "nao": (0.75, 0.22, 0.18),
-        "titulo": ("Source Serif 4 Semibold", False), "corpo": ("Inter", True), "cartao": (1, 1, 1),
-    },
-    "dinamico": {  # aprendido do vídeo do Matheus Fonseca: tela branca, selo numerado, sans pesada
-        "fundo": (0.98, 0.98, 0.98), "tinta": (0.08, 0.08, 0.08), "suave": (0.45, 0.45, 0.45),
-        "destaque": (0.80, 0.31, 0.20), "ok": (0.18, 0.62, 0.36), "nao": (0.80, 0.25, 0.20),
-        "titulo": ("Poppins ExtraBold", False), "corpo": ("Poppins SemiBold", False), "cartao": (1, 1, 1),
-    },
+    "editorial": dict(PALETA, titulo=("Source Serif 4 Semibold", False), corpo=("Inter", True)),  # Marcos Lemos
+    "dinamico": dict(PALETA, titulo=("Poppins ExtraBold", False), corpo=("Poppins SemiBold", False)),  # Matheus F.
 }
 
 
@@ -107,14 +111,14 @@ def icone(ctx, st, marca, x, y, r, n):
         fonte(ctx, *st["corpo"], r * 1.1)
         s = str(n)
         e = ctx.text_extents(s)
-        ctx.set_source_rgb(1, 1, 1)
+        ctx.set_source_rgb(*st["fundo"])
         ctx.move_to(x - e.x_bearing - e.width / 2, y - e.y_bearing - e.height / 2)
         ctx.show_text(s)
         return
     ctx.arc(x, y, r, 0, 2 * math.pi)
     ctx.set_source_rgb(*(st["ok"] if marca == "check" else st["nao"]))
     ctx.fill()
-    ctx.set_source_rgb(1, 1, 1)
+    ctx.set_source_rgb(*st["fundo"])
     ctx.set_line_width(r * 0.28)
     ctx.set_line_cap(cairo.LINE_CAP_ROUND)
     if marca == "check":

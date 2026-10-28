@@ -11,6 +11,19 @@ Aprendido de cinco vídeos de referência (análise quadro a quadro, transcriç�
 Este arquivo é o "guia de estilo" que o vídeo A manda criar: o Claude lê antes de planejar cada vídeo.
 Edite à vontade (cores, fontes, o que você não quer) e coloque referências visuais em `edicao/estilo/`.
 
+## 0. Paleta do canal (vale para todos os estilos; definida em 28/10/2026)
+
+| Cor | Hex | Uso |
+|---|---|---|
+| Marinho | `#01103A` | fundo dos cards de tela cheia, pílulas sobre o vídeo, contorno das legendas |
+| Creme | `#F8EDD9` | texto principal e legendas |
+| Taupe | `#B19F92` | destaque: a palavra em cor do título, números, palavra-chave da legenda, item "não" |
+| Cinza-azulado | `#919FA8` | secundário: rótulos, itens já feitos/apagados, item "ok" |
+
+Regra: texto sempre creme sobre marinho (ou sobre o vídeo). Taupe e cinza-azulado só sobre fundo escuro —
+sobre o creme eles não têm contraste. Fica em `PALETA` no `ferramentas/elementos.py`. As cores das seções 2 e 3
+(creme do Marcos, branco do Matheus) descrevem as referências; o kit usa esta paleta.
+
 ## 1. Ritmo (vale para os dois estilos)
 
 | Medida | A | B | C | D | E | Regra no editor |

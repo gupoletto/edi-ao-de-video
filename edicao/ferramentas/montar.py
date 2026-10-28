@@ -21,7 +21,7 @@ import numpy as np
 import soundfile as sf
 
 from comum import FINAL, FONTES, RAIZ, gravar, ler, pasta_trabalho, preparar, sonda
-from elementos import SO_MONTAR, TELA_CHEIA, cartao_rect, no_editado, resolucao
+from elementos import CREME, SO_MONTAR, TAUPE, TELA_CHEIA, cartao_rect, hexrgb, no_editado, resolucao
 from planejar import dur_abertura, saida
 
 SR = 48000
@@ -59,18 +59,20 @@ def legendas(plano, tr, W, H, caminho):
     frase: 2–3 palavras em sans pesada branca, a palavra-chave em serifa itálica clara, entrando com desfoque.
     caixa: frase curta numa caixa escura discreta."""
     modo = plano.get("legenda_estilo") or ("palavra" if plano["estilo"] == "dinamico" else "caixa")
+    texto_cor, chave_cor = ass_cor(hexrgb(CREME)), ass_cor(hexrgb(TAUPE))  # paleta do canal
+    tc = "&H00" + texto_cor[2:-1]
     vertical = H > W
     if modo == "palavra":
         tam, max_pal = (88 if vertical else 64), 3
-        estilo = (f"Style: L,Poppins ExtraBold,{tam},&H00FFFFFF,&H00FFFFFF,&H00000000,&H64000000,0,0,0,0,100,100,0,0,"
+        estilo = (f"Style: L,Poppins ExtraBold,{tam},{tc},{tc},&H003A1001,&H643A1001,0,0,0,0,100,100,0,0,"
                   f"1,{tam // 11},2,2,60,60,{int(H * (0.30 if vertical else 0.08))},1")
     elif modo == "frase":
         tam, max_pal = (84 if vertical else 62), 3
-        estilo = (f"Style: L,Poppins ExtraBold,{tam},&H00FFFFFF,&H00FFFFFF,&H50000000,&H78000000,0,0,0,0,100,100,-1,0,"
+        estilo = (f"Style: L,Poppins ExtraBold,{tam},{tc},{tc},&H503A1001,&H783A1001,0,0,0,0,100,100,-1,0,"
                   f"1,2,4,2,60,60,{int(H * (0.26 if vertical else 0.12))},1")
     else:
         tam, max_pal = (64 if vertical else 46), 6
-        estilo = (f"Style: L,Inter,{tam},&H00FFFFFF,&H00FFFFFF,&H00000000,&H90000000,-1,0,0,0,100,100,0,0,"
+        estilo = (f"Style: L,Inter,{tam},{tc},{tc},&H003A1001,&H303A1001,-1,0,0,0,100,100,0,0,"
                   f"3,14,0,2,80,80,{int(H * (0.22 if vertical else 0.06))},1")
     cheios = [(e["de"], e["ate"]) for e in plano["elementos"] if e["tipo"] in TELA_CHEIA | {"tela"}]
     fix = {k.lower(): v for k, v in plano.get("correcoes", {}).items()}  # ex.: {"cloud": "Claude"}
@@ -95,10 +97,10 @@ def legendas(plano, tr, W, H, caminho):
                 if len(re.sub(r"\W", "", palavras[chave])) < (7 if modo == "palavra" else 5):
                     chave = -1
                 if modo == "palavra" and chave >= 0:
-                    palavras[chave] = r"{\i1\c&H3CD7FF&}" + palavras[chave] + r"{\i0\c&HFFFFFF&}"
+                    palavras[chave] = rf"{{\i1\c{chave_cor}}}" + palavras[chave] + rf"{{\i0\c{texto_cor}}}"
                 elif modo == "frase" and chave >= 0:
-                    palavras[chave] = (r"{\fnSource Serif 4 Semibold\i1\c&H8FB8F5&}" + palavras[chave] +
-                                       r"{\fnPoppins ExtraBold\i0\c&HFFFFFF&}")
+                    palavras[chave] = (rf"{{\fnSource Serif 4 Semibold\i1\c{chave_cor}}}" + palavras[chave] +
+                                       rf"{{\fnPoppins ExtraBold\i0\c{texto_cor}}}")
                 texto = " ".join(palavras)
                 if modo == "palavra":
                     texto = r"{\fscx80\fscy80\t(0,90,\fscx100\fscy100)}" + texto  # "pulo" curto na entrada
@@ -302,7 +304,7 @@ def montar(fonte, previa=False, trecho=None, crf=20):
             arq = e["arquivo"] if os.path.isabs(e["arquivo"]) else os.path.join(RAIZ, e["arquivo"])
             entradas += ["-ss", f"{e.get('inicio', 0):.3f}", "-itsoffset", f"{a:.3f}", "-i", arq]
             g.append(f"[{idx}:v]scale={W}:{H}:force_original_aspect_ratio=decrease,"
-                     f"pad={W}:{H}:(ow-iw)/2:(oh-ih)/2:color=0x111111,setsar=1[t{i}]")
+                     f"pad={W}:{H}:(ow-iw)/2:(oh-ih)/2:color=0x01103A,setsar=1[t{i}]")
             camada(f"[{atual}][t{i}]overlay=eof_action=pass:{quando}")
             idx += 1
             pw, ph = (W * 0.2, W * 0.2 * 1.15) if W > H else (W * 0.34, W * 0.34 * 1.15)
@@ -316,12 +318,12 @@ def montar(fonte, previa=False, trecho=None, crf=20):
             continue
         if tipo == "foco":  # holofote: escurece tudo fora da área
             ax, ay, aw, ah = (v * d for v, d in zip(e["area"], (W, H, W, H)))
-            escuro = "color=black@0.6:t=fill"
+            escuro = "color=0x01103A@0.65:t=fill"
             for bx, by, bw, bh in ((0, 0, W, ay), (0, ay + ah, W, H - ay - ah), (0, ay, ax, ah),
                                    (ax + aw, ay, W - ax - aw, ah)):
                 if bw > 0 and bh > 0:
                     camada(f"drawbox=x={bx:.0f}:y={by:.0f}:w={bw:.0f}:h={bh:.0f}:{escuro}:{quando}")
-            camada(f"drawbox=x={ax:.0f}:y={ay:.0f}:w={aw:.0f}:h={ah:.0f}:color=white@0.9:t=4:{quando}")
+            camada(f"drawbox=x={ax:.0f}:y={ay:.0f}:w={aw:.0f}:h={ah:.0f}:color=0x{CREME[1:]}@0.9:t=4:{quando}")
             continue
         if tipo == "popup":  # recorta a área e mostra ampliada na frente
             ax, ay, aw, ah = (v * d for v, d in zip(e["area"], (W, H, W, H)))
@@ -330,7 +332,7 @@ def montar(fonte, previa=False, trecho=None, crf=20):
             ox = min(max(ax + aw / 2 - ow / 2, W * 0.05), W * 0.95 - ow)
             oy = min(max(ay + ah / 2 - oh / 2, H * 0.05), H * 0.95 - oh)
             g.append(f"[{copia(a, b)}]crop={aw:.0f}:{ah:.0f}:{ax:.0f}:{ay:.0f},scale={ow:.0f}:{oh:.0f}[u{i}]")
-            camada(f"drawbox=x={ox - 6:.0f}:y={oy - 6:.0f}:w={ow + 12:.0f}:h={oh + 12:.0f}:color=white:t=fill:{quando}")
+            camada(f"drawbox=x={ox - 6:.0f}:y={oy - 6:.0f}:w={ow + 12:.0f}:h={oh + 12:.0f}:color=0x{CREME[1:]}:t=fill:{quando}")
             camada(f"[{atual}][u{i}]overlay={ox:.0f}:{oy:.0f}:eof_action=pass:{quando}")
             continue
         mov = os.path.join(pasta, "elementos", f"E{i:02d}_{tipo}.mov")
