@@ -12,3 +12,6 @@
 | 28/10/2026 | Espaço | Lua 2x mais perto (simulação de órbita, marés) | What if | "What If the X Were Twice as Close? (Real … Simulation)" | lote-2026-10-28/space_moon_closer.mp4 |
 | 28/10/2026 | Espaço | Planetas mais extremos (Marte, Netuno, Júpiter, Mercúrio, Vênus) | Ranking | "Ranking the 5 Most Extreme X in Our Y" | lote-2026-10-28/space_extreme_planets.mp4 |
 | 28/10/2026 | Espaço | Comparação de tamanho (Terra/Vênus, Lua/Plutão, Mercúrio/Ganimedes, Urano/Netuno) | Interativo (quiz) | "Which Is Bigger? X Edition (N Questions)" | lote-2026-10-28/space_which_bigger.mp4 |
+| 29/10/2026 | Simulações de física | Queda por um túnel através da Terra (oscilador harmônico) | Why/how | "How Long Would It Take to X?" | lote-2026-10-29/physics_tunnel.mp4 |
+| 29/10/2026 | Simulações de física | Berço de Newton, hexágono girando, corda, três corpos, blocos que contam π | Ranking | "5 X That Look Impossible (#1 …)" | lote-2026-10-29/physics_impossible.mp4 |
+| 29/10/2026 | Simulações de física | Corridas: queda livre, lançamento, braquistócrona, pêndulos | Interativo (quiz) | "Can You Predict the Winner? N X Races" | lote-2026-10-29/physics_races.mp4 |
