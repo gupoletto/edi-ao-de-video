@@ -10,11 +10,20 @@ Tipos (campos em plano.json -> "elementos"; "de"/"ate" em segundos do vídeo BRU
   lista    tela cheia: "texto" (título), "itens" [..], "marca": "check" | "x" | "numero",
            "tempos" opcional [..] (instante no bruto em que cada item entra)
   letreiro sobre o rosto: "itens" [..] em pílulas que entram uma a uma, "lado": "esquerda" | "direita"
-  numero   tela cheia: "texto" (o número, ex.: "R$ 12 mil"), "legenda"
+  numero   tela cheia: "texto" (o número, ex.: "R$ 12 mil"), "legenda", "contar_de" opcional (conta até o número)
+  sumario  tela cheia: "texto" (título), "itens" [etapas], "atual" (índice da etapa que começa agora)
+  dividido rosto num cartão + texto ao lado: "texto", "destaque", "itens" opcional, "lado": "esquerda" | "direita"
+Em "itens" do letreiro, "~texto~" sai riscado (ex.: "~Premiere~").
+Feitos direto no montar.py, com o próprio vídeo (sem clipe):
+  tela     gravação de tela em tela cheia + rosto em miniatura: "arquivo" (ex.: "bruto/tela.mp4"), "inicio" (s no
+           arquivo), "pip": "esquerda" | "direita"
+  foco     holofote: escurece fora de "area" [x, y, w, h] (frações da tela)
+  popup    recorta "area" [x, y, w, h] e mostra ampliada ("escala", padrão 1.6)
 """
 import argparse
 import math
 import os
+import re
 import subprocess
 
 import cairo
@@ -192,7 +201,7 @@ def d_letreiro(ctx, st, e, t, W, H):
         k = ease((t - 0.15 - i * passo) / 0.3)
         if k <= 0:
             break
-        w = ctx.text_extents(it).x_advance + tam * 2.6
+        w = ctx.text_extents(it.strip("~")).x_advance + tam * 2.6
         h = tam * 2.0
         x = W * 0.03 if e.get("lado", "esquerda") == "esquerda" else W * 0.97 - w
         ctx.save()
@@ -207,10 +216,19 @@ def d_letreiro(ctx, st, e, t, W, H):
         ctx.arc(x + tam * 1.0, y + h / 2, tam * 0.28, 0, 2 * math.pi)
         ctx.set_source_rgb(*st["destaque"])
         ctx.fill()
-        ctx.set_source_rgb(*st["tinta"])
+        riscado = it.startswith("~") and it.endswith("~")
+        txt = it.strip("~")
+        ctx.set_source_rgb(*(st["suave"] if riscado else st["tinta"]))
         fonte(ctx, fam, neg, tam)
         ctx.move_to(x + tam * 1.8, y + h / 2 + tam * 0.36)
-        ctx.show_text(it)
+        ctx.show_text(txt)
+        if riscado:  # o traço atravessa a palavra logo depois que ela entra
+            r = ease((t - 0.15 - i * passo - 0.35) / 0.3)
+            ctx.set_source_rgb(*st["nao"])
+            ctx.set_line_width(tam * 0.12)
+            ctx.move_to(x + tam * 1.6, y + h / 2)
+            ctx.line_to(x + tam * 1.6 + (ctx.text_extents(txt).x_advance + tam * 0.4) * r, y + h / 2)
+            ctx.stroke()
         ctx.pop_group_to_source()
         ctx.paint_with_alpha(k)
         ctx.restore()
@@ -225,6 +243,8 @@ def d_numero(ctx, st, e, t, W, H):
     fam, neg = st["titulo"]
     fonte(ctx, fam, neg, tam)
     s = e["texto"]
+    if "contar_de" in e:
+        s = contando(s, e["contar_de"], ease(t / 1.4))
     ctx.set_source_rgba(*st["destaque"], k)
     ctx.move_to(W / 2 - ctx.text_extents(s).x_advance / 2, H * 0.52 + 20 * (1 - k))
     ctx.show_text(s)
@@ -236,8 +256,104 @@ def d_numero(ctx, st, e, t, W, H):
         ctx.show_text(s)
 
 
-TIPOS = {"titulo": d_titulo, "lista": d_lista, "letreiro": d_letreiro, "numero": d_numero}
-TELA_CHEIA = {"titulo", "lista", "numero"}
+def contando(texto, de, k):
+    """'R$ 12.500' contando a partir de `de`: troca só o número, mantém prefixo, sufixo e separadores."""
+    m = re.search(r"\d[\d.]*(,\d+)?", texto)
+    if not m:
+        return texto
+    bruto = m.group(0)
+    dec = len(bruto.split(",")[1]) if "," in bruto else 0
+    alvo = float(bruto.replace(".", "").replace(",", "."))
+    v = de + (alvo - de) * k
+    num = f"{v:,.{dec}f}".replace(",", "X").replace(".", ",").replace("X", ".")
+    return texto[:m.start()] + num + texto[m.end():]
+
+
+def d_sumario(ctx, st, e, t, W, H):
+    """Mapa do vídeo com a etapa atual em destaque (as anteriores marcadas, as próximas apagadas)."""
+    ctx.set_source_rgb(*st["fundo"])
+    ctx.paint()
+    itens, atual = e.get("itens", []), e.get("atual", 0)
+    tam = H * (0.05 if W > H else 0.034)
+    x0 = W * (0.3 if W > H else 0.12)
+    y = H * 0.5 - len(itens) * tam * 0.85
+    if e.get("texto"):
+        fonte(ctx, *st["corpo"], tam * 0.5)
+        ctx.set_source_rgb(*st["destaque"])
+        ctx.move_to(x0, y - tam * 1.4)
+        ctx.show_text(e["texto"].upper())
+    k = ease((t - 0.3) / 0.5)
+    for i, it in enumerate(itens):
+        fam, neg = st["titulo"] if i == atual else st["corpo"]
+        fonte(ctx, fam, neg, tam * (1 + 0.18 * k if i == atual else 0.8))
+        if i < atual:
+            ctx.set_source_rgba(*st["suave"], 0.55)
+        elif i == atual:
+            ctx.set_source_rgb(*st["tinta"])
+        else:
+            ctx.set_source_rgba(*st["suave"], 0.35)
+        ctx.move_to(x0 + (tam * 0.9 * k if i == atual else 0), y)
+        ctx.show_text(it)
+        if i == atual:
+            ctx.set_source_rgba(*st["destaque"], k)
+            ctx.move_to(x0 - tam * 0.4, y)
+            ctx.show_text("→")
+        elif i < atual:
+            icone(ctx, st, "check", x0 - tam * 0.55, y - tam * 0.3, tam * 0.28, 0)
+        y += tam * 1.7
+
+
+def cartao_rect(W, H, lado="esquerda"):
+    """Onde fica o rosto na tela dividida (x, y, w, h). O montar.py coloca o vídeo exatamente aqui."""
+    if W > H:
+        w, h = W * 0.30, H * 0.74
+        x = W * 0.07 if lado == "esquerda" else W * 0.93 - w
+        return x, (H - h) / 2, w, h
+    w, h = W * 0.78, H * 0.42
+    return (W - w) / 2, H * 0.09, w, h
+
+
+def d_dividido(ctx, st, e, t, W, H):
+    ctx.set_source_rgb(*st["fundo"])
+    ctx.paint()
+    x, y, w, h = cartao_rect(W, H, e.get("lado", "esquerda"))
+    for k in range(6):  # sombra macia em volta do cartão
+        rr(ctx, x - k * 3, y - k * 3 + 10, w + k * 6, h + k * 6, 28 + k * 3)
+        ctx.set_source_rgba(0, 0, 0, 0.025)
+        ctx.fill()
+    ctx.save()
+    ctx.set_operator(cairo.OPERATOR_CLEAR)  # buraco: o vídeo aparece por baixo
+    rr(ctx, x, y, w, h, 28)
+    ctx.fill()
+    ctx.restore()
+    if W > H:
+        tx = x + w + W * 0.06 if e.get("lado", "esquerda") == "esquerda" else W * 0.07
+        larg, ty, tam = W * 0.5, H * 0.38, H * 0.075
+    else:
+        tx, larg, ty, tam = W * 0.1, W * 0.8, y + h + H * 0.1, H * 0.045
+    k = ease((t - 0.2) / 0.5)
+    ctx.push_group()
+    yy = titulo_com_destaque(ctx, st, e.get("texto", ""), e.get("destaque"), tx, ty, tam, larg)
+    ctx.pop_group_to_source()
+    ctx.paint_with_alpha(k)
+    fam, neg = st["corpo"]
+    ti = tam * 0.5
+    yy += ti
+    for i, it in enumerate(e.get("itens", [])):
+        a = ease((t - 0.8 - i * 0.6) / 0.35)
+        if a <= 0:
+            break
+        fonte(ctx, fam, neg, ti)
+        ctx.set_source_rgba(*st["tinta"], a)
+        ctx.move_to(tx + 20 * (1 - a), yy)
+        ctx.show_text("· " + it)
+        yy += ti * 1.7
+
+
+TIPOS = {"titulo": d_titulo, "lista": d_lista, "letreiro": d_letreiro, "numero": d_numero,
+         "sumario": d_sumario, "dividido": d_dividido}
+TELA_CHEIA = {"titulo", "lista", "numero", "sumario", "dividido"}
+SO_MONTAR = {"tela", "foco", "popup"}  # não geram clipe: o montar.py faz com o próprio vídeo
 FADE = 0.25
 
 
@@ -274,6 +390,8 @@ def renderizar(fonte_video, amostra=False):
     out_dir = os.path.join(pasta, "elementos")
     os.makedirs(out_dir, exist_ok=True)
     for i, e in enumerate(plano["elementos"], 1):
+        if e["tipo"] in SO_MONTAR:
+            continue
         e = no_editado(plano, e)
         nome = f"E{i:02d}_{e['tipo']}"
         dur = e["ate"] - e["de"]

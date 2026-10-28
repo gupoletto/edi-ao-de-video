@@ -32,8 +32,10 @@ python3 edicao/ferramentas/planejar.py    edicao/bruto/viagem.mp4 --estilo edito
 #   3. revise edicao/trabalho/viagem/plano.md; os elementos visuais entram em plano.json -> "elementos"
 python3 edicao/ferramentas/elementos.py   edicao/bruto/viagem.mp4 --amostra # 4. um quadro de cada elemento
 python3 edicao/ferramentas/elementos.py   edicao/bruto/viagem.mp4           #    renderiza os elementos
-python3 edicao/ferramentas/montar.py      edicao/bruto/viagem.mp4 --previa  # 5. prévia rápida (540p)
+python3 edicao/ferramentas/montar.py      edicao/bruto/viagem.mp4 --previa --trecho 30 90   # 5. aprove 1 min
+python3 edicao/ferramentas/montar.py      edicao/bruto/viagem.mp4 --previa  #    prévia inteira (540p)
 python3 edicao/ferramentas/montar.py      edicao/bruto/viagem.mp4           # 6. final -> edicao/final/
+python3 edicao/ferramentas/exportar.py    edicao/bruto/viagem.mp4           #    opcional: EDL p/ Premiere/DaVinci
 ```
 
 Dependências: `pip install sherpa-onnx pycairo numpy` e ffmpeg. Na primeira transcrição o modelo
@@ -45,13 +47,18 @@ vão para `~/.local/share/fonts`.
 - `manter`: trechos do bruto que ficam (em segundos). Apague ou mude um trecho para cortar/manter algo.
 - `cortes`: o que foi tirado e por quê (pausas, regravações) — só informativo.
 - `zooms`: trechos com zoom de 110 % no rosto. `foco`: onde está o rosto (fração da largura e da altura).
-- `legendas`: liga/desliga. `correcoes`: palavras que a transcrição errou, para as legendas.
-- `elementos`: `titulo`, `lista`, `numero`, `letreiro` (campos em `ferramentas/elementos.py`).
+- `legendas`: liga/desliga; `legenda_estilo`: `palavra` (1–3 palavras, contorno), `frase` (palavra-chave em serifa
+  itálica) ou `caixa`. `correcoes`: palavras que a transcrição errou, para as legendas.
+- `abertura`: trechos do bruto `[[de, ate], ...]` que vão para o começo como gancho (o resto do vídeo segue igual).
+- `sons`: efeitos sonoros sintetizados (whoosh nos cards, "pop" nos itens). Sem direitos autorais.
+- `elementos`: `titulo`, `lista`, `numero` (com `contar_de`), `letreiro` (`"~texto~"` sai riscado), `sumario`,
+  `dividido`, `tela`, `foco`, `popup` (campos em `ferramentas/elementos.py`).
   Os tempos `de`/`ate` são do vídeo **bruto**; o montador converte para o editado.
 
 ## Limites desta versão
 
 - O tempo de cada palavra é estimado dentro da frase (a frase em si tem tempo exato), então a legenda
   palavra a palavra pode adiantar ou atrasar um pouco em frases longas.
-- Ainda não faz: tela dividida, gravação de tela com câmera em miniatura, recorte do fundo atrás de você
-  e música. Dá para acrescentar quando você precisar.
+- Ainda não faz: recorte do fundo atrás de você (texto atrás da pessoa), trilha musical e b-roll de bancos
+  de imagem. Dá para acrescentar quando você precisar.
+- A montagem é em duas passadas: primeiro a linha do tempo (`trabalho/<nome>/linha_do_tempo.mkv`), depois as camadas.

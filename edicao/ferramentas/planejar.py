@@ -2,10 +2,10 @@
 """Etapa 3: monta o plano de edição a partir da transcrição.
 
     python3 edicao/ferramentas/planejar.py edicao/bruto/meu-video.mp4 [--estilo editorial|dinamico]
-                                           [--formato horizontal|vertical] [--pausa 0.35]
+                                           [--formato horizontal|vertical] [--ritmo normal|rapido]
 
 Faz a parte mecânica, medida nos vídeos de referência (fala em 89–97 % do tempo, pausas de ~0,27 s):
-- corta pausas maiores que --pausa, deixando 0,1 s de respiro de cada lado (nunca no meio de palavra:
+- corta pausas maiores que 0,35 s (--ritmo rapido: 0,25 s, como nos tutoriais mais rápidos), deixando 0,1 s de respiro de cada lado (nunca no meio de palavra:
   os cortes caem nos silêncios que o detector de voz encontrou);
 - marca regravações (frase repetida logo em seguida) e fica com a última tomada;
 - alterna um zoom leve (110 %) a cada corte seco, para o corte não "pular".
@@ -42,6 +42,7 @@ def regravacoes(segs):
 
 
 def planejar(fonte, estilo="editorial", formato="horizontal", pausa=0.35):
+    """Recalcula cortes e zooms. Apaga os elementos e a abertura de um plano anterior."""
     pasta = pasta_trabalho(fonte)
     tr = ler(os.path.join(pasta, "transcricao.json"))
     segs = tr["segments"]
@@ -65,6 +66,9 @@ def planejar(fonte, estilo="editorial", formato="horizontal", pausa=0.35):
         "fonte": tr["fonte"], "estilo": estilo, "formato": formato,
         "foco": [0.5, 0.42],  # ponto do rosto (fração da largura, da altura) usado no zoom e no corte vertical
         "legendas": formato == "vertical" or estilo == "dinamico",
+        "legenda_estilo": "palavra" if estilo == "dinamico" else "frase",  # palavra | frase | caixa
+        "sons": True,  # efeitos sonoros sintetizados na entrada dos elementos
+        "abertura": [],  # gancho: trechos do bruto [[de, ate], ...] mostrados antes de tudo
         "manter": [[round(a, 3), round(b, 3)] for a, b in manter],
         "cortes": sorted(sugestoes, key=lambda c: c["de"]),
         "zooms": zooms,
@@ -79,9 +83,13 @@ def planejar(fonte, estilo="editorial", formato="horizontal", pausa=0.35):
     return plano
 
 
+def dur_abertura(plano):
+    return sum(b - a for a, b in plano.get("abertura", []))
+
+
 def saida(plano, t):
-    """Tempo na fonte -> tempo no vídeo editado."""
-    acc = 0.0
+    """Tempo na fonte -> tempo no vídeo editado (a abertura, se houver, vem antes)."""
+    acc = dur_abertura(plano)
     for a, b in plano["manter"]:
         if t < a:
             return acc
@@ -102,6 +110,8 @@ def escrever_md(pasta, plano, tr):
         txt = e.get("texto") or " · ".join(e.get("itens", []))
         L.append(f"{i}. **{hms(saida(plano, e['de']))}–{hms(saida(plano, e['ate']))}** {e['tipo']}: {txt}"
                  f"  ({hms(e['de'])})")
+    if plano.get("abertura"):
+        L += ["", "## Abertura (gancho)", ""] + [f"- {hms(a)}–{hms(b)} do bruto" for a, b in plano["abertura"]]
     L += ["", "## Cortes", ""]
     for c in plano["cortes"]:
         extra = f" — “{c['texto']}”" if c.get("texto") else ""
@@ -116,6 +126,6 @@ if __name__ == "__main__":
     ap.add_argument("fonte")
     ap.add_argument("--estilo", default="editorial", choices=["editorial", "dinamico"])
     ap.add_argument("--formato", default="horizontal", choices=["horizontal", "vertical"])
-    ap.add_argument("--pausa", type=float, default=0.35)
+    ap.add_argument("--ritmo", default="normal", choices=["normal", "rapido"])
     a = ap.parse_args()
-    planejar(a.fonte, a.estilo, a.formato, a.pausa)
+    planejar(a.fonte, a.estilo, a.formato, 0.25 if a.ritmo == "rapido" else 0.35)
