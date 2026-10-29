@@ -7,6 +7,8 @@
 - fundo: um quadro (cena, lugar) escurecido para o azul-marinho da paleta, à esquerda;
 - rosto: um quadro com a expressão (ou --foto, uma foto que o usuário mandou), recortado em volta de --centro (frações x y do quadro), num cartão à
   direita (--zoom aproxima). --espelhar desfaz o espelho da câmera frontal (texto de camiseta/placa fica legível);
+- --recortar: em vez do cartão, a pessoa recortada (rembg) com contorno branco de adesivo;
+- --bilhete/--carimbo: um ingresso desenhado com carimbo torto, sob o título;
 - titulo: no máximo 4 palavras; a parte entre *asteriscos* ganha a tarja de destaque. sub e selo são opcionais.
 Saída: edicao/final/<nome>_thumb.jpg (e .png).
 """
@@ -91,10 +93,66 @@ def montar(a):
     ctx.set_source(g)
     ctx.paint()
 
-    # cartão com o rosto, levemente inclinado
     rosto = quadro(a.foto, None) if a.foto else quadro(a.fonte, a.rosto)
     if a.espelhar:
         rosto = rosto[:, ::-1]
+    if a.recortar:
+        pessoa(ctx, rosto, a, creme, navy)
+    else:
+        cartao(ctx, rosto, a, creme)
+    texto_e_selo(ctx, a, navy, creme, cinza, taupe)
+
+    nome = os.path.splitext(os.path.basename(a.fonte))[0]
+    png = os.path.join(FINAL, f"{nome}_thumb.png")
+    surf.write_to_png(png)
+    jpg = png[:-4] + ".jpg"
+    subprocess.run(["ffmpeg", "-v", "error", "-y", "-i", png, "-q:v", "2", jpg], check=True)
+    print(f"pronto: {jpg} ({os.path.getsize(jpg) / 1e6:.1f} MB)")
+
+
+def argb(rgba):
+    """RGBA (PIL) -> superfície cairo ARGB32 pré-multiplicada."""
+    a = np.asarray(rgba, np.float32)
+    al = a[..., 3:4] / 255
+    bgra = np.concatenate([a[..., 2::-1] * al, a[..., 3:4]], axis=2).round().astype(np.uint8)
+    bgra = np.ascontiguousarray(bgra)
+    h, w = bgra.shape[:2]
+    return cairo.ImageSurface.create_for_data(memoryview(bgra), cairo.FORMAT_ARGB32, w, h, w * 4), bgra
+
+
+def pessoa(ctx, img, a, creme, navy):
+    """Recorta a pessoa (rembg, modelo u2net_human_seg do GitHub) e cola como adesivo: contorno branco grosso,
+    sombra marinho, sem fundo. A pessoa fica à direita, com a base da foto saindo pela borda de baixo."""
+    from PIL import Image, ImageFilter
+    from rembg import new_session, remove
+    rgb = Image.fromarray(np.ascontiguousarray(img[..., 2::-1]))
+    cut = remove(rgb, session=new_session("u2net_human_seg"))
+    k = a.altura / cut.height
+    cut = cut.resize((round(cut.width * k), round(cut.height * k)), Image.LANCZOS)
+    alfa = cut.getchannel("A").point(lambda v: 255 if v > 128 else 0)
+    r = a.contorno
+    borda = alfa.filter(ImageFilter.MaxFilter(2 * r + 1)).filter(ImageFilter.GaussianBlur(1.2))
+    pad = r * 3
+    lw, lh = cut.width + 2 * pad, cut.height + 2 * pad
+    sombra = Image.new("L", (lw, lh), 0)
+    sombra.paste(borda, (pad, pad))
+    sombra = sombra.filter(ImageFilter.GaussianBlur(14))
+    camada = Image.new("RGBA", (lw, lh), (0, 0, 0, 0))
+    camada.paste(Image.new("RGBA", (lw, lh), tuple(int(c * 255) for c in navy) + (0,)), (0, 0))
+    camada.putalpha(sombra.point(lambda v: int(v * 0.8)))
+    branco = Image.new("RGBA", cut.size, (255, 255, 255, 255))
+    branco.putalpha(borda)
+    camada.alpha_composite(branco, (pad, pad))
+    camada.alpha_composite(cut, (pad, pad))
+    surf, _buf = argb(camada)
+    x = W - lw + pad + a.desloc[0]
+    y = H - lh + pad + a.desloc[1]
+    ctx.set_source_surface(surf, x + 10, y + 14)  # sombra levemente para baixo
+    ctx.paint()
+
+
+def cartao(ctx, rosto, a, creme):
+    """Cartão com o rosto, levemente inclinado."""
     cw, ch = 470, 640
     ctx.save()
     ctx.translate(W - cw / 2 - 50, H / 2 + 10)
@@ -108,6 +166,50 @@ def montar(a):
     cobrir(ctx, rosto, -cw / 2, -ch / 2, cw, ch, cx, a.centro[1], a.zoom)
     ctx.restore()
 
+
+def bilhete(ctx, a, x, y, navy, creme, taupe):
+    """Ingresso com picote e carimbo atravessado (ex.: "JÁ UTILIZADO")."""
+    bw, bh = 470, 132
+    ctx.save()
+    ctx.translate(x + bw / 2, y + bh / 2)
+    ctx.rotate(np.radians(-6))
+    ctx.translate(-bw / 2, -bh / 2)
+    arredondado(ctx, 0, 0, bw, bh, 12)
+    ctx.set_source_rgb(*creme)
+    ctx.fill()
+    for cx in (0, bw):  # meias-luas do picote
+        ctx.arc(cx, bh / 2, 16, 0, 2 * np.pi)
+        ctx.set_source_rgb(*navy)
+        ctx.fill()
+    ctx.set_dash([8, 7])
+    ctx.set_line_width(3)
+    ctx.move_to(bw * 0.72, 12)
+    ctx.line_to(bw * 0.72, bh - 12)
+    ctx.set_source_rgba(*navy, 0.5)
+    ctx.stroke()
+    ctx.set_dash([])
+    texto(ctx, "INGRESSO", 34, 50, 24, taupe)
+    texto(ctx, a.bilhete, 34, 94, 30, navy)
+    texto(ctx, "Nº 0001", bw * 0.72 + 24, 76, 22, navy)
+    if a.carimbo:  # carimbo de borda dupla, torto por cima do ingresso
+        ctx.translate(bw * 0.56, bh * 0.5)
+        ctx.rotate(np.radians(-12))
+        ctx.select_font_face("Poppins", cairo.FONT_SLANT_NORMAL, cairo.FONT_WEIGHT_BOLD)
+        ctx.set_font_size(36)
+        e = ctx.text_extents(a.carimbo)
+        cw, chh = e.x_advance + 40, 62
+        cor = (0.69, 0.16, 0.18)  # vermelho de carimbo: o único fora da paleta, só aqui
+        ctx.set_source_rgba(*cor, 0.92)
+        for d, lw in ((0, 5), (8, 2)):
+            arredondado(ctx, -cw / 2 - d, -chh / 2 - d, cw + 2 * d, chh + 2 * d, 10)
+            ctx.set_line_width(lw)
+            ctx.stroke()
+        ctx.move_to(-e.x_advance / 2, 13)
+        ctx.show_text(a.carimbo)
+    ctx.restore()
+
+
+def texto_e_selo(ctx, a, navy, creme, cinza, taupe):
     # selo
     x0 = 64
     if a.selo:
@@ -121,7 +223,7 @@ def montar(a):
 
     # título: até 2 linhas; *destaque* com tarja taupe e texto marinho
     linhas = a.titulo.split("|") if "|" in a.titulo else _quebra(a.titulo)
-    y = 300 if len(linhas) > 1 else 360
+    y = (260 if a.bilhete else 300) if len(linhas) > 1 else 360
     for ln in linhas:
         x = x0
         partes = ln.split("*")
@@ -141,13 +243,9 @@ def montar(a):
         y += a.tamanho * 1.12
     if a.sub:
         texto(ctx, a.sub, x0, y + 18, 50, cinza, "Source Serif 4", cairo.FONT_WEIGHT_BOLD, italico=True)
-
-    nome = os.path.splitext(os.path.basename(a.fonte))[0]
-    png = os.path.join(FINAL, f"{nome}_thumb.png")
-    surf.write_to_png(png)
-    jpg = png[:-4] + ".jpg"
-    subprocess.run(["ffmpeg", "-v", "error", "-y", "-i", png, "-q:v", "2", jpg], check=True)
-    print(f"pronto: {jpg} ({os.path.getsize(jpg) / 1e6:.1f} MB)")
+        y += 70
+    if a.bilhete:
+        bilhete(ctx, a, x0 + 6, y + 10, navy, creme, taupe)
 
 
 def _quebra(t):
@@ -169,6 +267,12 @@ if __name__ == "__main__":
     ap.add_argument("--centro-fundo", type=float, nargs=2, default=[0.5, 0.5])
     ap.add_argument("--zoom", type=float, default=1.0, help="aproxima o rosto no cartão (1.4 = 40 %% mais perto)")
     ap.add_argument("--espelhar", action="store_true")
+    ap.add_argument("--recortar", action="store_true", help="pessoa recortada com contorno branco, sem cartão")
+    ap.add_argument("--altura", type=int, default=780, help="altura da foto recortada na thumb (px)")
+    ap.add_argument("--contorno", type=int, default=12, help="espessura do contorno branco (px)")
+    ap.add_argument("--desloc", type=int, nargs=2, default=[0, 0], help="move a pessoa (px x y)")
+    ap.add_argument("--bilhete", default="", help="ingresso desenhado sob o título (texto do evento)")
+    ap.add_argument("--carimbo", default="", help="carimbo por cima do ingresso")
     ap.add_argument("--titulo", required=True)
     ap.add_argument("--sub", default="")
     ap.add_argument("--selo", default="")

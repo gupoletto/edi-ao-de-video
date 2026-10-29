@@ -41,7 +41,7 @@ python3 edicao/ferramentas/exportar.py    edicao/bruto/viagem.mp4           #   
 python3 edicao/ferramentas/thumb.py       edicao/bruto/viagem.mp4 --rosto 12.3 --fundo 80 --titulo "CHEGUEI NO *TOPO*" --selo "DIA 5/30"  # thumbnail 1280x720
 ```
 
-Dependências: `pip install sherpa-onnx pycairo numpy` e ffmpeg. Na primeira transcrição o modelo
+Dependências: `pip install sherpa-onnx pycairo numpy` e ffmpeg (para a thumbnail com recorte: `pip install rembg onnxruntime`). Na primeira transcrição o modelo
 Whisper small (~640 MB, do GitHub do sherpa-onnx) é baixado para `~/.cache/sherpa`; as fontes (OFL)
 vão para `~/.local/share/fonts`.
 
