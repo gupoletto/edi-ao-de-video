@@ -6,7 +6,7 @@
 
 - fundo: um quadro (cena, lugar) escurecido para o azul-marinho da paleta, à esquerda;
 - rosto: um quadro com a expressão, recortado em volta de --centro (frações x y do quadro), num cartão à
-  direita. --espelhar desfaz o espelho da câmera frontal (texto de camiseta/placa fica legível);
+  direita (--zoom aproxima). --espelhar desfaz o espelho da câmera frontal (texto de camiseta/placa fica legível);
 - titulo: no máximo 4 palavras; a parte entre *asteriscos* ganha a tarja de destaque. sub e selo são opcionais.
 Saída: edicao/final/<nome>_thumb.jpg (e .png).
 """
@@ -39,11 +39,11 @@ def superficie(a):
     return cairo.ImageSurface.create_for_data(memoryview(a), cairo.FORMAT_RGB24, w, h, w * 4), a
 
 
-def cobrir(ctx, img, x, y, w, h, cx=0.5, cy=0.5):
+def cobrir(ctx, img, x, y, w, h, cx=0.5, cy=0.5, zoom=1.0):
     """Desenha img cobrindo o retângulo (como object-fit: cover), centrado em (cx, cy) da imagem."""
     s, _ = superficie(img)
     ih, iw = img.shape[:2]
-    k = max(w / iw, h / ih)
+    k = max(w / iw, h / ih) * zoom
     ox = min(0, max(w - iw * k, w / 2 - iw * k * cx))
     oy = min(0, max(h - ih * k, h / 2 - ih * k * cy))
     ctx.save()
@@ -104,7 +104,7 @@ def montar(a):
     arredondado(ctx, -cw / 2, -ch / 2, cw, ch, 18)
     ctx.clip()
     cx = 1 - a.centro[0] if a.espelhar else a.centro[0]
-    cobrir(ctx, rosto, -cw / 2, -ch / 2, cw, ch, cx, a.centro[1])
+    cobrir(ctx, rosto, -cw / 2, -ch / 2, cw, ch, cx, a.centro[1], a.zoom)
     ctx.restore()
 
     # selo
@@ -165,6 +165,7 @@ if __name__ == "__main__":
     ap.add_argument("--fundo", type=float, required=True, help="s do quadro de fundo")
     ap.add_argument("--centro", type=float, nargs=2, default=[0.5, 0.4], help="centro do rosto (frações x y)")
     ap.add_argument("--centro-fundo", type=float, nargs=2, default=[0.5, 0.5])
+    ap.add_argument("--zoom", type=float, default=1.0, help="aproxima o rosto no cartão (1.4 = 40 %% mais perto)")
     ap.add_argument("--espelhar", action="store_true")
     ap.add_argument("--titulo", required=True)
     ap.add_argument("--sub", default="")
