@@ -143,5 +143,8 @@ preencha `elementos`.
    neste arquivo — e só então assistir à **prévia inteira**.
 3. Conferir **todo texto na tela** (erro de digitação) e nomes na transcrição (ex.: "cloud" → "Claude" em `correcoes`).
 4. Ouvir o áudio: **nenhum corte no meio de palavra**.
+4b. **Tapa na câmera = fim do take.** Nada depois do tapa aparece (camiseta, chão, câmera balançando), nem num
+   efeito criativo: no episódio 10 a camiseta do Eddie depois do tapa virou um match cut e o usuário pediu para tirar.
+   O `montar.py` já aplica isso sozinho; confira na lista "tirado ... (tapa na câmera)" que ele imprime.
 5. Final para YouTube: 1920×1080 (ou 1080×1920 vertical), fps do original, H.264 + AAC, −14 LUFS.
 6. Quer o último ajuste à mão? `exportar.py` gera um EDL para abrir no Premiere, DaVinci ou Final Cut (A e C fazem isso).

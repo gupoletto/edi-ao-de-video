@@ -24,6 +24,9 @@ Pergunte só o que não der para inferir: estilo (`editorial` = limpo/creme, pad
      que o elemento ilustra; dure até a frase terminar, 2,5–6 s);
    - `correcoes` para nomes que a transcrição errou;
    - confira os `cortes` de regravação (o detector pode errar; devolva o trecho a `manter` se não for regravação);
+   - **tapa/soco na câmera = fim do take** (regra do usuário): nada do que vem depois do tapa volta para `manter`
+     ou `abertura`, nem como efeito. O `planejar.py`/`montar.py` cortam sozinhos (`tapas.py`); confira os cortes
+     "tapa na câmera" e olhe um quadro de cada para ver se não sobrou camiseta ou chão;
    - acerte `foco` olhando um quadro (`ffmpeg -ss 5 -i <v> -frames:v 1 q.png`) se o rosto não estiver no centro.
    Rode `planejar.py` de novo só se quiser recalcular os cortes — ele apaga os elementos. Depois de editar o
    JSON à mão, regenere o resumo legível: `python3 -c "import sys;sys.path.insert(0,'edicao/ferramentas');import planejar,comum,os;p='edicao/trabalho/<v>';planejar.escrever_md(p,comum.ler(p+'/plano.json'),comum.ler(p+'/transcricao.json'))"`.

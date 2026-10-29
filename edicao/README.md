@@ -47,7 +47,11 @@ vão para `~/.local/share/fonts`.
 ## Ajustes no plano (`trabalho/<nome>/plano.json`)
 
 - `manter`: trechos do bruto que ficam (em segundos). Apague ou mude um trecho para cortar/manter algo.
-- `cortes`: o que foi tirado e por quê (pausas, regravações) — só informativo.
+- `cortes`: o que foi tirado e por quê (pausas, regravações, tapa na câmera) — só informativo.
+- **Tapa na câmera = fim do take** (combinado com o usuário). `tapas.py` acha o tapa (mão cobrindo a lente +
+  pancada no áudio) e as emendas entre clipes. O `planejar.py` e o `montar.py` tiram tudo do tapa até o próximo
+  clipe, e os restos de menos de 0,6 s de outro clipe, mesmo de trechos postos à mão em `manter` ou `abertura`.
+  Para conferir: `python3 edicao/ferramentas/tapas.py edicao/bruto/<v>.mkv`.
 - `zooms`: trechos com zoom de 110 % no rosto. `foco`: onde está o rosto (fração da largura e da altura).
 - `legendas`: liga/desliga; `legenda_estilo`: `palavra` (1–3 palavras, contorno), `frase` (palavra-chave em serifa
   itálica) ou `caixa`. `correcoes`: palavras que a transcrição errou, para as legendas.

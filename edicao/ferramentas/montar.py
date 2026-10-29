@@ -24,6 +24,7 @@ from comum import FINAL, FONTES, RAIZ, gravar, ler, pasta_trabalho, preparar, so
 from elementos import (CREME, SO_MONTAR, TAUPE, TELA_CHEIA, cartao_rect, hexrgb, inicio_item, no_editado,
                        resolucao)
 from planejar import dur_abertura, saida
+from tapas import aplicar, detectar
 
 SR = 48000
 
@@ -255,6 +256,12 @@ def montar(fonte, previa=False, trecho=None, crf=18, k4=False):
     W, H = resolucao(plano)
     fx, fy = plano.get("foco", [0.5, 0.42])
     fps = round(info["fps"])
+    # tapa na câmera = fim do take, mesmo em trechos que entraram no plano à mão
+    tapas = detectar(plano["fonte"])
+    for chave in ("manter", "abertura"):
+        plano[chave], tirados = aplicar(plano.get(chave, []), tapas, info["dur"])
+        for x, y, m in tirados:
+            print(f"  {chave}: tirado {x:.2f}-{y:.2f} s ({m})")
     plano["manter"] = na_grade(plano["manter"], fps)
     plano["abertura"] = na_grade(plano.get("abertura", []), fps)
     manter, abertura = plano["manter"], plano["abertura"]

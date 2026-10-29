@@ -8,6 +8,7 @@ Faz a parte mecânica, medida nos vídeos de referência (fala em 89–97 % do t
 - corta pausas maiores que 0,35 s (--ritmo rapido: 0,25 s, como nos tutoriais mais rápidos), deixando 0,1 s de respiro de cada lado (nunca no meio de palavra:
   os cortes caem nos silêncios que o detector de voz encontrou);
 - marca regravações (frase repetida logo em seguida) e fica com a última tomada;
+- tapa na câmera = fim do take: o que vem depois sai até o próximo clipe (tapas.py);
 - alterna um zoom leve (110 %) a cada corte seco, para o corte não "pular".
 Os elementos visuais (letreiros, títulos, listas, números) ficam em "elementos": quem preenche é o
 Claude, lendo a transcrição e o guia edicao/ESTILO.md. Saída: trabalho/<nome>/plano.json e plano.md.
@@ -18,6 +19,7 @@ import os
 import re
 
 from comum import gravar, hms, ler, pasta_trabalho
+from tapas import aplicar, detectar
 
 RESPIRO = 0.10  # s de silêncio mantidos antes de cada frase
 RESPIRO_FIM = 0.16  # e depois: o fim da última sílaba é fraco e o detector de voz o corta cedo
@@ -62,6 +64,8 @@ def planejar(fonte, estilo="editorial", formato="horizontal", pausa=0.35):
             if manter:
                 sugestoes.append({"de": manter[-1][1], "ate": a, "motivo": f"pausa de {a - manter[-1][1]:.1f} s"})
             manter.append([a, b])
+    manter, tirados = aplicar(manter, detectar(fonte), tr["dur"])
+    sugestoes += [{"de": round(x, 3), "ate": round(y, 3), "motivo": m} for x, y, m in tirados]
     zooms = [{"de": a, "ate": b, "escala": ZOOM} for k, (a, b) in enumerate(manter) if k % 2 == 1]
     plano = {
         "fonte": tr["fonte"], "estilo": estilo, "formato": formato,
