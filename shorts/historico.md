@@ -15,3 +15,6 @@
 | 29/10/2026 | Simulações de física | Queda por um túnel através da Terra (oscilador harmônico) | Why/how | "How Long Would It Take to X?" | lote-2026-10-29/physics_tunnel.mp4 |
 | 29/10/2026 | Simulações de física | Berço de Newton, hexágono girando, corda, três corpos, blocos que contam π | Ranking | "5 X That Look Impossible (#1 …)" | lote-2026-10-29/physics_impossible.mp4 |
 | 29/10/2026 | Simulações de física | Corridas: queda livre, lançamento, braquistócrona, pêndulos | Interativo (quiz) | "Can You Predict the Winner? N X Races" | lote-2026-10-29/physics_races.mp4 |
+| 30/10/2026 | Países e geografia | 5 menores países em escala (San Marino, Tuvalu, Nauru, Mônaco, Vaticano vs Central Park) | Ranking | "The 5 Smallest X on Earth (#1 …)" | lote-2026-10-30/geo_smallest_countries.mp4 |
+| 30/10/2026 | Países e geografia | Groenlândia vs África na projeção de Mercator (tamanho real) | Why | "Why X Looks as Big as Y (It's Nx Smaller)" | lote-2026-10-30/geo_greenland_true_size.mp4 |
+| 30/10/2026 | Países e geografia | Formatos de países (Itália, Islândia, Madagascar, Chile, Mongólia) | Interativo (quiz) | "Guess the X From Its Shape (N Questions, #N Is Hard)" | lote-2026-10-30/geo_guess_shape.mp4 |
