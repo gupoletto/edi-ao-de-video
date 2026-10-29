@@ -96,21 +96,31 @@ def sino(ctx, x, y, r, cor, giro):
     ctx.restore()
 
 
-def joinha(ctx, x, y, r, cor):
-    """Mão de like: palma arredondada + polegar para cima."""
+def joinha(ctx, x, y, r, cor, fundo=None):
+    """Mão de like no desenho clássico: punho à esquerda, mão com três dedos dobrados e um polegar curto."""
     ctx.save()
     ctx.translate(x, y)
-    ret(ctx, -r * 0.55, -r * 0.15, r * 1.0, r * 0.85, r * 0.18)  # mão
     ctx.set_source_rgb(*cor)
+    ret(ctx, -r * 0.95, -r * 0.12, r * 0.32, r * 0.92, r * 0.07)  # punho
     ctx.fill()
-    ret(ctx, -r * 0.95, -r * 0.1, r * 0.3, r * 0.8, r * 0.08)  # punho/manga
+    ret(ctx, -r * 0.55, -r * 0.12, r * 0.95, r * 0.92, r * 0.16)  # palma
     ctx.fill()
-    ctx.move_to(-r * 0.45, -r * 0.1)  # polegar
-    ctx.curve_to(-r * 0.3, -r * 0.5, -r * 0.1, -r * 0.75, -r * 0.05, -r * 0.95)
-    ctx.curve_to(r * 0.0, -r * 1.12, r * 0.35, -r * 1.05, r * 0.25, -r * 0.7)
-    ctx.line_to(r * 0.12, -r * 0.15)
+    for k in range(3):  # dedos dobrados, saindo um pouco para a direita
+        ret(ctx, r * 0.1, -r * 0.12 + k * r * 0.31, r * 0.62, r * 0.29, r * 0.14)
+        ctx.fill()
+    ctx.move_to(-r * 0.5, -r * 0.1)  # polegar: curto, levemente inclinado
+    ctx.line_to(-r * 0.22, -r * 0.5)
+    ctx.curve_to(-r * 0.14, -r * 0.66, r * 0.12, -r * 0.66, r * 0.1, -r * 0.42)
+    ctx.line_to(r * 0.02, -r * 0.1)
     ctx.close_path()
     ctx.fill()
+    if fundo:  # vincos entre os dedos
+        ctx.set_source_rgb(*fundo)
+        ctx.set_line_width(r * 0.05)
+        for k in (1, 2):
+            ctx.move_to(r * 0.3, -r * 0.12 + k * r * 0.31 - r * 0.01)
+            ctx.line_to(r * 0.68, -r * 0.12 + k * r * 0.31 - r * 0.01)
+        ctx.stroke()
     ctx.restore()
 
 
@@ -213,7 +223,7 @@ def quadro(ctx, st, t, W, H, a):
             ctx.arc(0, 0, 78 * u, 0, 2 * math.pi)
             ctx.set_source_rgb(*destaque)
             ctx.fill()
-            joinha(ctx, 4 * u, 14 * u, 46 * u, fundo)
+            joinha(ctx, 6 * u, 2 * u, 50 * u, fundo, destaque)
             ctx.restore()
             fonte(ctx, 46 * u)
             ctx.move_to(lx + 110 * u, ly + 16 * u)
