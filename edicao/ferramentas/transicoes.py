@@ -634,7 +634,7 @@ def celular(ctx, st, e, t, W, H, c):
     _centro(ctx, e.get("data", "quinta-feira"), 0, -sh * 0.33, st["suave"])
     na = ease((t - c * 0.7) / 0.25) if t > c * 0.7 else 0  # a notificação cai do topo
     if na > 0 and e.get("texto"):
-        nw, nh = sw * 0.88, sh * 0.12
+        nw, nh = sw * 0.92, sh * 0.12
         ny = -sh * 0.08 - (1 - na) * sh * 0.2
         ctx.push_group()
         _ret(ctx, -nw / 2, ny, nw, nh, nh * 0.25)
@@ -647,7 +647,12 @@ def celular(ctx, st, e, t, W, H, c):
         ctx.move_to(-nw / 2 + nh * 0.95, ny + nh * 0.42)
         ctx.set_source_rgb(*st["suave"])
         ctx.show_text(e.get("app", "LEMBRETE").upper())
-        _fonte(ctx, st, nh * 0.27)
+        tam = nh * 0.27
+        _fonte(ctx, st, tam)
+        livre = nw - nh * 1.2
+        if ctx.text_extents(e["texto"]).x_advance > livre:  # encolhe o texto para caber na notificação
+            tam *= livre / ctx.text_extents(e["texto"]).x_advance
+            _fonte(ctx, st, tam)
         ctx.move_to(-nw / 2 + nh * 0.95, ny + nh * 0.78)
         ctx.set_source_rgb(*st["fundo"])
         ctx.show_text(e["texto"])
