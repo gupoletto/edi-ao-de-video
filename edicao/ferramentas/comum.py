@@ -22,7 +22,7 @@ FONT_URLS = {  # todas com licença OFL
 }
 
 
-def preparar(stt=False):
+def preparar(stt=False, turbo=False):
     """Baixa fontes (e, se pedido, o modelo de transcrição) na primeira vez."""
     os.makedirs(FONTES, exist_ok=True)
     novas = False
@@ -35,10 +35,11 @@ def preparar(stt=False):
         subprocess.run(["fc-cache", "-f"], check=True)
     if stt:
         os.makedirs(SHERPA, exist_ok=True)
-        if not os.path.exists(os.path.join(SHERPA, "sherpa-onnx-whisper-small")):
+        modelo = "turbo" if turbo else "small"
+        if not os.path.exists(os.path.join(SHERPA, f"sherpa-onnx-whisper-{modelo}")):
             tar = os.path.join(SHERPA, "w.tar.bz2")
-            print("baixando o modelo de transcrição (Whisper small, ~640 MB)...", flush=True)
-            urllib.request.urlretrieve(SHERPA_URL + "sherpa-onnx-whisper-small.tar.bz2", tar)
+            print(f"baixando o modelo de transcrição (Whisper {modelo})...", flush=True)
+            urllib.request.urlretrieve(SHERPA_URL + f"sherpa-onnx-whisper-{modelo}.tar.bz2", tar)
             subprocess.run(["tar", "xjf", tar, "-C", SHERPA], check=True)
             os.remove(tar)
         vad = os.path.join(SHERPA, "silero_vad.onnx")

@@ -97,6 +97,22 @@ Mais rápido, feito para vertical (Reels/TikTok/Shorts) e para tutoriais com gra
 - Método: estudar um vídeo de referência quadro a quadro, **testar com um trecho de ~12 s**, só então fazer o resto;
   depois **transformar o processo numa skill**. Efeitos sonoros e b-roll numa pasta que o Claude consulta.
 
+## 3e. Fugindo do óbvio (criado no episódio 10, 29/10/2026)
+
+As referências abrem com o resultado ou um número. Num vlog com história, funciona melhor:
+- **Abrir no conflito** (o momento de maior tensão do próprio vídeo, mesmo que seja do fim do dia) e voltar no tempo
+  com um selo discreto ("17 horas antes") em vez de um card de "flashback".
+- **Relógio do dia**: um `selo` fixo no canto que muda por fase ("Dia 10/30 · manhã" → "noite" → "quase meia-noite").
+- **Progresso da série** (`progresso`) na abertura e no fecho: 30 blocos, o de hoje acende por último; o fecho
+  promete o próximo ("Amanhã: dia 11").
+- **Plano vs. realidade**: o plano dito de manhã vira um `dividido` com itens no tempo da fala; à noite, uma `lista`
+  com o que deu certo e o que ficou riscado. A edição conta a história por *callback*.
+- **Match cut**: procure duas imagens parecidas em sequência (a arte da camiseta → a mesma arte no telão) e corte
+  exatamente entre elas.
+- **Momento cinema**: no trecho mais visual, faixas de cinema (`foco` com `contorno: false`) e o som abafado.
+- **Música de terceiros** (show, bar, carro): mostre poucos segundos e use `abafar`; o Content ID do YouTube ainda
+  pode reconhecer, então avise antes de publicar.
+
 ## 4. Quando usar cada elemento (regra para o plano)
 
 | Na fala... | Elemento |

@@ -21,10 +21,41 @@ import numpy as np
 import soundfile as sf
 
 from comum import FINAL, FONTES, RAIZ, gravar, ler, pasta_trabalho, preparar, sonda
-from elementos import CREME, SO_MONTAR, TAUPE, TELA_CHEIA, cartao_rect, hexrgb, no_editado, resolucao
+from elementos import (CREME, SO_MONTAR, TAUPE, TELA_CHEIA, cartao_rect, hexrgb, inicio_item, no_editado,
+                       resolucao)
 from planejar import dur_abertura, saida
 
 SR = 48000
+
+
+def na_grade(intervalos, fps):
+    """Arredonda cada ponto de corte para o quadro mais próximo. Assim cada trecho tem um número inteiro de
+    quadros e o áudio cortado no mesmo instante tem exatamente a mesma duração: sem isso, cada corte deixa até
+    meio quadro de diferença e, somando dezenas de cortes, a boca sai do tempo da voz."""
+    out = []
+    for a, b in intervalos:
+        a, b = round(a * fps) / fps, round(b * fps) / fps
+        if b > a:
+            out.append([a, b])
+    return out
+
+
+def meio_aberto(intervalos, fps=None, var="t"):
+    """[a, b) para áudio; para vídeo (fps dado) o quadro k entra se a <= k/fps < b, com meia folga de quadro
+    para não depender de arredondamento de ponto flutuante."""
+    h = 0.5 / fps if fps else 0.0
+    return "+".join(f"gte({var},{a - h:.6f})*lt({var},{b - h:.6f})" for a, b in intervalos) or "0"
+
+
+def audio_trechos(entrada, intervalos, nome):
+    """Recorta o áudio com atrim, exato até a amostra (o aselect escolhe blocos inteiros de ~1024 amostras,
+    ~23 ms, e erra cada corte por até isso), e emenda os pedaços."""
+    n = len(intervalos)
+    linhas = [f"[{entrada}]aresample={SR},asplit={n}" + "".join(f"[{nome}s{k}]" for k in range(n))]
+    for k, (a, b) in enumerate(intervalos):
+        linhas.append(f"[{nome}s{k}]atrim=start={a:.6f}:end={b:.6f},asetpts=PTS-STARTPTS[{nome}{k}]")
+    linhas.append("".join(f"[{nome}{k}]" for k in range(n)) + f"concat=n={n}:v=0:a=1[{nome}]")
+    return linhas
 
 
 def entre(intervalos, var="t"):
@@ -42,6 +73,11 @@ def na_abertura(plano, t):
 
 
 # ---------- legendas (ASS) ----------
+
+COMUNS = set("""quando porque também então depois enquanto comprei consegui acabei estava estavam tinham ficar
+fiquei sempre nenhum nenhuma alguma alguns algumas aquele aquela aquilo isso esse essa este esta agora ainda muito
+muita muitos muitas pouco coisa coisas daqui gente vamos vou""".split())
+
 
 def ass_tempo(t):
     h, r = divmod(max(0.0, t), 3600)
@@ -67,7 +103,7 @@ def legendas(plano, tr, W, H, caminho):
         estilo = (f"Style: L,Poppins ExtraBold,{tam},{tc},{tc},&H003A1001,&H643A1001,0,0,0,0,100,100,0,0,"
                   f"1,{tam // 11},2,2,60,60,{int(H * (0.30 if vertical else 0.08))},1")
     elif modo == "frase":
-        tam, max_pal = (84 if vertical else 62), 3
+        tam, max_pal = (84 if vertical else 70), 3
         estilo = (f"Style: L,Poppins ExtraBold,{tam},{tc},{tc},&H503A1001,&H783A1001,0,0,0,0,100,100,-1,0,"
                   f"1,2,4,2,60,60,{int(H * (0.26 if vertical else 0.12))},1")
     else:
@@ -94,7 +130,8 @@ def legendas(plano, tr, W, H, caminho):
                         p = p.replace(re.sub(r"\W", "", p), fix[nu])
                     palavras.append(p)
                 chave = max(range(len(palavras)), key=lambda k: len(re.sub(r"\W", "", palavras[k])))
-                if len(re.sub(r"\W", "", palavras[chave])) < (7 if modo == "palavra" else 5):
+                limpa = re.sub(r"\W", "", palavras[chave]).lower()
+                if len(limpa) < 7 or limpa in COMUNS:  # destaque só em palavra de peso
                     chave = -1
                 if modo == "palavra" and chave >= 0:
                     palavras[chave] = rf"{{\i1\c{chave_cor}}}" + palavras[chave] + rf"{{\i0\c{texto_cor}}}"
@@ -169,12 +206,12 @@ def efeitos(plano, total, caminho):
         if e["tipo"] == "letreiro":
             passo = max(0.3, min(1.0, (dur * 0.5) / max(1, len(itens))))
             for k in range(len(itens)):
-                por(p, a + 0.15 + k * passo)
+                por(p, a + inicio_item(e, k, 0.15 + k * passo))
                 n += 1
         elif e["tipo"] == "lista":
             passo = max(0.35, min(1.2, (dur * 0.6) / max(1, len(itens))))
             for k in range(len(itens)):
-                por(p, (e["tempos"][k] if e.get("tempos") else a + 0.4 + k * passo))
+                por(p, a + inicio_item(e, k, 0.4 + k * passo))
                 n += 1
     sf.write(caminho, pista, SR)
     return n
@@ -193,7 +230,23 @@ def recorte_rosto(cw, ch, fx, fy, W, H, altura=0.96):
     return f"crop={ww:.0f}:{hh:.0f}:{x:.0f}:{y:.0f},scale={cw:.0f}:{ch:.0f}"
 
 
-def montar(fonte, previa=False, trecho=None, crf=20):
+def conferir_sincronia(arquivo, fps):
+    """Para a montagem se vídeo e áudio da linha do tempo não tiverem a mesma duração (até 1 quadro)."""
+    def ultima(sel, campos):
+        r = subprocess.run(["ffprobe", "-v", "error", "-select_streams", sel, "-show_entries", campos,
+                            "-of", "csv=p=0", arquivo], capture_output=True, text=True, check=True).stdout.split()
+        return r[-1].split(",")
+
+    dur = {"v": float(ultima("v:0", "packet=pts_time")[0]) + 1.0 / fps}
+    pts, amostras = ultima("a:0", "frame=pts_time,nb_samples")[:2]
+    dur["a"] = float(pts) + int(amostras) / int(ultima("a:0", "stream=sample_rate")[0])
+    dif = dur["v"] - dur["a"]
+    print(f"  sincronia: vídeo {dur['v']:.3f}s, áudio {dur['a']:.3f}s, diferença {dif * 1000:+.0f} ms")
+    if abs(dif) > 1.0 / fps + 0.03:
+        raise SystemExit("vídeo e áudio saíram com durações diferentes; a voz ficaria fora da boca")
+
+
+def montar(fonte, previa=False, trecho=None, crf=18, k4=False):
     preparar()
     pasta = pasta_trabalho(fonte)
     plano = ler(os.path.join(pasta, "plano.json"))
@@ -201,7 +254,10 @@ def montar(fonte, previa=False, trecho=None, crf=20):
     info = sonda(plano["fonte"])
     W, H = resolucao(plano)
     fx, fy = plano.get("foco", [0.5, 0.42])
-    manter, abertura = plano["manter"], plano.get("abertura", [])
+    fps = round(info["fps"])
+    plano["manter"] = na_grade(plano["manter"], fps)
+    plano["abertura"] = na_grade(plano.get("abertura", []), fps)
+    manter, abertura = plano["manter"], plano["abertura"]
     total = dur_abertura(plano) + sum(b - a for a, b in manter)
     els = plano["elementos"]
 
@@ -217,21 +273,21 @@ def montar(fonte, previa=False, trecho=None, crf=20):
     g, a_g = [], []
     if abertura:
         # cada trecho da abertura é uma entrada própria (na ordem do plano, não na do bruto; um split
-        # guardaria o vídeo todo na memória), recortado com -ss/-t e emendado antes dos trechos mantidos
-
+        # guardaria o vídeo todo na memória), recortado com trim/atrim nos mesmos instantes da grade de quadros
+        h = 0.5 / fps
         for k, (a, b) in enumerate(abertura):
-            entradas += ["-ss", f"{a:.3f}", "-t", f"{b - a:.3f}", "-i", plano["fonte"]]
-            g.append(f"[{idx}:v]setpts=PTS-STARTPTS[va{k}]")
-            a_g.append(f"[{idx}:a]asetpts=PTS-STARTPTS[aa{k}]")
+            entradas += ["-i", plano["fonte"]]
+            g.append(f"[{idx}:v]fps={fps},trim=start={a - h:.6f}:end={b - h:.6f},setpts=PTS-STARTPTS[va{k}]")
+            a_g.append(f"[{idx}:a]aresample={SR},atrim=start={a:.6f}:end={b:.6f},asetpts=PTS-STARTPTS[aa{k}]")
             idx += 1
-        g.append(f"[0:v]select='{entre(manter)}',setpts=N/FRAME_RATE/TB[vm]")
-        a_g.append(f"[0:a]aselect='{entre(manter)}',asetpts=N/SR/TB[am]")
+        g.append(f"[0:v]fps={fps},select='{meio_aberto(manter, fps)}',setpts=N/FRAME_RATE/TB[vm]")
+        a_g += audio_trechos("0:a", manter, "am")
         # concat precisa de vídeo e áudio juntos: aqui só vídeo e só áudio, cada um com seu concat
         g.append("".join(f"[va{k}]" for k in range(len(abertura))) + f"[vm]concat=n={len(abertura) + 1}:v=1:a=0[lin]")
         a_g.append("".join(f"[aa{k}]" for k in range(len(abertura))) + f"[am]concat=n={len(abertura) + 1}:v=0:a=1[alin]")
     else:
-        g.append(f"[0:v]select='{entre(manter)}',setpts=N/FRAME_RATE/TB[lin]")
-        a_g.append(f"[0:a]aselect='{entre(manter)}',asetpts=N/SR/TB[alin]")
+        g.append(f"[0:v]fps={fps},select='{meio_aberto(manter, fps)}',setpts=N/FRAME_RATE/TB[lin]")
+        a_g += audio_trechos("0:a", manter, "alin")
 
     # 2. geometria: corta para a proporção do formato, centrado no foco, e escala; zoom alternado
     alvo = W / H
@@ -248,12 +304,19 @@ def montar(fonte, previa=False, trecho=None, crf=20):
     g.append(f"[b0][bz]overlay=enable='{entre(zooms)}',format=yuv420p[vbase]")
 
     # áudio: voz contínua + efeitos; −14 LUFS em duas passadas (a primeira só mede)
+    abafar = [(saida(plano, x), saida(plano, y)) for x, y in plano.get("abafar", [])]
+    if abafar:  # som "de longe" (passa-baixa e mais baixo): música de terceiros fica de fundo, não em destaque
+        quando_ab = entre(abafar)
+        a_g.append(f"[alin]lowpass=f=500:enable='{quando_ab}',volume=0.45:enable='{quando_ab}'[alin_ab]")
+        voz_lbl = "alin_ab"
+    else:
+        voz_lbl = "alin"
     if sfx:
         a_g.append(f"[{sfx_idx}:a]aresample={SR}[fx]")
-        a_g.append(f"[alin]aresample={SR}[voz];[voz][fx]amix=inputs=2:duration=first:normalize=0[amix]")
+        a_g.append(f"[{voz_lbl}]aresample={SR}[voz];[voz][fx]amix=inputs=2:duration=first:normalize=0[amix]")
         a_fim = "amix"
     else:
-        a_fim = "alin"
+        a_fim = voz_lbl
     medir = ";".join(a_g) + f";[{a_fim}]loudnorm=I=-14:TP=-1.5:LRA=11:print_format=json"
     med = subprocess.run(["ffmpeg", "-hide_banner"] + entradas + ["-vn", "-filter_complex", medir, "-f", "null", "-"],
                          capture_output=True, text=True, check=True).stderr
@@ -270,9 +333,10 @@ def montar(fonte, previa=False, trecho=None, crf=20):
     lin = os.path.join(pasta, "linha_do_tempo.mkv")
     print(f"passada 1: linha do tempo ({total:.0f}s)...", flush=True)
     subprocess.run(["ffmpeg", "-v", "error", "-y"] + entradas + ["-filter_complex_script", script_a,
-                    "-map", "[vbase]", "-map", "[aout]", "-r", f"{info['fps']:.3f}", "-c:v", "libx264",
-                    "-preset", "ultrafast" if previa else "veryfast", "-crf", "23" if previa else "12",
+                    "-map", "[vbase]", "-map", "[aout]", "-r", str(fps), "-c:v", "libx264",
+                    "-preset", "ultrafast" if previa else "veryfast", "-crf", "23" if previa else "10",
                     "-c:a", "pcm_s16le", lin], check=True)
+    conferir_sincronia(lin, fps)
 
     entradas, idx, g = ["-i", lin], 1, []
     atual, n = "0:v", 0
@@ -316,14 +380,24 @@ def montar(fonte, previa=False, trecho=None, crf=20):
             px = margem if e.get("pip", "esquerda") == "esquerda" else W - pw - margem
             camada(f"[{atual}][pm{i}]overlay={px:.0f}:{H - ph - margem:.0f}:eof_action=pass:{quando}")
             continue
+        if tipo == "vertical":  # laterais pretas viram o próprio quadro ampliado e desfocado
+            vw = round(W * e.get("largura", 0.316) / 2) * 2
+            x0 = (W - vw) // 2
+            g.append(f"[{copia(a, b)}]crop={vw}:{H}:{x0}:0,scale={W}:{H}:force_original_aspect_ratio=increase,"
+                     f"crop={W}:{H},boxblur=30:2,eq=brightness=-0.06:saturation=1.1[vb{i}]")
+            camada(f"[{atual}][vb{i}]overlay=0:0:eof_action=pass:{quando}")
+            g.append(f"[{copia(a, b)}]crop={vw}:{H}:{x0}:0[vf{i}]")
+            camada(f"[{atual}][vf{i}]overlay={x0}:0:eof_action=pass:{quando}")
+            continue
         if tipo == "foco":  # holofote: escurece tudo fora da área
             ax, ay, aw, ah = (v * d for v, d in zip(e["area"], (W, H, W, H)))
-            escuro = "color=0x01103A@0.65:t=fill"
+            escuro = f"color=0x01103A@{e.get('opacidade', 0.65)}:t=fill"
             for bx, by, bw, bh in ((0, 0, W, ay), (0, ay + ah, W, H - ay - ah), (0, ay, ax, ah),
                                    (ax + aw, ay, W - ax - aw, ah)):
                 if bw > 0 and bh > 0:
                     camada(f"drawbox=x={bx:.0f}:y={by:.0f}:w={bw:.0f}:h={bh:.0f}:{escuro}:{quando}")
-            camada(f"drawbox=x={ax:.0f}:y={ay:.0f}:w={aw:.0f}:h={ah:.0f}:color=0x{CREME[1:]}@0.9:t=4:{quando}")
+            if e.get("contorno", True):  # sem contorno, vira faixa de cinema (área = a tela útil)
+                camada(f"drawbox=x={ax:.0f}:y={ay:.0f}:w={aw:.0f}:h={ah:.0f}:color=0x{CREME[1:]}@0.9:t=4:{quando}")
             continue
         if tipo == "popup":  # recorta a área e mostra ampliada na frente
             ax, ay, aw, ah = (v * d for v, d in zip(e["area"], (W, H, W, H)))
@@ -345,7 +419,9 @@ def montar(fonte, previa=False, trecho=None, crf=20):
         ass = os.path.join(pasta, "legendas.ass")
         print(f"  {legendas(plano, tr, W, H, ass)} legendas ({plano.get('legenda_estilo', 'padrão')})")
         camada(f"ass='{ass}':fontsdir='{FONTES}'")
-    g.append(f"[{atual}]" + ("scale=-2:540," if previa else "") + "format=yuv420p[vout]")
+    # --4k: o YouTube dá uma compressão melhor (VP9/AV1) a vídeos enviados em 2160p, mesmo vistos em 1080p
+    g.append(f"[{atual}]" + ("scale=-2:540," if previa else "scale=-2:2160:flags=lanczos," if k4 else "")
+             + "format=yuv420p[vout]")
 
     script = os.path.join(pasta, "filtro.txt")
     with open(script, "w", encoding="utf-8") as f:
@@ -356,11 +432,12 @@ def montar(fonte, previa=False, trecho=None, crf=20):
         vcod = ["-c:v", "libx264", "-preset", "veryfast", "-crf", "28"]
     else:
         os.makedirs(FINAL, exist_ok=True)
-        out = os.path.join(FINAL, f"{nome}_editado.mp4")
-        vcod = ["-c:v", "libx264", "-preset", "medium", "-crf", str(crf), "-profile:v", "high"]
+        out = os.path.join(FINAL, f"{nome}_editado{'_4k' if k4 else ''}.mp4")
+        vcod = ["-c:v", "libx264", "-preset", "slow", "-crf", str(crf), "-profile:v", "high", "-pix_fmt", "yuv420p",
+                "-color_primaries", "bt709", "-color_trc", "bt709", "-colorspace", "bt709"]
     janela = ["-ss", f"{trecho[0]:.3f}", "-to", f"{trecho[1]:.3f}"] if trecho else []
     cmd = (["ffmpeg", "-v", "error", "-stats", "-y"] + entradas +
-           ["-filter_complex_script", script, "-map", "[vout]", "-map", "0:a", "-r", f"{info['fps']:.3f}"] +
+           ["-filter_complex_script", script, "-map", "[vout]", "-map", "0:a", "-r", str(fps)] +
            janela + vcod + ["-c:a", "aac", "-b:a", "192k", "-movflags", "+faststart", out])
     print(f"passada 2: montando {total:.0f}s ({len(abertura)} trechos de abertura, {len(manter)} trechos, "
           f"{len(els)} elementos)...", flush=True)
@@ -376,6 +453,7 @@ if __name__ == "__main__":
     ap.add_argument("--previa", action="store_true")
     ap.add_argument("--trecho", nargs=2, type=float, metavar=("DE", "ATE"),
                     help="só este pedaço do vídeo editado (segundos), para aprovar o estilo antes do vídeo todo")
-    ap.add_argument("--crf", type=int, default=20, help="qualidade do final (menor = melhor e maior)")
+    ap.add_argument("--crf", type=int, default=18, help="qualidade do final (menor = melhor e maior)")
+    ap.add_argument("--4k", dest="k4", action="store_true", help="final em 2160p para o YouTube")
     a = ap.parse_args()
-    montar(a.fonte, a.previa, a.trecho, a.crf)
+    montar(a.fonte, a.previa, a.trecho, a.crf, a.k4)

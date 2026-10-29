@@ -1,7 +1,9 @@
 #!/usr/bin/env python3
 """Etapa 2: transcreve a fala com o tempo de cada frase e (aproximado) de cada palavra.
 
-    python3 edicao/ferramentas/transcrever.py edicao/bruto/meu-video.mp4
+    python3 edicao/ferramentas/transcrever.py edicao/bruto/meu-video.mp4 [pt] [--turbo]
+
+--turbo usa o Whisper large-v3-turbo (~1,6 GB, bem mais preciso em áudio de rua; mais lento).
 
 Roda no próprio computador: detector de voz (Silero) + Whisper small (sherpa-onnx), em português.
 Saída em edicao/trabalho/<nome>/: transcricao.json e transcricao.txt.
@@ -32,10 +34,11 @@ def palavras(texto, a, b):
     return out
 
 
-def transcrever(fonte, idioma="pt"):
+def transcrever(fonte, idioma="pt", turbo=False):
     import sherpa_onnx
-    preparar(stt=True)
-    w = os.path.join(SHERPA, "sherpa-onnx-whisper-small", "small-")
+    preparar(stt=True, turbo=turbo)
+    nome = "turbo" if turbo else "small"
+    w = os.path.join(SHERPA, f"sherpa-onnx-whisper-{nome}", f"{nome}-")
     rec = sherpa_onnx.OfflineRecognizer.from_whisper(
         encoder=w + "encoder.int8.onnx", decoder=w + "decoder.int8.onnx", tokens=w + "tokens.txt",
         language=idioma, task="transcribe", num_threads=os.cpu_count() or 4)
@@ -79,6 +82,7 @@ def transcrever(fonte, idioma="pt"):
 
 
 if __name__ == "__main__":
-    if len(sys.argv) < 2:
+    args = [a for a in sys.argv[1:] if not a.startswith("--")]
+    if not args:
         sys.exit(__doc__)
-    transcrever(sys.argv[1], *(sys.argv[2:3]))
+    transcrever(args[0], *(args[1:2]), turbo="--turbo" in sys.argv)

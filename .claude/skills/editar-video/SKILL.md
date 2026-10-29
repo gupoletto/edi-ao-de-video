@@ -13,7 +13,10 @@ Pergunte só o que não der para inferir: estilo (`editorial` = limpo/creme, pad
 
 ## Passos
 
-1. `python3 edicao/ferramentas/transcrever.py edicao/bruto/<v>.mp4`
+0. Vídeo da câmera (iPhone, Android): `python3 edicao/ferramentas/importar.py <arquivo> <v>` (HDR -> SDR, fps fixo;
+   arquivo do Google Drive: baixe com `https://drive.usercontent.google.com/download?id=<ID>&export=download&confirm=t`).
+1. `python3 edicao/ferramentas/transcrever.py edicao/bruto/<v>.mkv --turbo` (o turbo erra bem menos em áudio de rua).
+   Corrija na transcrição as frases erradas antes das legendas.
 2. `python3 edicao/ferramentas/planejar.py edicao/bruto/<v>.mp4 --estilo <e> --formato <f>`
 3. Leia `trabalho/<v>/transcricao.txt` como o "cérebro" do vídeo: marque pessoas, objetos, números, datas e etapas
    citados, e escreva um roteiro de edição curto (o que aparece na tela em cada trecho). Depois preencha em `plano.json`:
@@ -25,6 +28,8 @@ Pergunte só o que não der para inferir: estilo (`editorial` = limpo/creme, pad
    Rode `planejar.py` de novo só se quiser recalcular os cortes — ele apaga os elementos. Depois de editar o
    JSON à mão, regenere o resumo legível: `python3 -c "import sys;sys.path.insert(0,'edicao/ferramentas');import planejar,comum,os;p='edicao/trabalho/<v>';planejar.escrever_md(p,comum.ler(p+'/plano.json'),comum.ler(p+'/transcricao.json'))"`.
    - `abertura` por último: 1–3 trechos fortes do próprio vídeo (resultado, número, frase de impacto) que vão na frente.
+   - trechos **sem fala** que contam a história (b-roll, chegada, show) saem com o corte de pausas: devolva-os a `manter`.
+   - procure ideias fora do óbvio na seção 3e do ESTILO antes de repetir o que as referências fazem.
 4. **Pare e mostre o plano** (`plano.md`) ao usuário: duração antes/depois, cortes, lista de elementos. Espere a aprovação.
 5. `elementos.py --amostra`, olhe os PNGs (texto cortado? destaque certo? erro de digitação?), envie ao usuário os 3 primeiros.
 6. `elementos.py`, depois `montar.py --previa --trecho <de> <ate>` num pedaço de ~1 min com elementos variados; aprovado

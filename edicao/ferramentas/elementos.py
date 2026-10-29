@@ -13,12 +13,17 @@ Tipos (campos em plano.json -> "elementos"; "de"/"ate" em segundos do vídeo BRU
   numero   tela cheia: "texto" (o número, ex.: "R$ 12 mil"), "legenda", "contar_de" opcional (conta até o número)
   sumario  tela cheia: "texto" (título), "itens" [etapas], "atual" (índice da etapa que começa agora)
   dividido rosto num cartão + texto ao lado: "texto", "destaque", "itens" opcional, "lado": "esquerda" | "direita"
+  progresso série em blocos: "total" (ex.: 30), "feito" (ex.: 10, acende por último), "rotulo", "texto", "destaque"
+  selo     marcador discreto no canto que fica o trecho todo: "texto" (ex.: "Dia 10/30 · 07:06"), "canto"
+Em lista, letreiro e dividido, "tempos" [..] (instantes no bruto) faz cada item entrar quando é falado.
 Em "itens" do letreiro, "~texto~" sai riscado (ex.: "~Premiere~").
 Feitos direto no montar.py, com o próprio vídeo (sem clipe):
   tela     gravação de tela em tela cheia + rosto em miniatura: "arquivo" (ex.: "bruto/tela.mp4"), "inicio" (s no
            arquivo), "pip": "esquerda" | "direita"
   foco     holofote: escurece fora de "area" [x, y, w, h] (frações da tela)
   popup    recorta "area" [x, y, w, h] e mostra ampliada ("escala", padrão 1.6)
+  vertical clipe vertical gravado com faixas pretas: preenche as laterais com o próprio quadro desfocado
+           ("largura": fração da tela ocupada pelo vídeo vertical, padrão 0.316 = 9:16 dentro de 16:9)
 """
 import argparse
 import math
@@ -99,6 +104,12 @@ def titulo_com_destaque(ctx, st, texto, destaque, x, y, tam, largura, centro=Fal
     return y
 
 
+def inicio_item(e, i, padrao):
+    """Quando o item i entra (s desde o início do elemento): no instante falado ("tempos") ou no ritmo padrão."""
+    tempos = e.get("tempos")
+    return tempos[i] - e["de"] if tempos and i < len(tempos) else padrao
+
+
 def norm(t):
     return [p for p in "".join(c if c.isalnum() or c == " " else " " for c in t.lower()).split()]
 
@@ -169,9 +180,8 @@ def d_lista(ctx, st, e, t, W, H):
     fam, neg = st["corpo"]
     ti = tam * 0.62
     y += ti * 0.8
-    tempos = e.get("tempos")  # opcional: instante (no bruto) em que cada item é falado
     for i, it in enumerate(itens):
-        ini = tempos[i] - e["de"] if tempos else 0.4 + i * passo
+        ini = inicio_item(e, i, 0.4 + i * passo)
         k = ease((t - ini) / 0.35)
         if k <= 0:
             break
@@ -182,11 +192,20 @@ def d_lista(ctx, st, e, t, W, H):
         rr(ctx, x0, y, W - 2 * x0, h, 16)
         ctx.set_source_rgb(*st["cartao"])
         ctx.fill()
-        icone(ctx, st, marca, x0 + h * 0.5, y + h / 2, ti * 0.55, i + 1)
+        riscado = it.startswith("~") and it.endswith("~")  # o que ficou de fora: ✗ e traço
+        txt = it.strip("~")
+        icone(ctx, st, "x" if riscado else marca, x0 + h * 0.5, y + h / 2, ti * 0.55, i + 1)
         fonte(ctx, fam, neg, ti)
-        ctx.set_source_rgb(*st["tinta"])
+        ctx.set_source_rgb(*(st["suave"] if riscado else st["tinta"]))
         ctx.move_to(x0 + h * 1.05, y + h / 2 + ti * 0.36)
-        ctx.show_text(it)
+        ctx.show_text(txt)
+        if riscado:
+            r = ease((t - ini - 0.35) / 0.35)
+            ctx.set_source_rgb(*st["nao"])
+            ctx.set_line_width(ti * 0.1)
+            ctx.move_to(x0 + h * 0.95, y + h / 2)
+            ctx.line_to(x0 + h * 0.95 + (ctx.text_extents(txt).x_advance + ti * 0.3) * r, y + h / 2)
+            ctx.stroke()
         ctx.pop_group_to_source()
         ctx.paint_with_alpha(k)
         ctx.restore()
@@ -202,7 +221,8 @@ def d_letreiro(ctx, st, e, t, W, H):
     fonte(ctx, fam, neg, tam)
     y = H * 0.06
     for i, it in enumerate(itens):
-        k = ease((t - 0.15 - i * passo) / 0.3)
+        ini = inicio_item(e, i, 0.15 + i * passo)
+        k = ease((t - ini) / 0.3)
         if k <= 0:
             break
         w = ctx.text_extents(it.strip("~")).x_advance + tam * 2.6
@@ -227,7 +247,7 @@ def d_letreiro(ctx, st, e, t, W, H):
         ctx.move_to(x + tam * 1.8, y + h / 2 + tam * 0.36)
         ctx.show_text(txt)
         if riscado:  # o traço atravessa a palavra logo depois que ela entra
-            r = ease((t - 0.15 - i * passo - 0.35) / 0.3)
+            r = ease((t - ini - 0.35) / 0.3)
             ctx.set_source_rgb(*st["nao"])
             ctx.set_line_width(tam * 0.12)
             ctx.move_to(x + tam * 1.6, y + h / 2)
@@ -344,20 +364,95 @@ def d_dividido(ctx, st, e, t, W, H):
     ti = tam * 0.5
     yy += ti
     for i, it in enumerate(e.get("itens", [])):
-        a = ease((t - 0.8 - i * 0.6) / 0.35)
+        a = ease((t - inicio_item(e, i, 0.8 + i * 0.6)) / 0.35)
         if a <= 0:
             break
+        riscado = it.startswith("~") and it.endswith("~")
         fonte(ctx, fam, neg, ti)
-        ctx.set_source_rgba(*st["tinta"], a)
+        ctx.set_source_rgba(*(st["suave"] if riscado else st["tinta"]), a)
         ctx.move_to(tx + 20 * (1 - a), yy)
-        ctx.show_text("· " + it)
+        ctx.show_text("· " + it.strip("~"))
+        if riscado:
+            ctx.set_source_rgba(*st["nao"], a)
+            ctx.set_line_width(ti * 0.1)
+            ctx.move_to(tx + ti * 0.6, yy - ti * 0.32)
+            ctx.line_to(tx + ti * 0.6 + ctx.text_extents(it.strip("~")).x_advance, yy - ti * 0.32)
+            ctx.stroke()
         yy += ti * 1.7
 
 
+def d_progresso(ctx, st, e, t, W, H):
+    """Progresso de uma série: N blocos, os já feitos acesos e o de hoje acendendo ("feito" de "total")."""
+    ctx.set_source_rgb(*st["fundo"])
+    ctx.paint()
+    total, feito = e.get("total", 30), e.get("feito", 1)
+    tam = H * (0.05 if W > H else 0.035)
+    fonte(ctx, *st["corpo"], tam * 0.55)
+    s = (e.get("rotulo") or "").upper()
+    ctx.set_source_rgba(*st["suave"], ease(t / 0.4))
+    ctx.move_to(W / 2 - ctx.text_extents(s).x_advance / 2, H * 0.36)
+    ctx.show_text(s)
+    fam, neg = st["titulo"]
+    fonte(ctx, fam, neg, tam * 2.6)
+    s = e.get("texto") or f"Dia {feito}"
+    k = ease((t - 0.1) / 0.5)
+    ctx.push_group()
+    titulo_com_destaque(ctx, st, s, e.get("destaque"), W / 2, H * 0.36 + tam * 2.9, tam * 2.6, W * 0.9, centro=True)
+    ctx.pop_group_to_source()
+    ctx.paint_with_alpha(k)
+    cols = 30 if total <= 30 else 50
+    larg = W * (0.62 if W > H else 0.84)
+    gap = larg * 0.006
+    bw = (larg - gap * (cols - 1)) / cols
+    x0, y0 = (W - larg) / 2, H * 0.62
+    for i in range(total):
+        x = x0 + (i % cols) * (bw + gap)
+        y = y0 + (i // cols) * (bw * 2.6)
+        if i < feito - 1:
+            cor, a = st["destaque"], 1.0
+        elif i == feito - 1:  # o bloco de hoje acende depois que o resto já está na tela
+            cor, a = st["destaque"], ease((t - 0.9) / 0.5)
+        else:
+            cor, a = st["cartao"], 1.0
+        rr(ctx, x, y, bw, bw * 2.2, min(6, bw * 0.3))
+        ctx.set_source_rgba(*st["cartao"], 1)
+        ctx.fill()
+        if a > 0:
+            rr(ctx, x, y + bw * 2.2 * (1 - a), bw, bw * 2.2 * a, min(6, bw * 0.3))
+            ctx.set_source_rgb(*cor)
+            ctx.fill()
+    fonte(ctx, *st["corpo"], tam * 0.55)
+    s = f"{feito} de {total}"
+    ctx.set_source_rgba(*st["tinta"], ease((t - 1.2) / 0.4))
+    ctx.move_to(W / 2 - ctx.text_extents(s).x_advance / 2, y0 + bw * 2.2 + tam * 1.3)
+    ctx.show_text(s)
+
+
+def d_selo(ctx, st, e, t, W, H):
+    """Marcador fixo e discreto no canto (ex.: "DIA 10/30 · 07:06"), que acompanha o trecho inteiro."""
+    tam = H * (0.024 if W > H else 0.018)
+    fonte(ctx, *st["corpo"], tam)
+    s = e["texto"].upper()
+    w, h = ctx.text_extents(s).x_advance + tam * 1.6, tam * 1.9
+    canto = e.get("canto", "direita")
+    x = W * 0.97 - w if canto == "direita" else W * 0.03
+    y = H * 0.05
+    k = ease(t / 0.35)
+    ctx.push_group()
+    rr(ctx, x, y, w, h, h / 2)
+    ctx.set_source_rgba(*st["fundo"], 0.82)
+    ctx.fill()
+    ctx.set_source_rgb(*st["tinta"])
+    ctx.move_to(x + tam * 0.8, y + h / 2 + tam * 0.36)
+    ctx.show_text(s)
+    ctx.pop_group_to_source()
+    ctx.paint_with_alpha(k)
+
+
 TIPOS = {"titulo": d_titulo, "lista": d_lista, "letreiro": d_letreiro, "numero": d_numero,
-         "sumario": d_sumario, "dividido": d_dividido}
-TELA_CHEIA = {"titulo", "lista", "numero", "sumario", "dividido"}
-SO_MONTAR = {"tela", "foco", "popup"}  # não geram clipe: o montar.py faz com o próprio vídeo
+         "sumario": d_sumario, "dividido": d_dividido, "progresso": d_progresso, "selo": d_selo}
+TELA_CHEIA = {"titulo", "lista", "numero", "sumario", "dividido", "progresso"}
+SO_MONTAR = {"tela", "foco", "popup", "vertical"}  # não geram clipe: o montar.py faz com o próprio vídeo
 FADE = 0.25
 
 

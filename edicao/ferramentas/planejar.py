@@ -19,7 +19,8 @@ import re
 
 from comum import gravar, hms, ler, pasta_trabalho
 
-RESPIRO = 0.10  # s de silêncio mantidos antes e depois de cada frase
+RESPIRO = 0.10  # s de silêncio mantidos antes de cada frase
+RESPIRO_FIM = 0.16  # e depois: o fim da última sílaba é fraco e o detector de voz o corta cedo
 ZOOM = 1.10
 
 
@@ -54,8 +55,8 @@ def planejar(fonte, estilo="editorial", formato="horizontal", pausa=0.35):
     for i, s in enumerate(segs):
         if i in fora:
             continue
-        a, b = max(0.0, s["start"] - RESPIRO), min(tr["dur"], s["end"] + RESPIRO)
-        if manter and a - manter[-1][1] < pausa - 2 * RESPIRO:
+        a, b = max(0.0, s["start"] - RESPIRO), min(tr["dur"], s["end"] + RESPIRO_FIM)
+        if manter and a - manter[-1][1] < pausa - RESPIRO - RESPIRO_FIM:
             manter[-1][1] = b
         else:
             if manter:

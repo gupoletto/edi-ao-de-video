@@ -27,7 +27,8 @@ O Claude segue as etapas e para duas vezes para você aprovar: **no plano** e **
 ## Etapas (se quiser rodar à mão)
 
 ```bash
-python3 edicao/ferramentas/transcrever.py edicao/bruto/viagem.mp4          # 2. transcrição com tempos
+python3 edicao/ferramentas/importar.py    ~/Downloads/IMG_1234.MOV viagem  # 1. HDR/VFR -> bruto/viagem.mkv
+python3 edicao/ferramentas/transcrever.py edicao/bruto/viagem.mkv --turbo  # 2. transcrição com tempos
 python3 edicao/ferramentas/planejar.py    edicao/bruto/viagem.mp4 --estilo editorial --formato horizontal
 #   3. revise edicao/trabalho/viagem/plano.md; os elementos visuais entram em plano.json -> "elementos"
 python3 edicao/ferramentas/elementos.py   edicao/bruto/viagem.mp4 --amostra # 4. um quadro de cada elemento
@@ -35,6 +36,7 @@ python3 edicao/ferramentas/elementos.py   edicao/bruto/viagem.mp4           #   
 python3 edicao/ferramentas/montar.py      edicao/bruto/viagem.mp4 --previa --trecho 30 90   # 5. aprove 1 min
 python3 edicao/ferramentas/montar.py      edicao/bruto/viagem.mp4 --previa  #    prévia inteira (540p)
 python3 edicao/ferramentas/montar.py      edicao/bruto/viagem.mp4           # 6. final -> edicao/final/
+python3 edicao/ferramentas/montar.py      edicao/bruto/viagem.mp4 --4k      #    versão 2160p p/ o YouTube
 python3 edicao/ferramentas/exportar.py    edicao/bruto/viagem.mp4           #    opcional: EDL p/ Premiere/DaVinci
 ```
 
@@ -51,9 +53,20 @@ vão para `~/.local/share/fonts`.
   itálica) ou `caixa`. `correcoes`: palavras que a transcrição errou, para as legendas.
 - `abertura`: trechos do bruto `[[de, ate], ...]` que vão para o começo como gancho (o resto do vídeo segue igual).
 - `sons`: efeitos sonoros sintetizados (whoosh nos cards, "pop" nos itens). Sem direitos autorais.
+- `abafar`: trechos do bruto com o som "de longe" (passa-baixa e mais baixo), p.ex. música de show de terceiros.
 - `elementos`: `titulo`, `lista`, `numero` (com `contar_de`), `letreiro` (`"~texto~"` sai riscado), `sumario`,
-  `dividido`, `tela`, `foco`, `popup` (campos em `ferramentas/elementos.py`).
+  `dividido`, `progresso`, `selo`, `tela`, `foco` (com `contorno: false` vira faixa de cinema), `popup`,
+  `vertical` (clipe vertical com laterais desfocadas). Campos em `ferramentas/elementos.py`.
   Os tempos `de`/`ate` são do vídeo **bruto**; o montador converte para o editado.
+
+## Qualidade e sincronia
+
+- Mande o arquivo **original da câmera** (pelo Google Drive), não o exportado por outro app. O `importar.py`
+  converte HDR em SDR e fixa a taxa de quadros; todas as etapas usam compressão quase sem perda e o final sai
+  em H.264 crf 18 (`--crf 16` para ainda mais qualidade).
+- Os cortes caem na grade de quadros e o áudio é cortado com `atrim` (exato até a amostra), com o mesmo início
+  e fim do vídeo: cada trecho tem a mesma duração nos dois. O montador para com erro se vídeo e áudio da linha
+  do tempo divergirem em mais de 1 quadro.
 
 ## Limites desta versão
 
