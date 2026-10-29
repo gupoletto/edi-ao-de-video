@@ -5,7 +5,7 @@
         --titulo "CAÍ NUM *GOLPE*" --sub "no show do Iron Maiden" --selo "DIA 10/30"
 
 - fundo: um quadro (cena, lugar) escurecido para o azul-marinho da paleta, à esquerda;
-- rosto: um quadro com a expressão, recortado em volta de --centro (frações x y do quadro), num cartão à
+- rosto: um quadro com a expressão (ou --foto, uma foto que o usuário mandou), recortado em volta de --centro (frações x y do quadro), num cartão à
   direita (--zoom aproxima). --espelhar desfaz o espelho da câmera frontal (texto de camiseta/placa fica legível);
 - titulo: no máximo 4 palavras; a parte entre *asteriscos* ganha a tarja de destaque. sub e selo são opcionais.
 Saída: edicao/final/<nome>_thumb.jpg (e .png).
@@ -24,7 +24,8 @@ W, H = 1280, 720
 
 
 def quadro(fonte, t):
-    raw = subprocess.run(["ffmpeg", "-v", "error", "-ss", str(t), "-i", fonte, "-frames:v", "1", "-f", "rawvideo",
+    busca = [] if t is None else ["-ss", str(t)]  # foto: sem -ss (numa imagem ele não devolve quadro)
+    raw = subprocess.run(["ffmpeg", "-v", "error", *busca, "-i", fonte, "-frames:v", "1", "-f", "rawvideo",
                           "-pix_fmt", "bgra", "-"], capture_output=True, check=True).stdout
     r = subprocess.run(["ffprobe", "-v", "error", "-select_streams", "v:0", "-show_entries", "stream=width,height",
                         "-of", "csv=p=0", fonte], capture_output=True, text=True, check=True).stdout.split(",")
@@ -91,7 +92,7 @@ def montar(a):
     ctx.paint()
 
     # cartão com o rosto, levemente inclinado
-    rosto = quadro(a.fonte, a.rosto)
+    rosto = quadro(a.foto, None) if a.foto else quadro(a.fonte, a.rosto)
     if a.espelhar:
         rosto = rosto[:, ::-1]
     cw, ch = 470, 640
@@ -161,7 +162,8 @@ def _quebra(t):
 if __name__ == "__main__":
     ap = argparse.ArgumentParser()
     ap.add_argument("fonte")
-    ap.add_argument("--rosto", type=float, required=True, help="s do quadro com a expressão")
+    ap.add_argument("--rosto", type=float, default=0.0, help="s do quadro com a expressão")
+    ap.add_argument("--foto", help="em vez do quadro: uma foto (jpg/png) mandada pelo usuário")
     ap.add_argument("--fundo", type=float, required=True, help="s do quadro de fundo")
     ap.add_argument("--centro", type=float, nargs=2, default=[0.5, 0.4], help="centro do rosto (frações x y)")
     ap.add_argument("--centro-fundo", type=float, nargs=2, default=[0.5, 0.5])
