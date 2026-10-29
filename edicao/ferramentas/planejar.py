@@ -72,7 +72,9 @@ def planejar(fonte, estilo="editorial", formato="horizontal", pausa=0.35):
         "foco": [0.5, 0.42],  # ponto do rosto (fração da largura, da altura) usado no zoom e no corte vertical
         "legendas": formato == "vertical" or estilo == "dinamico",
         "legenda_estilo": "palavra" if estilo == "dinamico" else "frase",  # palavra | frase | caixa
-        "sons": True,  # efeitos sonoros sintetizados na entrada dos elementos
+        "sons": True,  # efeitos sonoros sintetizados na entrada dos elementos e nas transições
+        "trilha": [{"estilo": "lofi", "volume": 0.3}],  # trilha sintetizada (sons.py); abaixa sozinha quando há voz
+        "vinheta": True,  # vinheta de fim (vinheta.py): inscreva-se, like, comente + espaço da tela final
         "abertura": [],  # gancho: trechos do bruto [[de, ate], ...] mostrados antes de tudo
         "manter": [[round(a, 3), round(b, 3)] for a, b in manter],
         "cortes": sorted(sugestoes, key=lambda c: c["de"]),

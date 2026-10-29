@@ -58,10 +58,18 @@ vão para `~/.local/share/fonts`.
   itálica) ou `caixa`. `correcoes`: palavras que a transcrição errou, para as legendas.
 - `abertura`: trechos do bruto `[[de, ate], ...]` que vão para o começo como gancho (o resto do vídeo segue igual).
 - `sons`: efeitos sonoros sintetizados (whoosh nos cards, "pop" nos itens). Sem direitos autorais.
+- `trilha`: trilha de fundo sintetizada, sem direitos autorais (`sons.py`): `[{"estilo": "lofi", "volume": 0.3}]` no
+  vídeo todo, ou trechos `{"de", "ate" (s no bruto), "estilo", "volume"}` trocando o clima (`lofi`, `pop`, `chill`,
+  `epico`). O montador abaixa a trilha enquanto você fala (sidechain) e sobe nas pausas.
+- `vinheta`: `true` emenda no fim a vinheta de 14 s (inscreva-se, like, comente e 6,5 s de tela final). Ela é gerada
+  uma vez com `python3 edicao/ferramentas/vinheta.py` (e `--formato vertical`); no YouTube Studio, use o modelo de tela
+  final "1 inscrição + 2 vídeos", que encaixa nos espaços dela.
 - `abafar`: trechos do bruto com o som "de longe" (passa-baixa e mais baixo), p.ex. música de show de terceiros.
 - `elementos`: `titulo`, `lista`, `numero` (com `contar_de`), `letreiro` (`"~texto~"` sai riscado), `sumario`,
   `dividido`, `progresso`, `selo`, `tela`, `foco` (com `contorno: false` vira faixa de cinema), `popup`,
-  `vertical` (clipe vertical com laterais desfocadas). Campos em `ferramentas/elementos.py`.
+  `vertical` (clipe vertical com laterais desfocadas), `transicao` (14 estilos com som próprio, ver
+  `ferramentas/transicoes.py`: roda, rota, relogio, cortina, flash, blocos, tinta, glitch, papel, iris, persiana,
+  filme, celular, polaroid). Campos em `ferramentas/elementos.py`.
   Os tempos `de`/`ate` são do vídeo **bruto**; o montador converte para o editado.
 
 ## Qualidade e sincronia

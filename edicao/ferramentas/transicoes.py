@@ -6,6 +6,15 @@ Cada uma cobre a tela inteira no instante do corte (assim o corte some) e conta 
   relogio  varredura de relógio: ponteiros giram de "hora_de" até "hora_ate" ("08:00", "16:30")
   cortina  cortina de palco fecha com um "texto" no meio e abre
   flash    luz de palco: clarão creme com raios saindo do centro
+  blocos   grade de quadrados que acende em onda diagonal (pixels) e apaga
+  tinta    respingo de tinta que cobre tudo e abre um buraco orgânico ("x", "y" do respingo; "cor": "taupe")
+  glitch   falha digital com faixas deslocadas e blocos; "texto" opcional quebrado em RGB
+  papel    folha creme rasgada que passa pela tela; "texto" opcional escrito nela
+  iris     círculo de desenho animado fecha num ponto ("x", "y", padrão o rosto) e abre
+  persiana lâminas verticais que giram e fecham, uma após a outra
+  filme    contagem de filme antigo 3-2-1 ("contagem") com grão e riscos
+  celular  um celular sobe e vira a tela: tela de bloqueio com "hora", "data" e notificação ("app", "texto")
+  polaroid polaroid cai com legenda escrita à mão ("texto") e a cena nova aparece de dentro da foto
 No plano: {"tipo": "transicao", "estilo": "...", "em": <s no bruto do 1º quadro da cena nova>, ...}.
 "antes"/"depois" (s) mudam quanto dura de cada lado do corte; o padrão depende do estilo.
 """
@@ -14,7 +23,9 @@ import math
 import cairo
 
 DURACAO = {"roda": (0.45, 0.45), "rota": (0.4, 0.9), "relogio": (0.45, 0.55), "cortina": (0.35, 0.75),
-           "flash": (0.15, 0.4)}
+           "flash": (0.15, 0.4), "blocos": (0.4, 0.45), "tinta": (0.35, 0.45), "glitch": (0.3, 0.3),
+           "papel": (0.35, 0.45), "iris": (0.4, 0.45), "persiana": (0.35, 0.4), "filme": (0.9, 0.25),
+           "celular": (0.5, 1.0), "polaroid": (0.45, 0.8)}
 
 
 def ease(x):
@@ -333,7 +344,394 @@ def flash(ctx, st, e, t, W, H, c):
         ctx.fill()
 
 
-ESTILOS = {"roda": roda, "rota": rota, "relogio": relogio, "cortina": cortina, "flash": flash}
+# ---------- blocos ----------
+
+def blocos(ctx, st, e, t, W, H, c):
+    """Grade de quadrados que acendem em onda diagonal (como pixels) e apagam na mesma direção."""
+    dur = e["ate"] - e["de"]
+    n_col = 16
+    lado = W / n_col
+    n_lin = int(math.ceil(H / lado))
+    cores = (st["fundo"], st["cartao"], st["destaque"])
+    for i in range(n_col):
+        for j in range(n_lin):
+            ordem = (i + j) / (n_col + n_lin - 2)  # 0 no canto de cima à esquerda, 1 no de baixo à direita
+            if t <= c:
+                k = ease((t / c - ordem * 0.6) / 0.4)
+            else:
+                k = 1 - ease(((t - c) / (dur - c) - ordem * 0.6) / 0.4)
+            if k <= 0:
+                continue
+            m = lado * k
+            ctx.rectangle(i * lado + (lado - m) / 2, j * lado + (lado - m) / 2, m + 0.6, m + 0.6)
+            cor = cores[0] if k >= 0.999 else cores[(i * 7 + j * 3) % 3]
+            ctx.set_source_rgb(*cor)
+            ctx.fill()
+
+
+# ---------- tinta ----------
+
+def _mancha(ctx, cx, cy, r, semente):
+    """Contorno de mancha de tinta: círculo com ondulações suaves de várias frequências."""
+    fases = [semente * 1.7 + k for k in range(4)]
+    for k in range(96):
+        a = k * 2 * math.pi / 96
+        rr = r * (1 + 0.10 * math.sin(3 * a + fases[0]) + 0.07 * math.sin(5 * a + fases[1])
+                  + 0.04 * math.sin(11 * a + fases[2]) + 0.025 * math.sin(17 * a + fases[3]))
+        (ctx.line_to if k else ctx.move_to)(cx + rr * math.cos(a), cy + rr * math.sin(a))
+    ctx.close_path()
+
+
+def tinta(ctx, st, e, t, W, H, c):
+    """Respingo de tinta: uma mancha orgânica cresce de um ponto até cobrir tudo, com gotas em volta; na volta,
+    um buraco com a mesma borda se abre no meio e revela a cena nova."""
+    dur = e["ate"] - e["de"]
+    cx, cy = W * e.get("x", 0.62), H * e.get("y", 0.45)
+    Rmax = math.hypot(W, H) * 0.75
+    cor = st["destaque"] if e.get("cor") == "taupe" else st["fundo"]
+    if t <= c:
+        r = Rmax * ease_out(t / c) ** 1.2
+        _mancha(ctx, cx, cy, r, 3)
+        ctx.set_source_rgb(*cor)
+        ctx.fill()
+        for g in range(9):  # gotas que voam na frente
+            a = g * 2.3
+            d = r * (1.15 + 0.25 * (g % 3))
+            ctx.arc(cx + d * math.cos(a), cy + d * math.sin(a), H * 0.012 * (1 + g % 3) * ease(t / c * 2), 0, 2 * math.pi)
+            ctx.fill()
+    else:
+        r = Rmax * ease((t - c) / (dur - c))
+        ctx.rectangle(0, 0, W, H)
+        _mancha(ctx, W / 2, H / 2, r, 5)
+        ctx.set_fill_rule(cairo.FILL_RULE_EVEN_ODD)
+        ctx.set_source_rgb(*cor)
+        ctx.fill()
+        ctx.set_fill_rule(cairo.FILL_RULE_WINDING)
+
+
+# ---------- glitch ----------
+
+def glitch(ctx, st, e, t, W, H, c):
+    """Falha digital: faixas horizontais deslocadas em marinho/creme/taupe, ruído de blocos e um quadro cheio no corte."""
+    dur = e["ate"] - e["de"]
+    rnd = __import__("random").Random(int(t * 30) * 13 + 1)
+    perto = 1 - min(1.0, abs(t - c) / max(c, dur - c))  # 0 longe do corte, 1 no corte
+    if abs(t - c) < 0.07:
+        ctx.rectangle(0, 0, W, H)
+        ctx.set_source_rgb(*st["fundo"])
+        ctx.fill()
+    n = int(4 + 22 * perto)
+    for _ in range(n):
+        y = rnd.uniform(0, H)
+        h = rnd.uniform(H * 0.01, H * 0.09) * (0.5 + perto)
+        x = rnd.uniform(-W * 0.3, W * 0.6)
+        w = rnd.uniform(W * 0.2, W * 0.9)
+        cor = rnd.choice([st["fundo"], st["fundo"], st["tinta"], st["destaque"], st["suave"]])
+        ctx.rectangle(x, y, w, h)
+        ctx.set_source_rgba(*cor, 0.55 + 0.45 * perto)
+        ctx.fill()
+    for _ in range(int(40 * perto)):  # blocos de compressão
+        s = rnd.uniform(8, 28)
+        ctx.rectangle(rnd.uniform(0, W), rnd.uniform(0, H), s, s)
+        ctx.set_source_rgba(*rnd.choice([st["tinta"], st["destaque"]]), 0.8)
+        ctx.fill()
+    if e.get("texto") and abs(t - c) < 0.35:  # texto "quebrado" em três cópias deslocadas
+        _fonte(ctx, st, H * 0.12)
+        for dx, cor, a in ((-8, st["destaque"], 0.8), (8, st["suave"], 0.8), (0, st["tinta"], 1.0)):
+            ctx.save()
+            ctx.translate(dx * (1 + rnd.random()), 0)
+            ctx.set_source_rgba(*cor, a)
+            ext = ctx.text_extents(e["texto"])
+            ctx.move_to(W / 2 - ext.width / 2 - ext.x_bearing, H / 2 + ext.height / 2)
+            ctx.show_text(e["texto"])
+            ctx.restore()
+
+
+# ---------- papel ----------
+
+def _borda_rasgada(x, H, semente, amp):
+    rng = __import__("random").Random(semente)
+    pts, y = [], -10.0
+    while y < H + 10:
+        pts.append((x + rng.uniform(-amp, amp), y))
+        y += rng.uniform(H * 0.015, H * 0.045)
+    return pts
+
+
+def papel(ctx, st, e, t, W, H, c):
+    """Folha de papel creme entra rasgada pela direita (com sombra) e sai rasgando para a esquerda."""
+    dur = e["ate"] - e["de"]
+    amp = W * 0.018
+    if t <= c:
+        x = W * 1.05 - (W * 1.1) * ease(t / c)
+        borda, cobre_dir = _borda_rasgada(x, H, 11, amp), True
+    else:
+        x = W * 1.05 - (W * 1.1) * ease((t - c) / (dur - c))
+        borda, cobre_dir = _borda_rasgada(x, H, 12, amp), False
+    for sombra, cor, a in ((14, (0, 0, 0), 0.25), (0, st["tinta"], 1.0)):
+        ctx.move_to(borda[0][0] - sombra, borda[0][1])
+        for px, py in borda:
+            ctx.line_to(px - sombra, py)
+        lado = W + 50 if cobre_dir else -50
+        ctx.line_to(lado, H + 10)
+        ctx.line_to(lado, -10)
+        ctx.close_path()
+        ctx.set_source_rgba(*cor, a)
+        ctx.fill()
+    # fibras da borda
+    ctx.set_line_width(2)
+    ctx.set_source_rgba(*st["suave"], 0.6)
+    for px, py in borda[::2]:
+        ctx.move_to(px, py)
+        ctx.line_to(px + (8 if cobre_dir else -8), py + 4)
+    ctx.stroke()
+    if e.get("texto") and abs(t - c) < 0.3:
+        _fonte(ctx, st, H * 0.1, corpo=False)
+        _centro(ctx, e["texto"], W / 2, H / 2 + H * 0.035, st["fundo"])
+
+
+# ---------- íris ----------
+
+def iris(ctx, st, e, t, W, H, c):
+    """Íris de desenho animado: um círculo fecha sobre um ponto (o rosto), fica preto um instante e abre."""
+    dur = e["ate"] - e["de"]
+    cx, cy = W * e.get("x", 0.5), H * e.get("y", 0.42)
+    Rmax = math.hypot(W, H)
+    if t <= c:
+        r = Rmax * (1 - ease(t / c))
+    else:
+        r = Rmax * ease((t - c - 0.08) / (dur - c - 0.08)) if t > c + 0.08 else 0
+    ctx.rectangle(0, 0, W, H)
+    if r > 0:
+        ctx.arc(cx, cy, r, 0, 2 * math.pi)
+    ctx.set_fill_rule(cairo.FILL_RULE_EVEN_ODD)
+    ctx.set_source_rgb(*st["fundo"])
+    ctx.fill()
+    ctx.set_fill_rule(cairo.FILL_RULE_WINDING)
+    if r > 0:
+        ctx.set_line_width(H * 0.012)
+        ctx.set_source_rgb(*st["destaque"])
+        ctx.arc(cx, cy, r, 0, 2 * math.pi)
+        ctx.stroke()
+
+
+# ---------- persiana ----------
+
+def persiana(ctx, st, e, t, W, H, c):
+    """Lâminas verticais que giram (ficam mais largas) até fechar e depois abrem, uma atrás da outra."""
+    dur = e["ate"] - e["de"]
+    n = 10
+    w = W / n
+    for i in range(n):
+        atraso = i / n * 0.45
+        if t <= c:
+            k = ease((t / c - atraso) / 0.55)
+        else:
+            k = 1 - ease(((t - c) / (dur - c) - atraso) / 0.55)
+        if k <= 0:
+            continue
+        lw = w * k
+        x = i * w + (w - lw) / 2
+        g = cairo.LinearGradient(x, 0, x + lw, 0)
+        g.add_color_stop_rgb(0, *(v * 0.75 for v in st["cartao"]))
+        g.add_color_stop_rgb(0.5, *st["cartao"])
+        g.add_color_stop_rgb(1, *st["fundo"])
+        ctx.rectangle(x, 0, lw + 0.8, H)
+        ctx.set_source(g if k < 0.999 else cairo.SolidPattern(*st["fundo"]))
+        ctx.fill()
+
+
+# ---------- filme ----------
+
+def filme(ctx, st, e, t, W, H, c):
+    """Contagem de filme antigo (3, 2, 1) com o ponteiro varrendo, grão e riscos; no corte, quadro cheio."""
+    dur = e["ate"] - e["de"]
+    a = min(1.0, t / 0.12, (dur - t) / 0.18)
+    if a <= 0:
+        return
+    ctx.push_group()
+    ctx.rectangle(0, 0, W, H)
+    ctx.set_source_rgb(*(v * 0.9 for v in st["tinta"]))
+    ctx.fill()
+    cx, cy, R = W / 2, H / 2, H * 0.36
+    n0 = e.get("contagem", 3)
+    passo = c / n0 if c > 0 else 1
+    k = int(t / passo)
+    frac = (t % passo) / passo
+    num = max(1, n0 - k) if t < c else 1
+    ctx.move_to(cx, cy)  # setor que varre
+    ctx.arc(cx, cy, R * 1.6, -math.pi / 2, -math.pi / 2 + 2 * math.pi * (frac if t < c else 1))
+    ctx.close_path()
+    ctx.set_source_rgba(*st["suave"], 0.55)
+    ctx.fill()
+    ctx.set_source_rgb(*st["fundo"])
+    ctx.set_line_width(H * 0.008)
+    for rr in (R, R * 0.82):
+        ctx.arc(cx, cy, rr, 0, 2 * math.pi)
+        ctx.stroke()
+    ctx.move_to(0, cy)
+    ctx.line_to(W, cy)
+    ctx.move_to(cx, 0)
+    ctx.line_to(cx, H)
+    ctx.stroke()
+    _fonte(ctx, st, H * 0.42)
+    _centro(ctx, str(num), cx, cy + H * 0.15, st["fundo"])
+    rnd = __import__("random").Random(int(t * 24))
+    for _ in range(3):  # riscos e poeira
+        x = rnd.uniform(0, W)
+        ctx.move_to(x, 0)
+        ctx.line_to(x + rnd.uniform(-20, 20), H)
+        ctx.set_line_width(rnd.uniform(1, 3))
+        ctx.set_source_rgba(0, 0, 0, 0.25)
+        ctx.stroke()
+    for _ in range(25):
+        ctx.arc(rnd.uniform(0, W), rnd.uniform(0, H), rnd.uniform(1, 4), 0, 2 * math.pi)
+        ctx.set_source_rgba(0, 0, 0, 0.3)
+        ctx.fill()
+    vin = cairo.RadialGradient(cx, cy, H * 0.3, cx, cy, W * 0.7)  # vinheta escura nas bordas
+    vin.add_color_stop_rgba(0, 0, 0, 0, 0)
+    vin.add_color_stop_rgba(1, 0, 0, 0, 0.5)
+    ctx.rectangle(0, 0, W, H)
+    ctx.set_source(vin)
+    ctx.fill()
+    ctx.pop_group_to_source()
+    ctx.paint_with_alpha(a)
+
+
+# ---------- celular ----------
+
+def celular(ctx, st, e, t, W, H, c):
+    """Um celular sobe da parte de baixo e cresce até a tela dele virar a tela do vídeo: tela de bloqueio com a hora
+    ("hora") e uma notificação ("texto", "app"); depois desce e revela a cena nova."""
+    dur = e["ate"] - e["de"]
+    if t <= c:
+        k = ease(t / c)
+    else:
+        k = 1 - ease((t - c - 0.35) / (dur - c - 0.35)) if t > c + 0.35 else 1.0
+    # tamanho: de um celular na mão (0) até a tela cheia (1)
+    pw0, ph0 = H * 0.42, H * 0.86
+    s = 1 + (max(W / (pw0 * 0.92), H / (ph0 * 0.94)) - 1) * ease((k - 0.45) / 0.55)
+    y_off = H * 1.1 * (1 - ease(k / 0.45))
+    cx, cy = W / 2, H / 2 + y_off
+    ctx.save()
+    ctx.translate(cx, cy)
+    ctx.scale(s, s)
+    pw, ph = pw0, ph0
+    r = pw * 0.12
+    _ret(ctx, -pw / 2, -ph / 2, pw, ph, r)
+    ctx.set_source_rgb(0.06, 0.06, 0.08)
+    ctx.fill()
+    sw, sh = pw * 0.92, ph * 0.94
+    _ret(ctx, -sw / 2, -sh / 2, sw, sh, r * 0.8)
+    g = cairo.LinearGradient(0, -sh / 2, 0, sh / 2)
+    g.add_color_stop_rgb(0, *st["cartao"])
+    g.add_color_stop_rgb(1, *st["fundo"])
+    ctx.set_source(g)
+    ctx.fill()
+    _fonte(ctx, st, sh * 0.13)
+    _centro(ctx, e.get("hora", "07:00"), 0, -sh * 0.22, st["tinta"])
+    _fonte(ctx, st, sh * 0.03)
+    _centro(ctx, e.get("data", "quinta-feira"), 0, -sh * 0.33, st["suave"])
+    na = ease((t - c * 0.7) / 0.25) if t > c * 0.7 else 0  # a notificação cai do topo
+    if na > 0 and e.get("texto"):
+        nw, nh = sw * 0.88, sh * 0.12
+        ny = -sh * 0.08 - (1 - na) * sh * 0.2
+        ctx.push_group()
+        _ret(ctx, -nw / 2, ny, nw, nh, nh * 0.25)
+        ctx.set_source_rgba(*st["tinta"], 0.95)
+        ctx.fill()
+        ctx.arc(-nw / 2 + nh * 0.5, ny + nh / 2, nh * 0.28, 0, 2 * math.pi)
+        ctx.set_source_rgb(*st["destaque"])
+        ctx.fill()
+        _fonte(ctx, st, nh * 0.22)
+        ctx.move_to(-nw / 2 + nh * 0.95, ny + nh * 0.42)
+        ctx.set_source_rgb(*st["suave"])
+        ctx.show_text(e.get("app", "LEMBRETE").upper())
+        _fonte(ctx, st, nh * 0.27)
+        ctx.move_to(-nw / 2 + nh * 0.95, ny + nh * 0.78)
+        ctx.set_source_rgb(*st["fundo"])
+        ctx.show_text(e["texto"])
+        ctx.pop_group_to_source()
+        ctx.paint_with_alpha(na)
+    ctx.restore()
+    if s > 1.5:  # quando o celular passa da tela, o fundo fora dele também fica marinho
+        ctx.rectangle(0, 0, W, H)
+        ctx.set_source_rgba(*st["fundo"], min(1.0, (s - 1.5)))
+        ctx.set_operator(cairo.OPERATOR_DEST_OVER)
+        ctx.fill()
+        ctx.set_operator(cairo.OPERATOR_OVER)
+
+
+def _ret(ctx, x, y, w, h, r):
+    ctx.new_sub_path()
+    ctx.arc(x + w - r, y + r, r, -math.pi / 2, 0)
+    ctx.arc(x + w - r, y + h - r, r, 0, math.pi / 2)
+    ctx.arc(x + r, y + h - r, r, math.pi / 2, math.pi)
+    ctx.arc(x + r, y + r, r, math.pi, 3 * math.pi / 2)
+    ctx.close_path()
+
+
+# ---------- polaroid ----------
+
+def polaroid(ctx, st, e, t, W, H, c):
+    """Uma polaroid cai girando sobre um fundo marinho com a legenda escrita ("texto"), e a cena nova aparece de dentro
+    da foto: a moldura cresce até sair da tela."""
+    dur = e["ate"] - e["de"]
+    if t <= c:  # fundo marinho entra em cortina rápida de cima
+        ctx.rectangle(0, 0, W, H * ease(t / c))
+        ctx.set_source_rgb(*st["fundo"])
+        ctx.fill()
+        cai = ease_out(t / c)
+        z, ang, oy = 1.0, math.radians(-18 + 12 * cai), -H * (1 - cai)
+        foto_a = 0.0
+    else:
+        q = (t - c) / (dur - c)
+        z = 1 + 4.5 * ease((q - 0.35) / 0.65) ** 2
+        ang, oy = math.radians(-6 * (1 - ease(q / 0.6))), 0
+        foto_a = 1.0
+        # fora da polaroid continua marinho até ela crescer
+        ctx.rectangle(0, 0, W, H)
+        fw, fh = H * 0.62 * z, H * 0.74 * z
+        ctx.save()
+        ctx.translate(W / 2, H / 2)
+        ctx.rotate(ang)
+        ctx.rectangle(-fw / 2, -fh / 2, fw, fh)
+        ctx.restore()
+        ctx.set_fill_rule(cairo.FILL_RULE_EVEN_ODD)
+        ctx.set_source_rgb(*st["fundo"])
+        ctx.fill()
+        ctx.set_fill_rule(cairo.FILL_RULE_WINDING)
+    fw, fh = H * 0.62 * z, H * 0.74 * z
+    ctx.save()
+    ctx.translate(W / 2, H / 2 + oy)
+    ctx.rotate(ang)
+    # moldura (com a janela da foto vazada quando a cena nova aparece)
+    ctx.rectangle(-fw / 2, -fh / 2, fw, fh)
+    jw = fw * 0.88
+    jy0 = -fh / 2 + fw * 0.06
+    if foto_a:
+        ctx.rectangle(-jw / 2, jy0, jw, jw)
+        ctx.set_fill_rule(cairo.FILL_RULE_EVEN_ODD)
+    ctx.set_source_rgb(*st["tinta"])
+    ctx.fill()
+    ctx.set_fill_rule(cairo.FILL_RULE_WINDING)
+    if not foto_a:  # foto ainda "revelando": cinza que clareia
+        ctx.rectangle(-jw / 2, jy0, jw, jw)
+        ctx.set_source_rgb(*st["cartao"])
+        ctx.fill()
+    if e.get("texto"):
+        ctx.select_font_face("Source Serif 4", cairo.FONT_SLANT_ITALIC, cairo.FONT_WEIGHT_BOLD)
+        ctx.set_font_size(fh * 0.075)
+        ext = ctx.text_extents(e["texto"])
+        ctx.move_to(-ext.width / 2 - ext.x_bearing, jy0 + jw + (fh / 2 - jy0 - jw) * 0.62 + fh * 0.035)
+        ctx.set_source_rgb(*st["fundo"])
+        ctx.show_text(e["texto"])
+    ctx.restore()
+
+
+ESTILOS = {"roda": roda, "rota": rota, "relogio": relogio, "cortina": cortina, "flash": flash, "blocos": blocos,
+           "tinta": tinta, "glitch": glitch, "papel": papel, "iris": iris, "persiana": persiana, "filme": filme,
+           "celular": celular, "polaroid": polaroid}
 
 
 def desenhar(ctx, st, e, t, W, H):

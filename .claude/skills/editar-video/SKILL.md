@@ -35,6 +35,8 @@ Pergunte só o que não der para inferir: estilo (`editorial` = limpo/creme, pad
    - `abertura` por último: 1–3 trechos fortes do próprio vídeo (resultado, número, frase de impacto) que vão na frente.
    - trechos **sem fala** que contam a história (b-roll, chegada, show) saem com o corte de pausas: devolva-os a `manter`.
    - procure ideias fora do óbvio na seção 3e do ESTILO antes de repetir o que as referências fazem;
+   - `trilha` por clima (ESTILO 3f) e `vinheta: true`; se `edicao/estilo/vinheta_<formato>.mkv` não existir, rode
+     `python3 edicao/ferramentas/vinheta.py [--formato vertical]` uma vez;
    - nas trocas de lugar/hora (as emendas que `tapas.py` lista), uma `transicao` temática ("em" = 1º quadro da cena
      nova, já depois de qualquer pedaço de câmera virando); veja os estilos em `ferramentas/transicoes.py`.
 4. **Pare e mostre o plano** (`plano.md`) ao usuário: duração antes/depois, cortes, lista de elementos. Espere a aprovação.

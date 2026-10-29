@@ -23,6 +23,7 @@ import soundfile as sf
 from comum import FINAL, FONTES, RAIZ, gravar, ler, pasta_trabalho, preparar, sonda
 from elementos import (CREME, SO_MONTAR, TAUPE, TELA_CHEIA, ajustar, cartao_rect, hexrgb, inicio_item, no_editado,
                        resolucao)
+import sons
 from planejar import dur_abertura, saida
 
 SR = 48000
@@ -185,6 +186,21 @@ def _pop(dur=0.09):
     return (0.35 * np.sin(2 * np.pi * np.cumsum(f) / SR) * np.exp(-t * 45)).astype(np.float32)
 
 
+def trilha_do_plano(plano, total):
+    """Trilha de fundo: "trilha": [{"de", "ate" (s no bruto; omitidos = o vídeo todo), "estilo", "volume"}].
+    Cada trecho entra e sai com fade e é gerado no tamanho certo (sons.trilha)."""
+    pista = np.zeros((int((total + 0.5) * SR), 2), np.float32)
+    for tr in plano["trilha"]:
+        a = saida(plano, tr["de"]) if "de" in tr else 0.0
+        b = saida(plano, tr["ate"]) if "ate" in tr else total
+        if b - a < 2:
+            continue
+        som = sons.trilha(tr.get("estilo", "lofi"), b - a) * tr.get("volume", 0.3)
+        i = int(a * SR)
+        pista[i:i + len(som)] += som[:len(pista) - i]
+    return pista
+
+
 def efeitos(plano, total, caminho):
     """Whoosh na entrada de cada card de tela cheia, "pop" em cada item que entra."""
     pista = np.zeros(int((total + 1) * SR), np.float32)
@@ -199,9 +215,10 @@ def efeitos(plano, total, caminho):
             continue
         e = no_editado(plano, e)
         a, dur = e["de"], e["ate"] - e["de"]
-        if e["tipo"] == "transicao":
-            por(w, a + e["corte"] - 0.3)  # o whoosh passa junto com o corte
-            n += 1
+        if e["tipo"] == "transicao":  # o som de cada estilo, alinhado com o corte
+            for nome, dt in sons.DA_TRANSICAO.get(e["estilo"], [("whoosh", -0.3)]):
+                por(sons.EFEITOS[nome]() * e.get("volume_som", 1.0), a + e["corte"] + dt)
+                n += 1
             continue
         if e["tipo"] in TELA_CHEIA or e["tipo"] == "tela":
             por(w, a - 0.12)
@@ -265,7 +282,14 @@ def montar(fonte, previa=False, trecho=None, crf=18, k4=False):
     plano["abertura"] = na_grade(plano.get("abertura", []), fps)
     manter, abertura = plano["manter"], plano["abertura"]
     total = dur_abertura(plano) + sum(b - a for a, b in manter)
+    total_principal = total
     els = plano["elementos"]
+    vinheta = None
+    if plano.get("vinheta"):  # vinheta de fim (vinheta.py), emendada depois do vídeo
+        vinheta = os.path.join(RAIZ, "estilo", f"vinheta_{'vertical' if H > W else 'horizontal'}.mkv")
+        if not os.path.exists(vinheta):
+            raise SystemExit(f"falta {vinheta}: rode vinheta.py antes")
+        total += sonda(vinheta)["dur"]
 
     entradas, idx = ["-i", plano["fonte"]], 1
     sfx = None
@@ -307,16 +331,32 @@ def montar(fonte, previa=False, trecho=None, crf=18, k4=False):
     zooms = [(saida(plano, z["de"]), saida(plano, z["ate"])) for z in plano["zooms"]]
     z = plano["zooms"][0]["escala"] if plano["zooms"] else 1.1
     g.append(f"[b1]crop=iw/{z}:ih/{z}:(iw-iw/{z})*{fx}:(ih-ih/{z})*{fy},scale={W}:{H}[bz]")
-    g.append(f"[b0][bz]overlay=enable='{entre(zooms)}',format=yuv420p[vbase]")
+    g.append(f"[b0][bz]overlay=enable='{entre(zooms)}',format=yuv420p[{'vbase0' if vinheta else 'vbase'}]")
 
-    # áudio: voz contínua + efeitos; −14 LUFS em duas passadas (a primeira só mede)
+    # áudio: voz contínua (+ trilha que abaixa quando há voz) + efeitos; −14 LUFS em duas passadas
+    voz_lbl = "alin"
+    if plano.get("trilha"):
+        tr_wav = os.path.join(pasta, "trilha.wav")
+        sf.write(tr_wav, trilha_do_plano(plano, total_principal), SR)
+        entradas += ["-i", tr_wav]
+        a_g.append(f"[alin]aformat=channel_layouts=stereo,asplit=2[vz][sc]")
+        a_g.append(f"[{idx}:a]aresample={SR},aformat=channel_layouts=stereo[tr]")
+        # sidechain: a voz comprime a trilha (abaixa ~10 dB enquanto fala e volta em 0,4 s)
+        a_g.append("[tr][sc]sidechaincompress=threshold=0.015:ratio=10:attack=15:release=400:makeup=1[trd]")
+        a_g.append("[vz][trd]amix=inputs=2:duration=first:normalize=0[alin_t]")
+        voz_lbl, idx = "alin_t", idx + 1
+    if vinheta:
+        entradas += ["-i", vinheta]
+        g.append(f"[{idx}:v]fps={fps},scale={W}:{H},setsar=1,format=yuv420p[vv];"
+                 f"[vbase0][vv]concat=n=2:v=1:a=0[vbase]")
+        a_g.append(f"[{idx}:a]aresample={SR},aformat=channel_layouts=stereo[av];"
+                   f"[{voz_lbl}]aformat=channel_layouts=stereo[am2];[am2][av]concat=n=2:v=0:a=1[alin_v]")
+        voz_lbl, idx = "alin_v", idx + 1
     abafar = [(saida(plano, x), saida(plano, y)) for x, y in plano.get("abafar", [])]
     if abafar:  # som "de longe" (passa-baixa e mais baixo): música de terceiros fica de fundo, não em destaque
         quando_ab = entre(abafar)
-        a_g.append(f"[alin]lowpass=f=500:enable='{quando_ab}',volume=0.45:enable='{quando_ab}'[alin_ab]")
+        a_g.append(f"[{voz_lbl}]lowpass=f=500:enable='{quando_ab}',volume=0.45:enable='{quando_ab}'[alin_ab]")
         voz_lbl = "alin_ab"
-    else:
-        voz_lbl = "alin"
     if sfx:
         a_g.append(f"[{sfx_idx}:a]aresample={SR}[fx]")
         a_g.append(f"[{voz_lbl}]aresample={SR}[voz];[voz][fx]amix=inputs=2:duration=first:normalize=0[amix]")

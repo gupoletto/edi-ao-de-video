@@ -116,11 +116,33 @@ As referências abrem com o resultado ou um número. Num vlog com história, fun
   - `relogio`: salto de horas no mesmo lugar;
   - `cortina` com texto: antes do evento;
   - `flash`: entrada no show ou na festa.
+  Outros estilos (cada um com o seu som, em `sons.DA_TRANSICAO`):
+  - `blocos`: pixels em onda; rotina ou tecnologia;
+  - `tinta`: respingo; virada de humor;
+  - `glitch` com `texto`: algo deu errado, ou um "DIA 11";
+  - `papel` com `texto`: "enquanto isso...";
+  - `iris`: fecha no rosto, para uma piada ou reação;
+  - `persiana`: troca de ambiente dentro de casa;
+  - `filme` 3-2-1: flashback, ou "vamos lá";
+  - `celular`: alarme, mensagem ou lembrete que muda o dia, com a notificação escrita;
+  - `polaroid` com legenda: um momento para guardar, ou uma foto do lugar.
   Uma a cada troca de cena, nunca em corte de pausa. Varie o estilo e não use mais de ~8 por vídeo. A cena nova
   deve começar no rosto ou na ação: corte antes o pedaço em que a câmera ainda está virando (camiseta, chão).
 - **Momento cinema**: no trecho mais visual, faixas de cinema (`foco` com `contorno: false`) e o som abafado.
 - **Música de terceiros** (show, bar, carro): mostre poucos segundos e use `abafar`; o Content ID do YouTube ainda
   pode reconhecer, então avise antes de publicar.
+
+## 3f. Trilha e vinheta (pedido do usuário, 29/10/2026)
+
+- **Trilha** sempre ligada, para o vídeo não ficar "seco", e sempre sintetizada (`sons.py`), nunca música baixada:
+  - `lofi` para o dia a dia;
+  - `pop` para montagem rápida, treino ou correria;
+  - `chill` para fala longa e reflexão;
+  - `epico` para a chegada, a conquista ou o show.
+  Troque o estilo por trechos quando o clima muda. Volume 0,25–0,35: a voz tem que vencer sempre. No trecho com
+  música de terceiros (show), não ponha trilha.
+- **Vinheta de fim** em todo vídeo (`"vinheta": true`): ela pede inscrição, like e o comentário "o que você quer ver
+  nos próximos vídeos?", e deixa 6,5 s para a tela final do YouTube.
 
 ## 4. Quando usar cada elemento (regra para o plano)
 
