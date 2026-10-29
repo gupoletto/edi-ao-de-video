@@ -23,7 +23,9 @@ Feitos direto no montar.py, com o próprio vídeo (sem clipe):
   foco     holofote: escurece fora de "area" [x, y, w, h] (frações da tela)
   popup    recorta "area" [x, y, w, h] e mostra ampliada ("escala", padrão 1.6)
   vertical clipe vertical gravado com faixas pretas: preenche as laterais com o próprio quadro desfocado
-           ("largura": fração da tela ocupada pelo vídeo vertical, padrão 0.316 = 9:16 dentro de 16:9)
+           ("largura": fração da tela ocupada pelo vídeo vertical, padrão 0.316 = 9:16 dentro de 16:9).
+           Celular deitado que gravou em pé (a imagem sai de lado na faixa): "girar": "anti-horario" | "horario"
+           gira a faixa 90° e a põe em tela cheia na horizontal, sem laterais desfocadas
 """
 import argparse
 import math

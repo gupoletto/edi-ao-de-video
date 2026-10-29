@@ -7,8 +7,8 @@ Combinado com o usuário: quando ele dá um tapa (ou soco) na câmera, o corte a
 (a câmera balançando, a camiseta, o chão) sai, até o próximo clipe começar.
 
 - Tapa: a mão cobre a lente (quadro quase liso: nitidez < 30 % da mediana do vídeo por 2+ quadros) junto de uma
-  pancada no áudio (pico > 3x a mediana, até 0,3 s antes ou durante). Corta 0,2 s antes da lente cobrir, que é
-  quando a mão já entra na frente.
+  pancada no áudio (pico > 3x a mediana, até 0,3 s antes ou durante), ou a mão que tapa a lente e o clipe acaba
+  logo depois (até 0,3 s), mesmo sem barulho. Corta 0,2 s antes da lente cobrir, que é quando a mão já entra.
 - Emenda: um salto de imagem num quadro só (o bruto vem de vários clipes do celular colados). Um trecho mantido
   que entra menos de 0,6 s num clipe vizinho perde esse pedaço: são restos (a cama, o chão, a mão ligando a
   câmera), nunca conteúdo.
@@ -66,9 +66,10 @@ def detectar(fonte, refazer=False):
             while j < len(coberto) and coberto[j]:
                 j += 1
             janela = pico[max(0, i - int(0.3 * fps)):j + 3]
-            if janela.max() > 3 * pmed:
+            fim_de_clipe = any(0 <= e - j / fps <= 0.3 for e in emendas)
+            if janela.max() > 3 * pmed or fim_de_clipe:
                 t = i / fps
-                depois = [e for e in emendas if e > t + 0.3]
+                depois = [e for e in emendas if e >= (j - 1) / fps]  # o clipe seguinte, depois da mão sair
                 tapas.append({"tapa": round(max(0.0, t - ANTES), 3), "retoma": depois[0] if depois else None})
             i = j
         i += 1
