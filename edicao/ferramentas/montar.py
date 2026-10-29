@@ -233,14 +233,15 @@ def recorte_rosto(cw, ch, fx, fy, W, H, altura=0.96):
 
 def conferir_sincronia(arquivo, fps):
     """Para a montagem se vídeo e áudio da linha do tempo não tiverem a mesma duração (até 1 quadro)."""
-    def ultima(sel, campos):
-        r = subprocess.run(["ffprobe", "-v", "error", "-select_streams", sel, "-show_entries", campos,
-                            "-of", "csv=p=0", arquivo], capture_output=True, text=True, check=True).stdout.split()
-        return r[-1].split(",")
+    def sonda(sel, campos, *extra):
+        return subprocess.run(["ffprobe", "-v", "error", *extra, "-select_streams", sel, "-show_entries", campos,
+                               "-of", "csv=p=0", arquivo], capture_output=True, text=True, check=True).stdout.split()
 
-    dur = {"v": float(ultima("v:0", "packet=pts_time")[0]) + 1.0 / fps}
-    pts, amostras = ultima("a:0", "frame=pts_time,nb_samples")[:2]
-    dur["a"] = float(pts) + int(amostras) / int(ultima("a:0", "stream=sample_rate")[0])
+    # conta quadros e amostras em vez de ler o horário do último pacote: com quadros B o último pacote não é
+    # o último quadro, e o loudnorm pode deixar um pulo de horário no último bloco de áudio
+    dur = {"v": int(sonda("v:0", "stream=nb_read_packets", "-count_packets")[0]) / fps}
+    amostras = sum(int(x) for x in sonda("a:0", "frame=nb_samples") if x.isdigit())
+    dur["a"] = amostras / int(sonda("a:0", "stream=sample_rate")[0])
     dif = dur["v"] - dur["a"]
     print(f"  sincronia: vídeo {dur['v']:.3f}s, áudio {dur['a']:.3f}s, diferença {dif * 1000:+.0f} ms")
     if abs(dif) > 1.0 / fps + 0.03:
