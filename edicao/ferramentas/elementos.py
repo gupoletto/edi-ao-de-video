@@ -17,6 +17,8 @@ Tipos (campos em plano.json -> "elementos"; "de"/"ate" em segundos do vídeo BRU
   selo     marcador discreto no canto que fica o trecho todo: "texto" (ex.: "Dia 10/30 · 07:06"), "canto"
 Em lista, letreiro e dividido, "tempos" [..] (instantes no bruto) faz cada item entrar quando é falado.
 Em "itens" do letreiro, "~texto~" sai riscado (ex.: "~Premiere~").
+  transicao em volta de um corte (troca de lugar/hora): "estilo" roda | rota | relogio | cortina | flash e "em"
+           (s no bruto do 1º quadro da cena nova); campos de cada estilo em ferramentas/transicoes.py
 Feitos direto no montar.py, com o próprio vídeo (sem clipe):
   tela     gravação de tela em tela cheia + rosto em miniatura: "arquivo" (ex.: "bruto/tela.mp4"), "inicio" (s no
            arquivo), "pip": "esquerda" | "direita"
@@ -36,8 +38,10 @@ import subprocess
 import cairo
 import numpy as np
 
-from comum import ler, pasta_trabalho, preparar
+import transicoes
+from comum import ler, pasta_trabalho, preparar, sonda
 from planejar import saida
+from tapas import aplicar, detectar
 
 FPS = 30
 def hexrgb(h):
@@ -452,7 +456,8 @@ def d_selo(ctx, st, e, t, W, H):
 
 
 TIPOS = {"titulo": d_titulo, "lista": d_lista, "letreiro": d_letreiro, "numero": d_numero,
-         "sumario": d_sumario, "dividido": d_dividido, "progresso": d_progresso, "selo": d_selo}
+         "sumario": d_sumario, "dividido": d_dividido, "progresso": d_progresso, "selo": d_selo,
+         "transicao": transicoes.desenhar}
 TELA_CHEIA = {"titulo", "lista", "numero", "sumario", "dividido", "progresso"}
 SO_MONTAR = {"tela", "foco", "popup", "vertical"}  # não geram clipe: o montar.py faz com o próprio vídeo
 FADE = 0.25
@@ -465,17 +470,33 @@ def quadro(st, e, t, W, H):
     TIPOS[e["tipo"]](ctx, st, e, t, W, H)
     ctx.pop_group_to_source()
     dur = e["ate"] - e["de"]
-    ctx.paint_with_alpha(min(1.0, t / FADE, (dur - t) / FADE) if e["tipo"] in TELA_CHEIA else min(1.0, (dur - t) / FADE))
+    if e["tipo"] == "transicao":  # cobre a tela no corte: sem esmaecer
+        ctx.paint()
+    else:
+        ctx.paint_with_alpha(min(1.0, t / FADE, (dur - t) / FADE) if e["tipo"] in TELA_CHEIA
+                             else min(1.0, (dur - t) / FADE))
     surf.flush()
     return surf
 
 
 def no_editado(plano, e):
     """Elemento com os tempos convertidos para o vídeo editado (os cortes encolhem a duração)."""
+    if e["tipo"] == "transicao":
+        return transicoes.tempos(e, saida(plano, e["em"]))
     e = dict(e, de=saida(plano, e["de"]), ate=saida(plano, e["ate"]))
     if e.get("tempos"):
         e["tempos"] = [saida(plano, t) for t in e["tempos"]]
     return e
+
+
+def ajustar(plano, avisar=False):
+    """Tira do plano o que vem depois de um tapa na câmera (tapas.py), igual para elementos e montagem."""
+    info, fim = detectar(plano["fonte"]), sonda(plano["fonte"])["dur"]
+    for chave in ("manter", "abertura"):
+        plano[chave], tirados = aplicar(plano.get(chave, []), info, fim)
+        if avisar:
+            for x, y, m in tirados:
+                print(f"  {chave}: tirado {x:.2f}-{y:.2f} s ({m})")
 
 
 def resolucao(plano):
@@ -486,6 +507,7 @@ def renderizar(fonte_video, amostra=False):
     preparar()
     pasta = pasta_trabalho(fonte_video)
     plano = ler(os.path.join(pasta, "plano.json"))
+    ajustar(plano)
     st = ESTILOS[plano["estilo"]]
     W, H = resolucao(plano)
     out_dir = os.path.join(pasta, "elementos")

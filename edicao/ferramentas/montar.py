@@ -21,10 +21,9 @@ import numpy as np
 import soundfile as sf
 
 from comum import FINAL, FONTES, RAIZ, gravar, ler, pasta_trabalho, preparar, sonda
-from elementos import (CREME, SO_MONTAR, TAUPE, TELA_CHEIA, cartao_rect, hexrgb, inicio_item, no_editado,
+from elementos import (CREME, SO_MONTAR, TAUPE, TELA_CHEIA, ajustar, cartao_rect, hexrgb, inicio_item, no_editado,
                        resolucao)
 from planejar import dur_abertura, saida
-from tapas import aplicar, detectar
 
 SR = 48000
 
@@ -200,6 +199,10 @@ def efeitos(plano, total, caminho):
             continue
         e = no_editado(plano, e)
         a, dur = e["de"], e["ate"] - e["de"]
+        if e["tipo"] == "transicao":
+            por(w, a + e["corte"] - 0.3)  # o whoosh passa junto com o corte
+            n += 1
+            continue
         if e["tipo"] in TELA_CHEIA or e["tipo"] == "tela":
             por(w, a - 0.12)
             n += 1
@@ -257,12 +260,7 @@ def montar(fonte, previa=False, trecho=None, crf=18, k4=False):
     W, H = resolucao(plano)
     fx, fy = plano.get("foco", [0.5, 0.42])
     fps = round(info["fps"])
-    # tapa na câmera = fim do take, mesmo em trechos que entraram no plano à mão
-    tapas = detectar(plano["fonte"])
-    for chave in ("manter", "abertura"):
-        plano[chave], tirados = aplicar(plano.get(chave, []), tapas, info["dur"])
-        for x, y, m in tirados:
-            print(f"  {chave}: tirado {x:.2f}-{y:.2f} s ({m})")
+    ajustar(plano, avisar=True)  # tapa na câmera = fim do take, mesmo em trechos postos à mão
     plano["manter"] = na_grade(plano["manter"], fps)
     plano["abertura"] = na_grade(plano.get("abertura", []), fps)
     manter, abertura = plano["manter"], plano["abertura"]
@@ -365,6 +363,8 @@ def montar(fonte, previa=False, trecho=None, crf=18, k4=False):
 
     # 3. elementos, na ordem do plano (os de cima por último)
     for i, e in enumerate(els, 1):
+        if e["tipo"] == "transicao":  # entram depois das legendas, por cima de tudo
+            continue
         a, b = saida(plano, e["de"]), saida(plano, e["ate"])
         quando = f"enable='between(t,{a:.3f},{b:.3f})'"
         tipo = e["tipo"]
@@ -433,6 +433,17 @@ def montar(fonte, previa=False, trecho=None, crf=18, k4=False):
         ass = os.path.join(pasta, "legendas.ass")
         print(f"  {legendas(plano, tr, W, H, ass)} legendas ({plano.get('legenda_estilo', 'padrão')})")
         camada(f"ass='{ass}':fontsdir='{FONTES}'")
+    # 4. transições: cobrem a tela no corte, então ficam acima de elementos e legendas
+    for i, e in enumerate(els, 1):
+        if e["tipo"] != "transicao":
+            continue
+        e = no_editado(plano, e)
+        mov = os.path.join(pasta, "elementos", f"E{i:02d}_transicao.mov")
+        if not os.path.exists(mov):
+            raise SystemExit(f"falta {mov}: rode elementos.py antes")
+        entradas += ["-itsoffset", f"{e['de']:.3f}", "-i", mov]
+        camada(f"[{atual}][{idx}:v]overlay=eof_action=pass:enable='between(t,{e['de']:.3f},{e['ate']:.3f})'")
+        idx += 1
     # --4k: o YouTube dá uma compressão melhor (VP9/AV1) a vídeos enviados em 2160p, mesmo vistos em 1080p
     g.append(f"[{atual}]" + ("scale=-2:540," if previa else "scale=-2:2160:flags=lanczos," if k4 else "")
              + "format=yuv420p[vout]")

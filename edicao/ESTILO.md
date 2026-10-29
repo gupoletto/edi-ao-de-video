@@ -107,8 +107,17 @@ As referências abrem com o resultado ou um número. Num vlog com história, fun
   promete o próximo ("Amanhã: dia 11").
 - **Plano vs. realidade**: o plano dito de manhã vira um `dividido` com itens no tempo da fala; à noite, uma `lista`
   com o que deu certo e o que ficou riscado. A edição conta a história por *callback*.
-- **Match cut**: procure duas imagens parecidas em sequência (a arte da camiseta → a mesma arte no telão) e corte
-  exatamente entre elas.
+- ~~**Match cut** com a camiseta depois do tapa~~: o usuário pediu para tirar (tapa = fim do take, seção 5).
+- **Transições temáticas** (`transicao`, pedido do usuário no episódio 10) em cada troca de lugar ou de hora, cada uma
+  contando algo da história e cobrindo a tela no corte:
+  - `roda`: saída de bike;
+  - `rota`: mapa do dia com paradas, e o ponto anda até a próxima; é o fio que amarra o vlog, então use a mesma
+    lista de `paradas` no vídeo todo;
+  - `relogio`: salto de horas no mesmo lugar;
+  - `cortina` com texto: antes do evento;
+  - `flash`: entrada no show ou na festa.
+  Uma a cada troca de cena, nunca em corte de pausa. Varie o estilo e não use mais de ~8 por vídeo. A cena nova
+  deve começar no rosto ou na ação: corte antes o pedaço em que a câmera ainda está virando (camiseta, chão).
 - **Momento cinema**: no trecho mais visual, faixas de cinema (`foco` com `contorno: false`) e o som abafado.
 - **Música de terceiros** (show, bar, carro): mostre poucos segundos e use `abafar`; o Content ID do YouTube ainda
   pode reconhecer, então avise antes de publicar.

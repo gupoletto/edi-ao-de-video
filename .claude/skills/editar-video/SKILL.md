@@ -34,7 +34,9 @@ Pergunte só o que não der para inferir: estilo (`editorial` = limpo/creme, pad
    JSON à mão, regenere o resumo legível: `python3 -c "import sys;sys.path.insert(0,'edicao/ferramentas');import planejar,comum,os;p='edicao/trabalho/<v>';planejar.escrever_md(p,comum.ler(p+'/plano.json'),comum.ler(p+'/transcricao.json'))"`.
    - `abertura` por último: 1–3 trechos fortes do próprio vídeo (resultado, número, frase de impacto) que vão na frente.
    - trechos **sem fala** que contam a história (b-roll, chegada, show) saem com o corte de pausas: devolva-os a `manter`.
-   - procure ideias fora do óbvio na seção 3e do ESTILO antes de repetir o que as referências fazem.
+   - procure ideias fora do óbvio na seção 3e do ESTILO antes de repetir o que as referências fazem;
+   - nas trocas de lugar/hora (as emendas que `tapas.py` lista), uma `transicao` temática ("em" = 1º quadro da cena
+     nova, já depois de qualquer pedaço de câmera virando); veja os estilos em `ferramentas/transicoes.py`.
 4. **Pare e mostre o plano** (`plano.md`) ao usuário: duração antes/depois, cortes, lista de elementos. Espere a aprovação.
 5. `elementos.py --amostra`, olhe os PNGs (texto cortado? destaque certo? erro de digitação?), envie ao usuário os 3 primeiros.
 6. `elementos.py`, depois `montar.py --previa --trecho <de> <ate>` num pedaço de ~1 min com elementos variados; aprovado
