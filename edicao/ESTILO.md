@@ -126,6 +126,13 @@ As referências abrem com o resultado ou um número. Num vlog com história, fun
   - `filme` 3-2-1: flashback, ou "vamos lá";
   - `celular`: alarme, mensagem ou lembrete que muda o dia, com a notificação escrita;
   - `polaroid` com legenda: um momento para guardar, ou uma foto do lugar.
+  - Criados no episódio 11:
+    - `cronometro`: relógio de corrida com km e pace;
+    - `cupom`: o que foi comprado, com "total" de brincadeira;
+    - `anilhas`: entrada na academia;
+    - `vapor`: o prato pronto;
+    - `rebobinar`: VHS do gancho de volta para o começo do dia.
+    Prefira inventar uma transição que nasça do assunto do dia a repetir a do episódio anterior.
   Uma a cada troca de cena, nunca em corte de pausa. Varie o estilo e não use mais de ~8 por vídeo. A cena nova
   deve começar no rosto ou na ação: corte antes o pedaço em que a câmera ainda está virando (camiseta, chão).
 - **Momento cinema**: no trecho mais visual, faixas de cinema (`foco` com `contorno: false`) e o som abafado.
@@ -143,6 +150,10 @@ As referências abrem com o resultado ou um número. Num vlog com história, fun
   música de terceiros (show), não ponha trilha.
 - **Vinheta de fim** em todo vídeo (`"vinheta": true`): ela pede inscrição, like e o comentário "o que você quer ver
   nos próximos vídeos?", e deixa 6,5 s para a tela final do YouTube.
+
+- **Thumbnail**: cada episódio com um conceito novo, nunca o mesmo layout. Já usados: episódio 10, recorte com
+  contorno, ingresso e carimbo (`thumb.py --recortar --bilhete`); episódio 11, HUD de videogame "NÍVEL 11" com XP e
+  conquistas (`thumb_jogo.py`). Use um quadro em que o usuário esteja sorrindo e bem iluminado.
 
 ## 4. Quando usar cada elemento (regra para o plano)
 
@@ -174,6 +185,9 @@ preencha `elementos`.
    neste arquivo — e só então assistir à **prévia inteira**.
 3. Conferir **todo texto na tela** (erro de digitação) e nomes na transcrição (ex.: "cloud" → "Claude" em `correcoes`).
 4. Ouvir o áudio: **nenhum corte no meio de palavra**.
+4c. **Pé, chão ou cama no começo e no fim do take** (regra do usuário, episódio 11): o `tapas.py` tira as pontas sem
+   rosto dos clipes em que você fala. Se um clipe inteiro mostra só a cama ou o chão enquanto você fala, cubra com um
+   card de tela cheia que ilustre a fala (no episódio 11, a `lista` "Antes do trampo").
 4b. **Tapa na câmera = fim do take.** Nada depois do tapa aparece (camiseta, chão, câmera balançando), nem num
    efeito criativo: no episódio 10 a camiseta do Eddie depois do tapa virou um match cut e o usuário pediu para tirar.
    O `montar.py` já aplica isso sozinho; confira na lista "tirado ... (tapa na câmera)" que ele imprime.
