@@ -328,11 +328,16 @@ def background():
     return s
 
 
-def render(segments, out, music_on=True):
+def render(segments, out, music_on=True, preparo=None):
     setup()
     segs = [s.build() for s in segments]
     total = sum(s.dur for s in segs)
     assert 20 <= total <= 60, f"duration {total:.1f}s outside 20-60 s"
+    t0 = 0.0
+    for s in segs:  # início de cada trecho no vídeo (cenas contínuas, como as 3D, usam o tempo global)
+        s.t0, t0 = t0, t0 + s.dur
+    if preparo:  # ex.: renderizar os quadros 3D agora que os tempos da narração são conhecidos
+        preparo(segs, total)
     print(f"{out}: {total:.1f}s, {len(segs)} segments")
 
     # audio
@@ -351,7 +356,8 @@ def render(segments, out, music_on=True):
         t0 += s.dur
     mix = voice + fx
     if music_on:
-        mix += music(n / SR)[:n]
+        m = music(n / SR)[:n]  # pode vir 1 amostra menor por arredondamento
+        mix[:len(m)] += m
     tmp = tempfile.mkdtemp()
     wav, aac, vid = (os.path.join(tmp, f) for f in ("mix.wav", "mix.m4a", "video.mp4"))
     sf.write(wav, mix, SR)
@@ -381,7 +387,7 @@ def render(segments, out, music_on=True):
         ctx.restore()
         draw_header(ctx, s.header)
         ctx.pop_group_to_source()
-        ctx.paint_with_alpha(ramp(lt, 0, 0.25) if k else 1.0)
+        ctx.paint_with_alpha(ramp(lt, 0, 0.25) if k and not getattr(s, "continuo", False) else 1.0)
         draw_captions(ctx, s, lt)
         text_center(ctx, HANDLE, W / 2, 1840, 28, GRAY, "SemiBold")
         surf.flush()
