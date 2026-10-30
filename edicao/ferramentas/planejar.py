@@ -75,6 +75,7 @@ def planejar(fonte, estilo="editorial", formato="horizontal", pausa=0.35):
         "sons": True,  # efeitos sonoros sintetizados na entrada dos elementos e nas transições
         "trilha": [{"estilo": "lofi", "volume": 0.3}],  # trilha sintetizada (sons.py); abaixa sozinha quando há voz
         "vinheta": True,  # vinheta de fim (vinheta.py): inscreva-se, like, comente + espaço da tela final
+        "vidro": True,  # cards e transições translúcidos sobre o vídeo desfocado (menos azul chapado)
         "abertura": [],  # gancho: trechos do bruto [[de, ate], ...] mostrados antes de tudo
         "manter": [[round(a, 3), round(b, 3)] for a, b in manter],
         "cortes": sorted(sugestoes, key=lambda c: c["de"]),

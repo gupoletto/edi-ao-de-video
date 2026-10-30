@@ -27,11 +27,12 @@ import math
 
 import cairo
 
-DURACAO = {"roda": (0.45, 0.45), "rota": (0.4, 0.9), "relogio": (0.45, 0.55), "cortina": (0.35, 0.75),
-           "flash": (0.15, 0.4), "blocos": (0.4, 0.45), "tinta": (0.35, 0.45), "glitch": (0.3, 0.3),
-           "papel": (0.35, 0.45), "iris": (0.4, 0.45), "persiana": (0.35, 0.4), "filme": (0.9, 0.25),
-           "celular": (0.5, 1.0), "polaroid": (0.45, 0.8), "cronometro": (0.45, 1.1), "cupom": (0.45, 1.4),
-           "anilhas": (0.4, 0.7), "vapor": (0.4, 0.7), "rebobinar": (0.7, 0.5)}
+# 1,4x mais longas que a primeira versão (pedido do usuário no episódio 11: mais tempo, mais fluidas)
+DURACAO = {"roda": (0.63, 0.63), "rota": (0.56, 1.26), "relogio": (0.63, 0.77), "cortina": (0.49, 1.05),
+           "flash": (0.21, 0.56), "blocos": (0.56, 0.63), "tinta": (0.49, 0.63), "glitch": (0.42, 0.42),
+           "papel": (0.49, 0.63), "iris": (0.56, 0.63), "persiana": (0.49, 0.56), "filme": (1.26, 0.35),
+           "celular": (0.7, 1.4), "polaroid": (0.63, 1.12), "cronometro": (0.63, 1.54), "cupom": (0.63, 1.96),
+           "anilhas": (0.56, 0.98), "vapor": (0.56, 0.98), "rebobinar": (0.98, 0.7)}
 
 
 def ease(x):
@@ -936,9 +937,9 @@ def vapor(ctx, st, e, t, W, H, c):
         ctx.arc(x, y, r, 0, 2 * math.pi)
         ctx.set_source(g)
         ctx.fill()
-    if abs(t - c) < 0.1:  # no corte, tela toda branca de vapor
+    if abs(t - c) < 0.1:  # no corte, véu de vapor (o desfoque do montar esconde o corte)
         ctx.rectangle(0, 0, W, H)
-        ctx.set_source_rgb(*st["tinta"])
+        ctx.set_source_rgba(*st["tinta"], 0.7)
         ctx.fill()
     if e.get("texto"):
         a = min(ease((t - c * 0.6) / 0.2), 1 - dissolve)
@@ -960,7 +961,7 @@ def rebobinar(ctx, st, e, t, W, H, c):
     perto = 1 - min(1.0, abs(t - c) / max(0.15, max(c, dur - c)))
     if t <= c + 0.12 and t >= c - 0.12:
         ctx.rectangle(0, 0, W, H)
-        ctx.set_source_rgb(0.02, 0.08, 0.55)  # azul de VCR, só nos quadros do corte
+        ctx.set_source_rgba(0.02, 0.08, 0.55, 0.6)  # azul de VCR, só nos quadros do corte (translúcido: o vidro esconde o corte)
         ctx.fill()
     ctx.set_source_rgba(0, 0, 0, 0.25 * perto)  # linhas de varredura
     for y in range(0, H, 4):

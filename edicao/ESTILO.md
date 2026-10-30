@@ -139,6 +139,15 @@ As referências abrem com o resultado ou um número. Num vlog com história, fun
 - **Música de terceiros** (show, bar, carro): mostre poucos segundos e use `abafar`; o Content ID do YouTube ainda
   pode reconhecer, então avise antes de publicar.
 
+## 3g. Vidro, menos azul chapado (pedido do usuário, episódio 11 refeito)
+
+- `"vidro": true` (padrão): nos cards de tela cheia e nas transições, o marinho chapado vira véu de cerca de 40 % sobre o
+  próprio vídeo desfocado (gblur). Em volta dos textos e ícones o marinho volta num degradê, para manter a leitura.
+  Pílulas e selos ficam com cerca de 70 %.
+- As transições são 1,4x mais longas que a primeira versão. O desfoque cresce até o corte e some depois, então o corte
+  some no vidro sem precisar de uma tela sólida.
+- Objetos (anilha, relógio, cupom, polaroid, papel) continuam opacos: são "coisas" na cena, não fundo.
+
 ## 3f. Trilha e vinheta (pedido do usuário, 29/10/2026)
 
 - **Trilha** sempre ligada, para o vídeo não ficar "seco", e sempre sintetizada (`sons.py`), nunca música baixada:

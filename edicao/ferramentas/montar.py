@@ -401,6 +401,13 @@ def montar(fonte, previa=False, trecho=None, crf=18, k4=False):
         g.append(f"[{idx - 1}:v]trim=start={a:.3f}:end={b:.3f}[q{idx - 1}]")  # mantém os tempos originais
         return f"q{idx - 1}"
 
+    def desfoque(fonte_q, a, b, entra, sai, nome):
+        """Cópia desfocada do vídeo que aparece (alfa) em `entra` s e some nos últimos `sai` s de [a, b]."""
+        g.append(f"[{fonte_q}]gblur=sigma=26,eq=saturation=0.85:brightness=-0.03,format=yuva420p,"
+                 f"fade=t=in:st={a:.3f}:d={max(entra, 0.05):.3f}:alpha=1,"
+                 f"fade=t=out:st={b - max(sai, 0.05):.3f}:d={max(sai, 0.05):.3f}:alpha=1[bl{nome}]")
+        camada(f"[{atual}][bl{nome}]overlay=eof_action=pass:enable='between(t,{a:.3f},{b:.3f})'")
+
     # 3. elementos, na ordem do plano (os de cima por último)
     for i, e in enumerate(els, 1):
         if e["tipo"] == "transicao":  # entram depois das legendas, por cima de tudo
@@ -408,6 +415,8 @@ def montar(fonte, previa=False, trecho=None, crf=18, k4=False):
         a, b = saida(plano, e["de"]), saida(plano, e["ate"])
         quando = f"enable='between(t,{a:.3f},{b:.3f})'"
         tipo = e["tipo"]
+        if plano.get("vidro") and tipo in TELA_CHEIA:  # card de vidro: o próprio vídeo, desfocado, por baixo
+            desfoque(copia(a, b), a, b, 0.4, 0.4, i)
         if tipo == "dividido":  # o rosto entra no cartão; o clipe do elemento tem o buraco
             x, y, cw, ch = cartao_rect(W, H, e.get("lado", "esquerda"))
             g.append(f"[{copia(a, b)}]{recorte_rosto(cw, ch, fx, fy, W, H)}[r{i}]")
@@ -478,6 +487,9 @@ def montar(fonte, previa=False, trecho=None, crf=18, k4=False):
         if e["tipo"] != "transicao":
             continue
         e = no_editado(plano, e)
+        if plano.get("vidro"):  # desfoque que cresce até o corte e some depois: o corte fica escondido no vidro
+            corte = e["de"] + e["corte"]
+            desfoque(copia(e["de"], e["ate"]), e["de"], e["ate"], e["corte"] * 0.9, (e["ate"] - corte) * 0.9, f"t{i}")
         mov = os.path.join(pasta, "elementos", f"E{i:02d}_transicao.mov")
         if not os.path.exists(mov):
             raise SystemExit(f"falta {mov}: rode elementos.py antes")

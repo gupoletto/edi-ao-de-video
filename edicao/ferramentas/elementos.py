@@ -460,7 +460,25 @@ TIPOS = {"titulo": d_titulo, "lista": d_lista, "letreiro": d_letreiro, "numero":
          "transicao": transicoes.desenhar}
 TELA_CHEIA = {"titulo", "lista", "numero", "sumario", "dividido", "progresso"}
 SO_MONTAR = {"tela", "foco", "popup", "vertical"}  # não geram clipe: o montar.py faz com o próprio vídeo
-FADE = 0.25
+FADE = 0.4
+COM_DESFOQUE = TELA_CHEIA | {"transicao"}  # o montar.py desfoca o vídeo por baixo destes ("vidro")
+VEU_GRANDE, VEU_PEQUENO = 0.42, 0.72
+
+
+def vidro(px, st, veu):
+    """Efeito vidro: as áreas grandes de marinho chapado ficam translúcidas (o vídeo desfocado aparece por baixo).
+    Perto de textos e ícones o marinho volta aos poucos (degradê suave), para a leitura continuar boa."""
+    from scipy import ndimage
+    meio = px[::2, ::2]
+    marinho = np.zeros(meio.shape[:2], bool)
+    # nos cards grandes só o fundo vira vidro (blocos e faixas "cartao" continuam); nas pílulas pequenas, as duas cores
+    for cor in ((st["fundo"],) if veu < 0.6 else (st["fundo"], st["cartao"])):  # px vem em BGRA
+        marinho |= np.abs(meio[..., :3] - np.array(cor[::-1]) * 255).max(axis=2) < 10
+    marinho &= meio[..., 3] > 200
+    longe = ndimage.binary_erosion(marinho, iterations=6 if veu < 0.6 else 3, border_value=1)
+    suave = ndimage.gaussian_filter(longe.astype(np.float32), 5)
+    fator = 1 - (1 - veu) * np.repeat(np.repeat(suave, 2, 0), 2, 1)[:px.shape[0], :px.shape[1]]
+    px[..., 3] *= fator
 
 
 def quadro(st, e, t, W, H):
@@ -529,6 +547,8 @@ def renderizar(fonte_video, amostra=False):
             px = np.frombuffer(s.get_data(), np.uint8).reshape(H, W, 4).astype(np.float32)
             a = px[..., 3:4]
             px[..., :3] = np.where(a > 0, px[..., :3] * 255 / np.maximum(a, 1), 0)  # cairo é pré-multiplicado
+            if plano.get("vidro"):
+                vidro(px, st, VEU_GRANDE if e["tipo"] in COM_DESFOQUE else VEU_PEQUENO)
             enc.stdin.write(px.clip(0, 255).astype(np.uint8).tobytes())
         enc.stdin.close()
         enc.wait()
