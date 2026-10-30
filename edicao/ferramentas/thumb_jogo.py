@@ -55,13 +55,29 @@ def fundo(ctx):
     ctx.fill()
 
 
-def recorte(img, altura, contorno, cortar_esq=0.0, cortar_dir=0.0):
+def recorte(img, altura, contorno, cortar_esq=0.0, cortar_dir=0.0, remover_laranja=False):
     """Pessoa recortada com contorno branco; cortar_esq/dir tiram parte das laterais (o braço da selfie)."""
     from PIL import Image, ImageEnhance, ImageFilter
     from rembg import new_session, remove
+    from scipy import ndimage
     rgb = Image.fromarray(np.ascontiguousarray(img[..., 2::-1]))
     rgb = ImageEnhance.Contrast(ImageEnhance.Brightness(rgb).enhance(0.94)).enhance(1.18)  # câmera estourada
     cut = remove(rgb, session=new_session("u2net_human_seg"))
+    if remover_laranja:  # objeto laranja/vermelho saturado colado no contorno (fruta, pimenta no fundo)
+        hsv = np.array(cut.convert("RGB").convert("HSV")).astype(np.float32)
+        a = np.array(cut.getchannel("A"))
+        perto_da_borda = ndimage.distance_transform_edt(a > 128) < 60  # só perto do contorno: o rosto fica intacto
+        a[perto_da_borda & (hsv[..., 1] > 170) & ((hsv[..., 0] < 22) | (hsv[..., 0] > 245)) & (hsv[..., 2] > 110)] = 0
+        a = ndimage.binary_fill_holes(ndimage.binary_opening(a > 128, iterations=3)).astype(np.uint8) * 255
+        cut.putalpha(Image.fromarray(a))
+    from scipy import ndimage  # fica só a maior mancha (a pessoa); some objeto solto que o recorte pegou junto
+    a = np.array(cut.getchannel("A"))
+    rot, n = ndimage.label(a > 128)
+    if n > 1:
+        maior = 1 + int(np.argmax(ndimage.sum(np.ones_like(a), rot, range(1, n + 1))))
+        a[rot != maior] = 0
+    a = np.where(ndimage.binary_fill_holes(a > 128), np.maximum(a, 255 * (a <= 128)), a).astype(np.uint8)
+    cut.putalpha(Image.fromarray(a))
     bb = cut.getchannel("A").point(lambda v: 255 if v > 128 else 0).getbbox()
     w = bb[2] - bb[0]
     cut = cut.crop((int(bb[0] + w * cortar_esq), bb[1], int(bb[2] - w * cortar_dir), bb[3]))
@@ -174,7 +190,7 @@ def montar(a):
     ctx = cairo.Context(surf)
     fundo(ctx)
     rosto = quadro(a.foto, None) if a.foto else quadro(a.fonte, a.rosto)
-    cam = recorte(rosto, a.altura, a.contorno, a.cortar_esq, a.cortar_dir)
+    cam = recorte(rosto, a.altura, a.contorno, a.cortar_esq, a.cortar_dir, a.remover_laranja)
     ps, _buf = argb(cam)
     ctx.set_source_surface(ps, W - cam.width + a.desloc[0], H - cam.height + a.desloc[1])
     ctx.paint()
@@ -206,6 +222,7 @@ if __name__ == "__main__":
     ap.add_argument("--altura", type=int, default=700)
     ap.add_argument("--cortar-esq", type=float, default=0.0, help="fração da largura da pessoa tirada da esquerda")
     ap.add_argument("--cortar-dir", type=float, default=0.0)
+    ap.add_argument("--remover-laranja", action="store_true", help="tira do recorte objetos laranja/vermelhos do fundo")
     ap.add_argument("--serie", default="MELHORANDO MINHA VIDA EM 30 DIAS")
     ap.add_argument("--contorno", type=int, default=12)
     ap.add_argument("--desloc", type=int, nargs=2, default=[40, 30])
