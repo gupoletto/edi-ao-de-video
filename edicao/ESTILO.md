@@ -194,6 +194,41 @@ Só referência por enquanto (o usuário pediu para aprender, não para aplicar 
 - **Cara de "gerado por IA"** (evitar): tudo entrando com o mesmo fade + subida; títulos que continuam escalando
   depois de pousar; push lento no fim da cena; quique em interface; anel de clique.
 
+## 3i. Referência F: Eli Rigobeli, "O Claude lançou o Motion" (vídeo de 13:53, assistido em 30/10/2026; só aprendizado)
+
+**Como ele monta a animação (vale para os nossos briefs):**
+- O pedido vira uma especificação em duas partes:
+  - **Estilo**: cor de fundo em hex, cor de acento em hex, tipografia, "movimentos suaves, ease-in-out, sem bounce
+    exagerado";
+  - **Linha do tempo em segundos**: 0–3 s linhas de construção; 3–6 s preenche de material e a lâmpada acende;
+    6–9 s slogan palavra por palavra; 9–12 s a marca entra e segura 1 s.
+  Ele chegou a esse texto conversando com o modelo antes de gerar. Antes de animar um card ou uma transição nova,
+  escreva o roteiro assim.
+- Animação **feita em código** (não vídeo gerado) permite pedir "corrige só o nome" ou "a marca entra mais devagar"
+  sem mudar o resto. Os nossos kits já são assim; mantenha cada elemento parametrizado.
+- Narrativa que funciona: **desenho técnico (blueprint) → ganha material → acende → marca**, ou seja, a construção do
+  objeto como revelação. Serve para o formato 3D do Fun Stuff (começar em wireframe e ganhar material) e para
+  aberturas.
+- Imagens e vídeos realistas gerados por IA (Higgsfield, patrocinador do vídeo) deixam com "cara de campanha", mas
+  no Fun Stuff exigem `containsSyntheticMedia: true` e quebram a regra "visual 100 % por código". Não usar sem o
+  usuário pedir.
+
+**Como ele edita o próprio vídeo (estilo de explicação com cards):**
+- Fala em close com luz de fundo colorida. Nos conceitos, a imagem vira um **cartão inclinado à direita** com fitas
+  adesivas vermelhas nos cantos, sobre um fundo de papel creme com grade de pontinhos.
+- À esquerda do cartão:
+  - uma etiqueta pequena manuscrita sobre uma tarja ("E se fosse um");
+  - o título grande condensado na cor de destaque com uma seta ("VÍDEO? ▶");
+  - um desenho que ilustra a ideia: rolo de filme com o quadro errado circulado, janela de código "marca.js" com
+    `entrada = rápida → devagar`, balão de chat "você → IA: 'Corrige o nome'";
+  - nota manuscrita embaixo ("…e torcer pra mudar só isso").
+- Gravação de tela com o rosto numa miniatura arredondada no canto, moldura azul em volta e marcadores de canto,
+  como os nossos `tela` + `pip`.
+- **Pedido de inscrição no meio do vídeo** (~3:30 de 13:53), num card "Bastante tutorial", e repetido no fim. Uma
+  ideia para os episódios longos: além da vinheta final, um lembrete curto e discreto em ~25 % do vídeo.
+- Possível elemento novo para o kit: `cartao_explica` (o rosto em cartão inclinado + título com etiqueta + desenho
+  simples). Ainda não implementado.
+
 ## 4. Quando usar cada elemento (regra para o plano)
 
 | Na fala... | Elemento |
