@@ -188,7 +188,36 @@ def multidao(d=1.2):  # aplauso/torcida ao longe
     return _norm(y * np.sin(np.linspace(0, np.pi, n)), 0.2)
 
 
-EFEITOS = {"whoosh": whoosh, "pop": pop, "clique": clique, "campainha": campainha, "tique": tique_taque,
+def impressora(d=1.2):  # impressora térmica: zumbido picotado
+    t = _t(d)
+    y = np.sign(np.sin(2 * np.pi * 95 * t)) * (np.sin(2 * np.pi * 7 * t) > -0.3) * 0.4
+    y += _passa_baixa(_rng.standard_normal(len(t)), 1800) * 0.3
+    return _norm(y * np.minimum(1, (d - t) / 0.1), 0.18)
+
+
+def metal():  # anilha batendo
+    t = _t(1.0)
+    y = sum(np.sin(2 * np.pi * f * t) * np.exp(-t * k) for f, k in ((310, 5), (835, 7), (1490, 9), (2210, 12)))
+    y += _rng.standard_normal(len(t)) * np.exp(-t * 60) * 0.8
+    return _norm(y, 0.33)
+
+
+def chiado(d=0.9):  # frigideira/vapor
+    n = int(d * SR)
+    r = _rng.standard_normal(n)
+    y = r - _passa_baixa(r, 3000)
+    return _norm(y * np.sin(np.linspace(0, np.pi, n)) ** 0.7 * (1 + 0.3 * _rng.random(n)), 0.16)
+
+
+def rebobinar_fita(d=1.1):  # motor de VCR acelerando + guinchos
+    t = _t(d)
+    f = 200 + 1800 * t / d
+    y = np.sin(2 * np.pi * np.cumsum(f) / SR) * 0.3 + _passa_baixa(_rng.standard_normal(len(t)), 900) * 0.4
+    return _norm(y * np.minimum(1, t / 0.1) * np.minimum(1, (d - t) / 0.15), 0.2)
+
+
+EFEITOS = {"impressora": impressora, "metal": metal, "chiado": chiado, "rebobinar": rebobinar_fita,
+           "whoosh": whoosh, "pop": pop, "clique": clique, "campainha": campainha, "tique": tique_taque,
            "ding": ding, "flash": flash_foto, "glitch": glitch, "splash": splash, "rasgo": rasgo, "boing": boing,
            "persiana": persiana, "projetor": projetor, "bipe": bipe_filme, "notificacao": notificacao,
            "obturador": obturador, "blips": blips, "multidao": multidao}
@@ -209,6 +238,11 @@ DA_TRANSICAO = {
     "filme": [("projetor", -0.55), ("bipe", -0.05)],
     "celular": [("notificacao", -0.2)],
     "polaroid": [("obturador", -0.15)],
+    "cronometro": [("bipe", -0.4), ("bipe", -0.25), ("ding", 0.35)],
+    "cupom": [("impressora", -0.4)],
+    "anilhas": [("whoosh", -0.35), ("metal", -0.02)],
+    "vapor": [("chiado", -0.4)],
+    "rebobinar": [("rebobinar", -0.7)],
 }
 
 

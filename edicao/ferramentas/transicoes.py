@@ -15,6 +15,11 @@ Cada uma cobre a tela inteira no instante do corte (assim o corte some) e conta 
   filme    contagem de filme antigo 3-2-1 ("contagem") com grão e riscos
   celular  um celular sobe e vira a tela: tela de bloqueio com "hora", "data" e notificação ("app", "texto")
   polaroid polaroid cai com legenda escrita à mão ("texto") e a cena nova aparece de dentro da foto
+  cronometro relógio de corrida: "km" contando, "pace", "rotulo"
+  cupom    cupom de mercado impresso: "itens" [..], "total", "titulo"
+  anilhas  duas anilhas de academia fecham a tela, com "texto"
+  vapor    vapor de comida quente cobre e se desfaz, com "texto"
+  rebobinar fita VHS rebobinando: "de_hora" -> "para_hora", "rotulo", "texto"
 No plano: {"tipo": "transicao", "estilo": "...", "em": <s no bruto do 1º quadro da cena nova>, ...}.
 "antes"/"depois" (s) mudam quanto dura de cada lado do corte; o padrão depende do estilo.
 """
@@ -25,7 +30,8 @@ import cairo
 DURACAO = {"roda": (0.45, 0.45), "rota": (0.4, 0.9), "relogio": (0.45, 0.55), "cortina": (0.35, 0.75),
            "flash": (0.15, 0.4), "blocos": (0.4, 0.45), "tinta": (0.35, 0.45), "glitch": (0.3, 0.3),
            "papel": (0.35, 0.45), "iris": (0.4, 0.45), "persiana": (0.35, 0.4), "filme": (0.9, 0.25),
-           "celular": (0.5, 1.0), "polaroid": (0.45, 0.8)}
+           "celular": (0.5, 1.0), "polaroid": (0.45, 0.8), "cronometro": (0.45, 1.1), "cupom": (0.45, 1.4),
+           "anilhas": (0.4, 0.7), "vapor": (0.4, 0.7), "rebobinar": (0.7, 0.5)}
 
 
 def ease(x):
@@ -734,9 +740,261 @@ def polaroid(ctx, st, e, t, W, H, c):
     ctx.restore()
 
 
+
+# ---------- cronômetro (relógio de corrida) ----------
+
+def cronometro(ctx, st, e, t, W, H, c):
+    """Relógio esportivo que sobe e cresce até a tela: distância contando até "km", ritmo ("pace") e tempo;
+    depois encolhe e sai. Campos: "km" (ex.: 2.0), "pace" (ex.: "5:10/km"), "rotulo" (ex.: "CORRIDA")."""
+    dur = e["ate"] - e["de"]
+    k = ease(t / c) if t <= c else 1 - ease((t - c - 0.45) / max(0.1, dur - c - 0.45)) if t > c + 0.45 else 1.0
+    ctx.rectangle(0, 0, W, H * k)
+    ctx.set_source_rgb(*st["fundo"])
+    ctx.fill()
+    s = 0.35 + 0.65 * ease_out(k)
+    cx, cy = W / 2, H / 2 + H * (1 - ease_out(k)) * 0.6
+    R = H * 0.36 * s
+    ctx.save()
+    ctx.translate(cx, cy)
+    for sy in (-1, 1):  # pulseira
+        ctx.rectangle(-R * 0.55, sy * R * 0.7, R * 1.1, sy * H)
+        ctx.set_source_rgb(*st["cartao"])
+        ctx.fill()
+    ctx.arc(0, 0, R * 1.08, 0, 2 * math.pi)
+    ctx.set_source_rgb(*st["suave"])
+    ctx.fill()
+    ctx.arc(0, 0, R, 0, 2 * math.pi)
+    ctx.set_source_rgb(0.02, 0.03, 0.06)
+    ctx.fill()
+    prog = ease_out(min(1.0, t / (c + 0.35)))
+    ctx.set_line_width(R * 0.07)  # anel de progresso
+    ctx.set_line_cap(cairo.LINE_CAP_ROUND)
+    ctx.set_source_rgb(*st["destaque"])
+    ctx.arc(0, 0, R * 0.88, -math.pi / 2, -math.pi / 2 + 2 * math.pi * max(0.001, prog))
+    ctx.stroke()
+    _fonte(ctx, st, R * 0.13)
+    _centro(ctx, e.get("rotulo", "CORRIDA"), 0, -R * 0.42, st["suave"])
+    _fonte(ctx, st, R * 0.42)
+    km = e.get("km", 2.0) * prog
+    _centro(ctx, f"{km:.2f}".replace(".", ","), 0, R * 0.12, st["tinta"])
+    _fonte(ctx, st, R * 0.12)
+    _centro(ctx, "KM", 0, R * 0.32, st["suave"])
+    if e.get("pace"):
+        _fonte(ctx, st, R * 0.13)
+        _centro(ctx, "PACE " + e["pace"], 0, R * 0.58, st["destaque"])
+    ctx.restore()
+
+
+# ---------- cupom (nota de mercado) ----------
+
+def cupom(ctx, st, e, t, W, H, c):
+    """Cupom fiscal sai da impressora de cima para baixo, com "itens" impressos um por um e o "total" (texto), e
+    é puxado para cima revelando a cena nova."""
+    dur = e["ate"] - e["de"]
+    itens = e.get("itens", [])
+    larg = W * 0.4
+    x0 = W / 2 - larg / 2
+    if t <= c:
+        ctx.rectangle(0, 0, W, H * ease(t / c))  # o fundo desce junto
+        ctx.set_source_rgb(*st["fundo"])
+        ctx.fill()
+        desce = ease_out(t / c)
+        sobe = 0.0
+    else:
+        q = (t - c) / (dur - c)
+        ctx.rectangle(0, 0, W, H * (1 - ease((q - 0.7) / 0.3)))
+        ctx.set_source_rgb(*st["fundo"])
+        ctx.fill()
+        desce, sobe = 1.0, ease((q - 0.72) / 0.28)
+    alto = H * 1.05
+    y_fim = -alto + alto * desce - alto * 1.1 * sobe
+    ctx.save()
+    ctx.translate(0, y_fim + H * 0.02)
+    # papel com picote de dente embaixo
+    ctx.move_to(x0, 0)
+    ctx.line_to(x0 + larg, 0)
+    n = 18
+    for i in range(n + 1):
+        ctx.line_to(x0 + larg - i * larg / n, alto - (12 if i % 2 else 0))
+    ctx.close_path()
+    ctx.set_source_rgb(*st["tinta"])
+    ctx.fill()
+    ctx.select_font_face("DejaVu Sans Mono", cairo.FONT_SLANT_NORMAL, cairo.FONT_WEIGHT_BOLD)
+    tam = H * 0.044
+    ctx.set_font_size(tam)
+    y = alto * 0.1
+    ctx.set_source_rgb(*st["fundo"])
+    _mono_c(ctx, e.get("titulo", "CUPOM DO DIA"), W / 2, y)
+    y += tam * 1.4
+    _mono_c(ctx, "-" * 22, W / 2, y)
+    for i, it in enumerate(itens):
+        y += tam * 1.6
+        aparece = t > c * 0.4 + i * 0.12
+        if aparece:
+            ctx.move_to(x0 + larg * 0.08, y)
+            ctx.show_text(it.upper()[:18])
+            ctx.move_to(x0 + larg * 0.82, y)
+            ctx.show_text("1x")
+    y += tam * 1.6
+    _mono_c(ctx, "-" * 22, W / 2, y)
+    if e.get("total") and t > c * 0.4 + len(itens) * 0.12:
+        y += tam * 1.8
+        ctx.set_font_size(tam * 1.25)
+        _mono_c(ctx, e["total"].upper(), W / 2, y)
+        ctx.set_font_size(tam)
+    y += tam * 2.2
+    for i in range(30):  # código de barras
+        w = (1 + (i * 7) % 3) * W * 0.0018
+        ctx.rectangle(x0 + larg * 0.15 + i * larg * 0.0235, y, w, tam * 2)
+    ctx.fill()
+    ctx.restore()
+
+
+def _mono_c(ctx, s, x, y):
+    e = ctx.text_extents(s)
+    ctx.move_to(x - e.x_advance / 2, y)
+    ctx.show_text(s)
+
+
+# ---------- anilhas ----------
+
+def _anilha(ctx, st, x, y, R, giro):
+    ctx.save()
+    ctx.translate(x, y)
+    ctx.rotate(giro)
+    ctx.arc(0, 0, R, 0, 2 * math.pi)
+    ctx.set_source_rgb(0.09, 0.1, 0.13)
+    ctx.fill()
+    ctx.set_line_width(R * 0.05)
+    ctx.set_source_rgb(0.2, 0.22, 0.27)
+    for rr in (0.92, 0.6):
+        ctx.arc(0, 0, R * rr, 0, 2 * math.pi)
+        ctx.stroke()
+    _fonte(ctx, st, R * 0.22)
+    for k in range(2):
+        ctx.save()
+        ctx.rotate(k * math.pi)
+        _centro(ctx, "20 KG", 0, -R * 0.68, st["destaque"])
+        ctx.restore()
+    ctx.arc(0, 0, R * 0.16, 0, 2 * math.pi)
+    ctx.set_source_rgb(*st["suave"])
+    ctx.fill()
+    ctx.arc(0, 0, R * 0.09, 0, 2 * math.pi)
+    ctx.set_source_rgb(0, 0, 0)
+    ctx.fill()
+    ctx.restore()
+
+
+def anilhas(ctx, st, e, t, W, H, c):
+    """Duas anilhas rolam das laterais e se encontram no meio (o fundo fecha atrás delas), com uma barra e o
+    "texto" (ex.: "TREINO DE BRAÇO"); depois rolam de volta para fora."""
+    dur = e["ate"] - e["de"]
+    k = ease(t / c) if t <= c else 1 - ease((t - c - 0.3) / max(0.1, dur - c - 0.3)) if t > c + 0.3 else 1.0
+    R = H * 0.62
+    xl = -R + (W / 2 - R * 0.0 + R) * k - R * 0.02
+    xr = W + R - (W / 2 + R) * k + R * 0.02
+    ctx.rectangle(0, 0, max(0.0, xl), H)
+    ctx.rectangle(min(W, xr), 0, W, H)
+    ctx.set_source_rgb(*st["fundo"])
+    ctx.fill()
+    ctx.rectangle(0, H / 2 - H * 0.03, W, H * 0.06)  # barra
+    ctx.set_source_rgba(*st["suave"], 0.9 * k)
+    ctx.fill()
+    _anilha(ctx, st, xl, H / 2, R, xl / R)
+    _anilha(ctx, st, xr, H / 2, R, -xr / R)
+    if e.get("texto") and k > 0.95:
+        _fonte(ctx, st, H * 0.075)
+        ext = ctx.text_extents(e["texto"])
+        ctx.rectangle(W / 2 - ext.width / 2 - H * 0.04, H * 0.82, ext.width + H * 0.08, H * 0.11)
+        ctx.set_source_rgb(*st["fundo"])
+        ctx.fill()
+        _centro(ctx, e["texto"], W / 2, H * 0.9, st["tinta"])
+
+
+# ---------- vapor ----------
+
+def vapor(ctx, st, e, t, W, H, c):
+    """Nuvens de vapor (comida quente) sobem de baixo, tomam a tela e se desfazem para cima com o "texto"."""
+    dur = e["ate"] - e["de"]
+    rnd = __import__("random").Random(9)
+    bolhas = [(rnd.uniform(-0.1, 1.1), rnd.uniform(0.0, 1.0), rnd.uniform(0.18, 0.4), rnd.uniform(0, 6)) for _ in range(60)]
+    if t <= c:
+        sob = ease(t / c)
+        dissolve = 0.0
+    else:
+        sob = 1.0 + 0.6 * ease((t - c) / (dur - c))
+        dissolve = ease((t - c - 0.2) / max(0.1, dur - c - 0.2))
+    for bx, by, br, fase in bolhas:
+        y = H * (1.4 - by * 0.9) - H * 1.25 * sob
+        x = W * bx + math.sin(t * 2 + fase) * W * 0.03
+        r = H * br * (1 + 0.4 * sob)
+        g = cairo.RadialGradient(x, y, 0, x, y, r)
+        a = (1 - dissolve)
+        g.add_color_stop_rgba(0, *st["tinta"], 0.95 * a)
+        g.add_color_stop_rgba(0.6, *st["tinta"], 0.85 * a)
+        g.add_color_stop_rgba(1, *st["tinta"], 0)
+        ctx.arc(x, y, r, 0, 2 * math.pi)
+        ctx.set_source(g)
+        ctx.fill()
+    if abs(t - c) < 0.1:  # no corte, tela toda branca de vapor
+        ctx.rectangle(0, 0, W, H)
+        ctx.set_source_rgb(*st["tinta"])
+        ctx.fill()
+    if e.get("texto"):
+        a = min(ease((t - c * 0.6) / 0.2), 1 - dissolve)
+        if a > 0:
+            ctx.select_font_face("Source Serif 4", cairo.FONT_SLANT_ITALIC, cairo.FONT_WEIGHT_BOLD)
+            ctx.set_font_size(H * 0.11)
+            ext = ctx.text_extents(e["texto"])
+            ctx.move_to(W / 2 - ext.width / 2 - ext.x_bearing, H / 2 + ext.height / 2 - H * 0.04 * ease((t - c) / 0.6))
+            ctx.set_source_rgba(*st["fundo"], a)
+            ctx.show_text(e["texto"])
+
+
+# ---------- rebobinar (VHS) ----------
+
+def rebobinar(ctx, st, e, t, W, H, c):
+    """Fita VHS rebobinando: linhas de varredura, faixa de rastreio, "◀◀ REW" e o relógio da fita correndo
+    para trás ("de_hora" -> "para_hora", ex.: "20:41" -> "07:02"); no corte, tela azul de VHS."""
+    dur = e["ate"] - e["de"]
+    perto = 1 - min(1.0, abs(t - c) / max(0.15, max(c, dur - c)))
+    if t <= c + 0.12 and t >= c - 0.12:
+        ctx.rectangle(0, 0, W, H)
+        ctx.set_source_rgb(0.02, 0.08, 0.55)  # azul de VCR, só nos quadros do corte
+        ctx.fill()
+    ctx.set_source_rgba(0, 0, 0, 0.25 * perto)  # linhas de varredura
+    for y in range(0, H, 4):
+        ctx.rectangle(0, y, W, 2)
+    ctx.fill()
+    rnd = __import__("random").Random(int(t * 30))
+    for _ in range(3):  # faixas de rastreio que correm
+        y = (t * 1.7 * H + rnd.uniform(0, H)) % H
+        ctx.rectangle(0, y, W, H * rnd.uniform(0.01, 0.05))
+        ctx.set_source_rgba(*st["tinta"], 0.35 * perto)
+        ctx.fill()
+    ctx.select_font_face("DejaVu Sans Mono", cairo.FONT_SLANT_NORMAL, cairo.FONT_WEIGHT_BOLD)
+    ctx.set_font_size(H * 0.075)
+    pisca = int(t * 4) % 2 == 0
+    ctx.set_source_rgba(1, 1, 1, 0.95 * (1 if pisca else 0.6))
+    ctx.move_to(W * 0.06, H * 0.14)
+    ctx.show_text(e.get("rotulo", "<< REW"))
+    def minutos(s):
+        h, m = s.split(":")
+        return int(h) * 60 + int(m)
+    if e.get("de_hora"):  # só mostra o relógio da fita quando as horas são conhecidas
+        a, b = minutos(e["de_hora"]), minutos(e.get("para_hora", "07:00"))
+        m = a + (b - a) * ease(t / dur)
+        ctx.move_to(W * 0.72, H * 0.9)
+        ctx.show_text(f"{int(m) // 60:02d}:{int(m) % 60:02d}")
+    ctx.set_font_size(H * 0.035)
+    ctx.move_to(W * 0.06, H * 0.9)
+    ctx.show_text("SP  " + e.get("texto", ""))
+
+
 ESTILOS = {"roda": roda, "rota": rota, "relogio": relogio, "cortina": cortina, "flash": flash, "blocos": blocos,
            "tinta": tinta, "glitch": glitch, "papel": papel, "iris": iris, "persiana": persiana, "filme": filme,
-           "celular": celular, "polaroid": polaroid}
+           "celular": celular, "polaroid": polaroid, "cronometro": cronometro, "cupom": cupom, "anilhas": anilhas,
+           "vapor": vapor, "rebobinar": rebobinar}
 
 
 def desenhar(ctx, st, e, t, W, H):
