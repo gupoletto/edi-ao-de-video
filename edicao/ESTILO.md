@@ -164,6 +164,36 @@ As referências abrem com o resultado ou um número. Num vlog com história, fun
   contorno, ingresso e carimbo (`thumb.py --recortar --bilhete`); episódio 11, HUD de videogame "NÍVEL 11" com XP e
   conquistas (`thumb_jogo.py`). Use um quadro em que o usuário esteja sorrindo e bem iluminado.
 
+## 3h. Ofício de movimento (aprendido em 30/10/2026: guias públicos do Remotion e do HyperFrames, citados no vídeo "Claude Motion")
+
+Só referência por enquanto (o usuário pediu para aprender, não para aplicar ainda):
+- **Entrar devagar, sair limpo**: chegadas com ease-out de cauda longa (expo/power4.out), saídas 40–50 % mais curtas
+  e num movimento só. Escala animada em escala "perceptual" (log), senão parece que acelera.
+- **Molas pelo amortecimento**: 1,0 sem quique; 0,7–0,85 "premium"; 0,4–0,6 brincalhão. Posição e tamanho podem
+  quicar; opacidade e cor nunca.
+- **Sobreposição e cascata**: o próximo elemento começa quando o anterior está 30–50 % pronto. Palavras com 60–120 ms
+  de intervalo, itens de lista com 40–80 ms.
+- **Títulos**: título pousado fica parado (nada de "respirar" ou "flutuar"). Varie a entrada: palavra a palavra com
+  blur 6→0 px em 0,13 s, 67 ms entre elas; ou do cinza para a tinta; ou a linha toda entrando com blur 8→0.
+- **Tempo de leitura**: 0,5 s + 0,3 s por palavra; a última frase do vídeo fica pelo menos 2 s.
+- **Transições com causa** (3–5 tipos por filme, cada uma motivada por algo na tela):
+  - objeto vira o mundo: um card cresce além da tela em 0,65 s;
+  - chicote (whip): mancha de 0,13–0,3 s e o elemento chega borrado e fica nítido em 0,13 s;
+  - inundação de cor;
+  - íris a partir do ponto clicado.
+  Corte no quadro mais rápido do movimento. Mundos não fazem crossfade entre si.
+- **Motion blur** nos movimentos rápidos: 6–12 px em texto, 15–20 px em tela cheia, só na direção do movimento.
+- **Trilha**: corte no tempo da batida (quadros por batida = fps × 60 / BPM, calculado pelo índice, sem somar
+  arredondado) e mude o layout no compasso.
+- **Vertical 9:16**: o app cobre o topo (até 168 px) e a parte de baixo (abaixo de 1330 px em 1080×1920). Todo texto
+  importante fica entre 168 e 1330 px, longe da coluna de botões da direita. Pendência para os Shorts do Fun Stuff:
+  hoje as legendas ficam em ~1560 px, numa área que a interface do YouTube pode cobrir.
+- **3D**: luz principal quente, contraluz fria, ambiente escuro com 2–3 faixas suaves, sombra de contato.
+  Rugosidade ≥ 0,45 no metal (sem estouros brancos). Mergulhe no objeto em vez de orbitar; vistas explodidas e
+  rótulos com números reais transformam simulação em explicação.
+- **Cara de "gerado por IA"** (evitar): tudo entrando com o mesmo fade + subida; títulos que continuam escalando
+  depois de pousar; push lento no fim da cena; quique em interface; anel de clique.
+
 ## 4. Quando usar cada elemento (regra para o plano)
 
 | Na fala... | Elemento |
