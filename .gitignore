@@ -9,3 +9,4 @@ edicao/trabalho/
 edicao/final/*
 !edicao/*/.gitkeep
 *.mov
+anuncios/zonas/
