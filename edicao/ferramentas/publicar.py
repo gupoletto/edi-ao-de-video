@@ -5,7 +5,7 @@
         [--descricao arquivo.txt] [--thumb edicao/final/video3_thumb.jpg] [--publico nao_listado]
 
 Credenciais (variáveis de ambiente da sessão, nunca no Git nem no chat):
-  YT_CLIENT_ID, YT_CLIENT_SECRET     o mesmo app OAuth do Fun Stuff
+  YT_PESSOAL_CLIENT_ID/SECRET        cliente OAuth usado para gerar o token (se faltar, usa YT_CLIENT_ID/SECRET)
   YT_PESSOAL_REFRESH_TOKEN           token autorizado na conta/canal pessoal (escopos youtube.upload + youtube.readonly)
   YT_PESSOAL_CANAL                   ID do canal pessoal (UC...): trava; só sobe se o token apontar para ele
 Nunca sobe no canal do Fun Stuff (UCUVaO7rhj5SbRhkEJ09xptQ), nem se as variáveis estiverem trocadas.
@@ -26,7 +26,8 @@ BLOCO = 64 * 1024 * 1024
 
 def token():
     dados = urllib.parse.urlencode({
-        "client_id": os.environ["YT_CLIENT_ID"], "client_secret": os.environ["YT_CLIENT_SECRET"],
+        "client_id": os.environ.get("YT_PESSOAL_CLIENT_ID") or os.environ["YT_CLIENT_ID"],
+        "client_secret": os.environ.get("YT_PESSOAL_CLIENT_SECRET") or os.environ["YT_CLIENT_SECRET"],
         "refresh_token": os.environ["YT_PESSOAL_REFRESH_TOKEN"], "grant_type": "refresh_token"}).encode()
     with urllib.request.urlopen("https://oauth2.googleapis.com/token", dados) as r:
         return json.load(r)["access_token"]
@@ -85,7 +86,7 @@ def main():
     ap.add_argument("--thumb")
     ap.add_argument("--publico", default="private", choices=["private", "unlisted"])
     a = ap.parse_args()
-    for v in ("YT_CLIENT_ID", "YT_CLIENT_SECRET", "YT_PESSOAL_REFRESH_TOKEN", "YT_PESSOAL_CANAL"):
+    for v in ("YT_PESSOAL_REFRESH_TOKEN", "YT_PESSOAL_CANAL"):
         if not os.environ.get(v):
             sys.exit(f"falta a variável de ambiente {v} (veja o topo deste arquivo)")
     tk = token()
