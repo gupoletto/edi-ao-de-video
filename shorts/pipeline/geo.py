@@ -164,3 +164,51 @@ def scale_bar(ctx, view, km, label, x, y, color=(1, 1, 1)):
         ctx.rectangle(xx - 2, y - 10, 4, 28)
         ctx.fill()
     text_center(ctx, label, x + w / 2, y + 52, 30, color, "SemiBold")
+
+
+# ---------- distância real ----------
+
+def azimutal(lon0, lat0):
+    """Projeção azimutal equidistante em km, centrada em (lon0, lat0): distâncias do centro são reais."""
+    la0, lo0 = math.radians(lat0), math.radians(lon0)
+
+    def f(lon, lat):
+        la, lo = math.radians(lat), math.radians(lon)
+        c = math.acos(max(-1.0, min(1.0, math.sin(la0) * math.sin(la) + math.cos(la0) * math.cos(la) * math.cos(lo - lo0))))
+        k = c / math.sin(c) if c > 1e-9 else 1.0
+        return (6371 * k * math.cos(la) * math.sin(lo - lo0),
+                6371 * k * (math.cos(la0) * math.sin(la) - math.sin(la0) * math.cos(la) * math.cos(lo - lo0)))
+    return f
+
+
+def circulo_minimo(pts):
+    """Menor círculo que contém todos os pontos (Welzl iterativo): ((x, y), raio)."""
+    import random
+    P = list(pts)
+    random.Random(1).shuffle(P)
+
+    def dois(a, b):
+        c = ((a[0] + b[0]) / 2, (a[1] + b[1]) / 2)
+        return c, math.dist(a, c)
+
+    def tres(a, b, c):
+        d = 2 * (a[0] * (b[1] - c[1]) + b[0] * (c[1] - a[1]) + c[0] * (a[1] - b[1]))
+        if abs(d) < 1e-9:
+            return None
+        sa, sb, sc = (p[0] ** 2 + p[1] ** 2 for p in (a, b, c))
+        u = ((sa * (b[1] - c[1]) + sb * (c[1] - a[1]) + sc * (a[1] - b[1])) / d,
+             (sa * (c[0] - b[0]) + sb * (a[0] - c[0]) + sc * (b[0] - a[0])) / d)
+        return u, math.dist(u, a)
+
+    dentro = lambda C, p: math.dist(C[0], p) <= C[1] + 1e-6  # noqa: E731
+    C = None
+    for i, p in enumerate(P):
+        if C is None or not dentro(C, p):
+            C = (p, 0.0)
+            for j, q in enumerate(P[:i]):
+                if not dentro(C, q):
+                    C = dois(p, q)
+                    for r in P[:j]:
+                        if not dentro(C, r):
+                            C = tres(p, q, r) or C
+    return C

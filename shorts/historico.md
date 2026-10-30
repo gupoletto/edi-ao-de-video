@@ -18,3 +18,6 @@
 | 30/10/2026 | Países e geografia | 5 menores países em escala (San Marino, Tuvalu, Nauru, Mônaco, Vaticano vs Central Park) | Ranking | "The 5 Smallest X on Earth (#1 …)" | lote-2026-10-30/geo_smallest_countries.mp4 |
 | 30/10/2026 | Países e geografia | Groenlândia vs África na projeção de Mercator (tamanho real) | Why | "Why X Looks as Big as Y (It's Nx Smaller)" | lote-2026-10-30/geo_greenland_true_size.mp4 |
 | 30/10/2026 | Países e geografia | Formatos de países (Itália, Islândia, Madagascar, Chile, Mongólia) | Interativo (quiz) | "Guess the X From Its Shape (N Questions, #N Is Hard)" | lote-2026-10-30/geo_guess_shape.mp4 |
+| 31/10/2026 | Comparação de tamanho | Prédios mais altos (Ping An, Abraj Al-Bait, Shanghai Tower, Merdeka 118, Burj Khalifa) vs Torre Eiffel | Ranking | "Ranking the Tallest X Ever Built (To Scale)" | lote-2026-10-31/size_tallest_buildings.mp4 |
+| 31/10/2026 | Comparação de tamanho | Terras dentro de Júpiter e do Sol (volume) | Why/how | "How Many X Fit Inside the Y?" | lote-2026-10-31/size_earths_in_sun.mp4 |
+| 31/10/2026 | Comparação de tamanho | Lua cobre o país? (Mongólia, Austrália, México, Chile, Argentina) | Interativo (quiz) | "Can the X Cover These Y? (N Rounds)" | lote-2026-10-31/size_moon_cover.mp4 |

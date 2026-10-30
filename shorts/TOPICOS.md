@@ -35,7 +35,7 @@ Cada dia tem **um tópico**, com **3 vídeos diferentes** dele, um em cada horá
 | Quarta | 3 · Espaço |
 | Quinta | 4 · Simulações de física |
 | Sexta | 5 · Países e geografia ranqueados |
-| Sábado | 6 · Dinossauros e Terra pré-histórica |
+| Sábado | ~~6 · Dinossauros e Terra pré-histórica~~ → 9 · Comparação de tamanho (troca em 30/10: dinossauros caiu para 40 mil de mediana; tamanho está em 130 mil) |
 | Domingo | 7 · Mitologia e civilizações antigas |
 
 Durante a transição (até 28/10), alguns horários já estão ocupados por vídeos do lote 1 (gelo, fábrica e lava). Nesses dias, a rotina produz só o número de vídeos que cabe nos horários livres.
