@@ -40,8 +40,8 @@ o mesmo espectador: curioso por ciência, que gosta de ver a coisa acontecer na 
 |---|---|---|---|
 | Seg 02/11 | Espaço | 3D: como o foguete chega à órbita (B trocado com A neste dia) | Quark: pular em Júpiter ✅ agendado |
 | Ter 03/11 | Ilusões de ótica | Interativo | E se o cabo do elevador arrebentar? |
-| Qua 04/11 | Simulações de física | Quark what-if | Carro × árvore a 30 mph ✅ pronto (`lote-2026-11-04`) |
-| Qui 05/11 | Como funciona | Ranking | Turbina de avião ✅ pronta (`lote-2026-11-05`) |
+| Qua 04/11 | Simulações de física | Quark what-if | Carro × árvore a 30 mph ✅ agendado |
+| Qui 05/11 | Como funciona | Ranking | Turbina de avião ✅ agendada |
 | Sex 06/11 | Terra e natureza | Interativo | Como o helicóptero voa |
 | Sáb 07/11 | Tamanho e escala | Ranking | Como o trem de pouso funciona |
 | Dom 08/11 | Satisfying | Quark what-if | Como a eletricidade chega à tomada |

@@ -25,3 +25,5 @@
 | 01/11/2026 | Como funciona (3D) | Motor de 4 tempos (admissão, compressão, explosão, escape) | Como funciona 3D | "How a X Actually Works (3D)" | lote-2026-11-01/tres_motor.mp4 |
 | 02/11/2026 | Satisfying | Bolas enchendo copo, tigela e funil (simulação) | Interativo (quiz) | "Guess How Many X Fill It (N Rounds)" | lote-2026-11-01/sat_fill_quiz.mp4 |
 | 02/11/2026 | Espaço (nicho estreitado; teste 2/dia) | Pular em Júpiter: 60 km/s, sem chão, sonda Galileo (58 min), hidrogênio metálico | What if com o Quark (arco de conflito) | "What If You Jumped Into X?" | lote-2026-11-02/quark_jupiter.mp4 |
+| 04/11/2026 | 3D cinematográfico (física) | Carro × árvore a 30 mph: zona de deformação, airbag, cinto, boneco de crash test | 3D cinematográfico | "What Happens When a X Hits a Y at N MPH?" | lote-2026-11-04/tres_batida.mp4 |
+| 05/11/2026 | 3D cinematográfico (como funciona) | Turbina de avião: fan, bypass, compressor, combustão, turbinas | 3D cinematográfico | "How a X Actually Works (3D)" | lote-2026-11-05/tres_turbina.mp4 |
