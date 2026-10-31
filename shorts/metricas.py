@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
 """Painel de desempenho dos Shorts do Fun Stuff, em Markdown (para colar em shorts/tendencias/AAAA-MM-DD.md).
 
-    python3 shorts/metricas.py            # tabela por vídeo + resumo por formato e por tópico
+    python3 shorts/metricas.py            # vídeos desde 27/10: tabela por vídeo + resumo por formato e por tópico
+    python3 shorts/metricas.py --desde 2026-10-25                     # inclui o lote 1
     python3 shorts/metricas.py --desde 2026-11-02 --ate 2026-11-08   # só vídeos publicados nesse intervalo
 
 Junta três fontes:
@@ -72,11 +73,14 @@ def analytics(token, ids, inicio):
     except urllib.error.HTTPError as e:
         print(f"> Analytics indisponível (HTTP {e.code}); só estatísticas públicas.\n")
         return {}
-    return {row[0]: {"avd": row[2], "pct": row[3], "shares": row[4], "subs": row[5]} for row in d.get("rows", [])}
+    # linha com 0 views no Analytics = dado ainda não processado (atraso de 2–3 dias): trata como ausente
+    return {row[0]: {"avd": row[2], "pct": row[3], "shares": row[4], "subs": row[5]}
+            for row in d.get("rows", []) if row[1] and row[2]}
 
 
 def main():
-    desde = sys.argv[sys.argv.index("--desde") + 1] if "--desde" in sys.argv else "2000-01-01"
+    # padrão: desde 27/10, quando começou o formato atual (o lote 1, satisfying genérico, distorce as medianas)
+    desde = sys.argv[sys.argv.index("--desde") + 1] if "--desde" in sys.argv else "2026-10-27"
     ate = sys.argv[sys.argv.index("--ate") + 1] if "--ate" in sys.argv else "2999-12-31"
     agora = dt.datetime.now(dt.timezone.utc)
     hist = historico()
