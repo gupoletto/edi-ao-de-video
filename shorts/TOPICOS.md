@@ -1,60 +1,76 @@
 # Top 10 tópicos em alta + agenda da semana
 
 > Arquivo vivo: a rotina diária o atualiza (ranking completo todo domingo; troca no meio da semana se um tópico despencar).
-> Última atualização: **25/10/2026**, a partir de 24 tópicos medidos na API do YouTube (Shorts em inglês, publicados de 18 a 25/10, top 25 por views em cada busca).
+> Última atualização: **31/10/2026**: nicho estreitado (ver abaixo). A medição original de 25/10 cobriu 24 tópicos.
 
-## Ranking atual
+## Nicho do canal (decidido em 31/10/2026): **ciência visual e simulações satisfatórias**
 
-A posição pesa a **mediana de views** (mais confiável que a soma, que um único viral distorce), o ritmo de views/hora, se dá para produzir com **visual 100% original** (sem imagens de terceiros) e se o tema é seguro para monetização.
+O algoritmo testa cada vídeo com uma amostra de ~200 pessoas parecidas com quem já gostou do canal (`ESTRATEGIA.md`,
+seções 7 e 8). Tópicos espalhados confundem essa amostra. Por isso todos os tópicos ficam sob um guarda-chuva só, para
+o mesmo espectador: curioso por ciência, que gosta de ver a coisa acontecer na tela.
 
-| # | Tópico | Mediana de views (7 dias) | Exemplos em alta | Formato original possível |
+- **Dentro:** ilusões de ótica, espaço, simulações de física, "como funciona" em 3D (mecanismos), Terra e natureza em
+  simulação (vulcões, terremotos, oceanos, clima), comparação de tamanho e escala, satisfying (loops, encaixes,
+  simulações).
+- **Fora (mesmo se estiverem em alta):** história e impérios, mitologia, dinossauros, países ranqueados por dado
+  político ou cultural, comida, celebridades, esporte. Mapas só entram como ciência de escala (ex.: projeção de
+  Mercator, tamanho real).
+- Candidatos novos no ranking de domingo só se couberem no guarda-chuva.
+
+## Ranking atual (medido em 25–31/10; o domingo reordena só dentro do nicho)
+
+| # | Tópico | Mediana de views (7 dias) | Desempenho no canal | Formato original possível |
 |---|---|---:|---|---|
-| 1 | **História "What if" e impérios** | 290 mil | "If empires had sound" (3,2 mi), "What if you were painted centuries ago?" | Mapas animados, linhas do tempo, impérios crescendo |
-| 2 | **Ilusões de ótica** | 376 mil | "Do you think it's a giant or just a visual illusion?" (1,8 mi) | 100% gerável por código: ilusões clássicas e novas |
-| 3 | **Espaço** | 111 mil | "Why nothing can survive Venus" (1,6 mi), "What if a coin-sized black hole appeared?" (677 mil) | Simulações de órbitas, planetas, buracos negros |
-| 4 | **Simulações de física** | 358 mil* | "Bouncing emoji balls multiply in a spiral!" (3,2 mi) | O que o canal já faz: bolinhas, caos, pêndulos |
-| 5 | **Países e geografia ranqueados** | 208 mil | "Countries ranked by their first letter" (643 mil), "What if Russia moved to Canada?" | Mapas, bandeiras, gráficos de dados reais |
-| 6 | **Dinossauros e Terra pré-histórica** | 1,6 mi* | "Welcome to Earth 210 million years ago" (4,5 mi) | Comparação de tamanho, Terra mudando ao longo das eras |
-| 7 | **Mitologia e civilizações antigas** | 578 mil* | "The clever survival trick used during ancient Chinese wars" (1,5 mi) | Deuses ranqueados, maravilhas antigas, mapas |
-| 8 | *Reserva:* Rankings "satisfying" | 132 mil | "Ranking the most satisfying vids" (1,2 mi) | Simulações satisfying (estilo do lote 1) |
-| 9 | *Reserva:* Comparação de tamanho | 165 mil | "Big vs. small! A fun size guessing game" | Escala de animais, prédios, planetas |
-| 10 | *Reserva:* Ciência da comida e "did you know" | 97–192 mil | "Why do Mongolians eat meat 3 times a day?" | Infográficos animados |
+| 1 | **Ilusões de ótica** | 376 mil | 1.256 / 1.040 | Ilusões geradas por código |
+| 2 | **Simulações de física** | 358 mil | 925–1.228 | Integração numérica de verdade |
+| 3 | **Espaço** | 111 mil | 650–1.182 | Órbitas, planetas, escalas |
+| 4 | **Satisfying** (loops, encaixes, enchimento) | 153 mil | (01/11) | `pipeline/satisfying.py` |
+| 5 | **Comparação de tamanho e escala** | 130 mil | (31/10) | Escala real, contornos reais |
+| 6 | **Como funciona em 3D** | 49 mil (busca "how it works 3d"); ~113 mil em "how it works 3d animation" | (01/11) | three.js (`pipeline/tres.py`) |
+| 7 | **Terra e natureza em simulação** | a medir no domingo 08/11 | — | Vulcões, placas, ondas, clima |
 
-\* Mediana inflada por virais fora do tema (desenho infantil, vídeos em outras línguas). O tópico continua forte, mas foi posto abaixo do que os números brutos sugerem.
+## Agenda da semana (a partir de 02/11)
 
-Ficaram de fora (fracos ou inviáveis sem imagens reais): tecnologia/IA, física do esporte, comparação de carros, ranking de animais, engenharia, dinheiro, desastres naturais, fundo do mar.
+**Teste de 2 vídeos por dia de 02/11 a 08/11** (aprovado em 31/10; horários no `upload.py`). Em cada dia:
+1. um **"what if / why" com o mascote Quark** (`pipeline/personagem.py`), roteiro com arco de conflito;
+2. **ranking** ou **interativo**, alternando dia sim, dia não. Começa pelo ranking na segunda; na quinta o 3D toma o
+   lugar desse segundo vídeo.
 
-## Agenda da semana (a partir de 26/10)
+| Dia | Tópico | 2º vídeo |
+|---|---|---|
+| Segunda 02/11 | Espaço | Ranking |
+| Terça 03/11 | Ilusões de ótica | Interativo |
+| Quarta 04/11 | Simulações de física | Ranking |
+| Quinta 05/11 | Como funciona (3D) | 3D "como funciona" |
+| Sexta 06/11 | Terra e natureza em simulação | Interativo |
+| Sábado 07/11 | Comparação de tamanho e escala | Ranking |
+| Domingo 08/11 | Satisfying | Interativo |
 
-Cada dia tem **um tópico**, com **3 vídeos diferentes** dele, um em cada horário de pico:
+No domingo 08/11 a rotina compara a semana de 2/dia com a semana anterior (3/dia), olhando a média de views por vídeo,
+a taxa de engajamento e, se a API de Analytics estiver liberada, a taxa de visualização e a duração média. Ela registra
+o resultado em `tendencias/` e no relatório, e recomenda ao usuário: manter 2, voltar para 3 ou testar 1. **Quem decide
+é o usuário.** Até ele decidir, o `upload.py` volta sozinho para 3 slots a partir de 09/11.
 
-| Dia | Tópico |
-|---|---|
-| Segunda | 1 · História "What if" e impérios |
-| Terça | 2 · Ilusões de ótica |
-| Quarta | 3 · Espaço |
-| Quinta | 4 · Simulações de física |
-| Sexta | 5 · Países e geografia ranqueados |
-| Sábado | ~~6 · Dinossauros e Terra pré-histórica~~ → 9 · Comparação de tamanho (troca em 30/10: dinossauros caiu para 40 mil de mediana; tamanho está em 130 mil) |
-| Domingo | ~~7 · Mitologia e civilizações antigas~~ → 8 · Satisfying rankings (troca em 31/10: mitologia ficou entre 11 e 21 mil de mediana; satisfying está em 153 mil) |
+## Os vídeos do dia: sempre diferentes entre si
 
-Durante a transição (até 28/10), alguns horários já estão ocupados por vídeos do lote 1 (gelo, fábrica e lava). Nesses dias, a rotina produz só o número de vídeos que cabe nos horários livres.
+Os vídeos do dia são do mesmo tópico, mas cada um tem **subtema e formato diferentes**:
 
-## Os 3 vídeos do dia: sempre diferentes entre si
+1. **Ranking** (#5 → #1).
+2. **"What if / Why"**. Desde 02/11 é contado pelo mascote Quark, com arco de conflito (gancho → subida → conflito →
+   virada → recompensa).
+3. **Interativo**: quiz, "can you spot it?", "guess which…".
+4. **Como funciona em 3D**, no lugar de um dos outros.
 
-Os três são do mesmo tópico, mas com **subtema e formato diferentes**:
-
-1. **Ranking** (#5 → #1), no estilo do lote 1. Ex.: "Ranking the largest empires in history".
-2. **"What if / Why"**: explicação com simulação. Ex.: "What if the Roman Empire never fell?"
-3. **Interativo**: quiz, "can you spot it?", "guess which…". Ex.: "Guess the empire from its map".
-
-Nenhum subtema se repete em 30 dias (controle em `historico.md`). O padrão de título também não se repete em dias seguidos.
+Nenhum subtema se repete em 30 dias (controle em `historico.md`). O padrão de título também não se repete em dias
+seguidos.
 
 ## Cuidados por tópico
 
-- **Dinossauros:** tom científico, não infantil. Conteúdo com cara de "para crianças" pode ser marcado como *made for kids*, o que corta anúncios e comentários.
-- **Mitologia:** só mitologias antigas (grega, nórdica, egípcia, mesopotâmica, asteca). Nada de religiões praticadas hoje.
-- **História e países:** nada de conflitos atuais ou temas políticos sensíveis. Fatos e números conferidos.
+- **Mascote:** o personagem é desenho animado, mas o tom do roteiro é de ciência para adolescentes e adultos (piadas
+  secas, números reais), nunca infantil. Conteúdo com cara de "para crianças" pode ser marcado como *made for kids*,
+  o que corta anúncios e comentários. O mascote nunca morre nem se machuca de verdade: o perigo é mostrado com humor
+  e ele sempre escapa.
+- **Terra e natureza:** desastres sem vítimas reais nem eventos recentes com mortes. Só a física do fenômeno.
 - **Ilusões de ótica:** as clássicas são domínio público como ideia, mas a arte precisa ser gerada pelo nosso código.
 
 ## Como o ranking é atualizado

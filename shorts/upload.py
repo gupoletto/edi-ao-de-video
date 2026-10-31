@@ -31,6 +31,11 @@ AUDIENCE_TZ = ZoneInfo("America/New_York")
 # Go live shortly before each US Shorts peak: lunch, after school/work, evening.
 SLOTS_WEEKDAY = [12, 15, 19]
 SLOTS_WEEKEND = [10, 14, 19]
+# Test (approved by the owner on 31/10/2026): 2 Shorts a day for one week, so each one gets more room before the
+# next. Lunch and evening peaks; back to 3 a day after the end date unless PLANO.md says otherwise.
+TESTE_2_POR_DIA = (dt.date(2026, 11, 2), dt.date(2026, 11, 8))
+SLOTS_TESTE_WEEKDAY = [12, 19]
+SLOTS_TESTE_WEEKEND = [10, 19]
 MIN_LEAD = dt.timedelta(minutes=30)
 
 
@@ -51,7 +56,11 @@ def taken_slots():
 
 
 def day_slots(day):
-    hours = SLOTS_WEEKEND if day.weekday() >= 5 else SLOTS_WEEKDAY
+    fim_de_semana = day.weekday() >= 5
+    if TESTE_2_POR_DIA[0] <= day <= TESTE_2_POR_DIA[1]:
+        hours = SLOTS_TESTE_WEEKEND if fim_de_semana else SLOTS_TESTE_WEEKDAY
+    else:
+        hours = SLOTS_WEEKEND if fim_de_semana else SLOTS_WEEKDAY
     return [dt.datetime(day.year, day.month, day.day, h, tzinfo=AUDIENCE_TZ).astimezone(dt.timezone.utc) for h in hours]
 
 

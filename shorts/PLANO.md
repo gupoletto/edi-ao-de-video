@@ -1,6 +1,6 @@
 # Plano do canal Fun Stuff (@funstuff-67)
 
-Shorts em inglês para público dos EUA, com visual 100% original gerado por código e voz de IA. Tópicos escolhidos pelo que está em alta (veja `TOPICOS.md`).
+Shorts em inglês para público dos EUA, com visual 100% original gerado por código e voz de IA. **Nicho (desde 31/10/2026): ciência visual e simulações satisfatórias.** Os tópicos ficam sempre dentro desse guarda-chuva, para o mesmo espectador, e a escolha segue o que está em alta (veja `TOPICOS.md`). O mascote **Quark** (`pipeline/personagem.py`) é a marca do canal e conta os "what if / why". As lições das referências estão em `ESTRATEGIA.md`.
 
 ## Situação em 25/10/2026
 
@@ -10,7 +10,7 @@ Shorts em inglês para público dos EUA, com visual 100% original gerado por có
 
 ## Agenda de publicação
 
-3 Shorts por dia, sempre um pouco antes dos **picos de audiência do YouTube nos EUA** (horário de Nova York; o `upload.py` ajusta sozinho o horário de verão americano):
+3 Shorts por dia (**teste de 2 por dia de 02/11 a 08/11**: 12h e 19h em Nova York nos dias úteis, 10h e 19h no fim de semana), sempre um pouco antes dos **picos de audiência do YouTube nos EUA** (horário de Nova York; o `upload.py` ajusta sozinho o horário de verão americano):
 
 | Dia | Horários (Nova York) | Em Brasília (até 31/10) | Em Brasília (a partir de 1/11) |
 |---|---|---|---|
@@ -18,7 +18,7 @@ Shorts em inglês para público dos EUA, com visual 100% original gerado por có
 | Sáb–dom | 10h · 14h · 19h | 11h · 15h · 20h | 12h · 16h · 21h |
 
 - Os picos são o almoço, a saída da escola ou do trabalho e a noite. No fim de semana, o pico da manhã começa mais cedo.
-- **Um tópico por dia da semana**, com 3 vídeos diferentes dele (ranking, "what if/why" e interativo). O top 10 de tópicos e a agenda da semana ficam em `TOPICOS.md`, atualizados pela rotina conforme o que está em alta.
+- **Um tópico por dia da semana**, com vídeos diferentes dele (ranking, "what if/why" com o Quark, interativo ou 3D). O top 10 de tópicos e a agenda da semana ficam em `TOPICOS.md`, atualizados pela rotina conforme o que está em alta.
 - A produção roda todo dia de manhã (05:47 em Brasília) e agenda os vídeos nos próximos horários livres, normalmente os do dia seguinte. Assim sempre sobra folga para conferir ou cancelar no YouTube Studio.
 - Lote 1 (agendado em 25/10): física dom 25/10 20h · matemática seg 26/10 13h · gelo seg 26/10 20h · fábrica ter 27/10 13h · lava qua 28/10 13h (horários de Brasília).
 - Quando houver dados do próprio canal, a rotina ajusta esses horários pelo horário de pico real da audiência.

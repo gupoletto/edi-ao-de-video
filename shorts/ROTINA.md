@@ -19,7 +19,14 @@ O código de produção fica em `shorts/pipeline/`. Se ainda não existir (prime
 - **Roteiro → cenas → voz → legendas → render** em 1080×1920, 30 fps, 20–60 s, H.264 + AAC, volume em −14 LUFS, arquivo < 40 MB.
 - Os 5 vídeos de `shorts/lote-01/` são a referência de estilo: título no topo, número grande em cada item (#5 → #1), legenda palavra por palavra, voz animada em inglês.
 - **Visual 100% original por código** (numpy/Pillow/matplotlib/cairo + ffmpeg, ou Remotion local; Chromium está instalado). Monte módulos reaproveitáveis para os tópicos de `TOPICOS.md`: mapas e linhas do tempo (história, países; use dados geográficos abertos de pacotes do PyPI, como `geopandas`/Natural Earth, ou do GitHub), ilusões de ótica, simulações de física e de espaço (integração numérica de verdade), comparação de tamanho, gráficos de dados, silhuetas e cenários estilizados (dinossauros, mitologia).
-- Os **3 formatos** do dia: ranking (#5 → #1), "what if / why" com simulação, e interativo (quiz, "can you spot it?", "guess which…").
+- Os **formatos** do dia: ranking (#5 → #1), "what if / why" contado pelo mascote Quark, e interativo (quiz, "can you spot it?", "guess which…").
+- **Mascote Quark** (`pipeline/personagem.py`, desde 02/11/2026). Feijão amarelo com óculos de laboratório; `quark(ctx, x, y_pés, altura, Pose(...), t)` com expressões neutro, feliz, rindo, surpreso, medo, pensando, bravo, tonto e determinado. Também tem braços, caminhada/corrida, pulo, squash, capacete e suor. A boca segue a voz: `Pose(boca=boca_da_voz(seg, t))`. Referência: `pipeline/episodes/quark_jupiter.py`.
+  - O Quark narra em 1ª pessoa ("What if I jumped into Jupiter?"), e o título usa "you".
+  - Arco de conflito: gancho → subida → conflito → prova/fato real → virada → recompensa → pergunta final.
+  - 25–35 s, com cenas cheias de movimento desde o 1º quadro.
+  - Quark grande (≥ 440 px de altura), entre o cabeçalho (~400 px) e as legendas (~1500 px).
+  - Ele nunca morre nem se machuca de verdade: o perigo vira humor e ele escapa.
+  - Fatos com números conferidos (docstring do episódio).
 - **Formato 3D "how it works"** (incluído a pedido do usuário em 30/10/2026; em alta no Brasil e nos EUA, mediana de ~113 mil em "how it works 3d animation"): um objeto em 3D de verdade (three.js renderizado no Chromium headless, `pipeline/tres.py` + uma cena em `pipeline/cenas3d/`), com física/cinemática real calculada no Python, câmera girando devagar e cada etapa narrada sincronizada com o movimento. Referência: `pipeline/episodes/tres_motor.py` (motor de 4 tempos). Pode substituir o "what if / why" de qualquer dia cujo tópico tenha um mecanismo para mostrar (motor, relógio, eclusa, catapulta, olho humano, foguete…), no máximo 2 vezes por semana. Ideia de abertura aprendida (referência "Claude Motion", 30/10): o objeto nasce como blueprint (linhas brancas sobre fundo azul-petróleo, cotas), ganha material e acende/liga. Escreva a cena como especificação: estilo com cores em hex + linha do tempo em segundos. Enquadramento: o objeto inteiro entre o cabeçalho (~20 % do topo) e as legendas (~75 %); confira com quadros de teste (`Filme.renderizar(..., tempos=[...])`) antes do render completo (~4 min).
 - **Voz:** Kokoro, TTS gratuito e de boa qualidade que roda offline. `pip install kokoro-onnx soundfile` e baixe do GitHub `https://github.com/thewh1teagle/kokoro-onnx/releases/download/model-files-v1.0/kokoro-v1.0.onnx` e `voices-v1.0.bin` (o Hugging Face está bloqueado). Voz animada em inglês americano, como `am_michael` ou `af_heart`; use sempre a mesma no canal. Cache dos modelos em `~/.cache/kokoro` (fora do Git).
 - **Música:** sintetizada pelo próprio pipeline ou nenhuma. Nunca use música baixada.
@@ -32,13 +39,14 @@ Use um access token (`upload.py` tem `access_token`) e `search.list` com `type=v
 - **Todo domingo:** meça de novo os 10 tópicos de `TOPICOS.md` e mais até 5 candidatos novos que tenham aparecido nas buscas da semana. Reordene o top 10, refaça a agenda da semana seguinte e atualize a data no topo do arquivo.
 - **Troca no meio da semana:** se o tópico de amanhã caiu para menos da metade da mediana anterior e uma reserva está bem acima, use a reserva e atualize a agenda.
 - **Desempenho do próprio canal:** `videos.list?part=statistics` nos IDs de todos os `uploaded.json`, para ver quais tópicos e formatos foram melhor. Registre views e **taxa de engajamento** = (likes + comentários) / views. Vídeo travado em ~200 views = amostra inicial reprovou (`ESTRATEGIA.md`, seção 7). Depois de 2 semanas de dados, a média do canal vale metade da nota de cada tópico.
+- **YouTube Analytics** (se o `YT_REFRESH_TOKEN` tiver o escopo `yt-analytics.readonly`): `GET https://youtubeanalytics.googleapis.com/v2/reports?ids=channel==MINE&startDate=…&endDate=…&metrics=views,averageViewDuration,averageViewPercentage,likes,comments,shares,subscribersGained&dimensions=video&filters=video==id1,id2,…`. Registre a duração média e a % assistida de cada Short em `tendencias/`. Se der 403, a permissão ainda não foi dada: siga só com as estatísticas públicas e avise no relatório.
 - vidIQ (se as ferramentas existirem): no máximo 1 chamada por dia, e só se `vidiq_balance` ≥ 5.
 - Salve um resumo em `shorts/tendencias/AAAA-MM-DD.md`.
 
 ## 4. Escolha dos vídeos de amanhã
 
 - **Quantos:** rode `python3 shorts/upload.py --free-slots <data de amanhã>` e produza exatamente esse número de vídeos (no máximo 3). Assim nada se acumula para os dias seguintes.
-- **Tópico:** o de amanhã na agenda de `TOPICOS.md`, com os 3 formatos (ranking, "what if/why" e interativo), cada um com um subtema diferente.
+- **Tópico:** o de amanhã na agenda de `TOPICOS.md`, com os formatos que ela indica para o dia (no teste de 02 a 08/11: Quark + ranking/interativo/3D), cada um com um subtema diferente. Sempre dentro do nicho "ciência visual e simulações satisfatórias".
 - Consulte `shorts/historico.md` (crie se não existir): nenhum subtema repetido em 30 dias, nem padrão de título em dias seguidos. Respeite os "Cuidados por tópico" de `TOPICOS.md`.
 - Inspire-se no que está subindo, mas faça a sua versão original. Nunca copie o vídeo de outro canal.
 - Aplique `shorts/ESTRATEGIA.md` (aprendido em 31/10/2026):
