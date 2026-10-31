@@ -19,6 +19,10 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import upload  # noqa: E402
 
 
+def num(n):
+    return f"{n:,.0f}".replace(",", ".")
+
+
 def buscar(token, q, dias, n=25):
     depois = (dt.datetime.now(dt.timezone.utc) - dt.timedelta(days=dias)).strftime("%Y-%m-%dT%H:%M:%SZ")
     r = upload.api_get(token, "search", part="id", q=q, type="video", videoDuration="short", publishedAfter=depois,
@@ -55,16 +59,16 @@ def main():
             continue
         med = statistics.median(v["views"] for v in vs)
         linhas.append((med, q))
-        print(f"\n### {q}  (mediana {med:,.0f} views, {len(vs)} vídeos, últimos {dias} dias)".replace(",", "."))
+        print(f"\n### {q}  (mediana {num(med)} views, {len(vs)} vídeos, últimos {dias} dias)")
         for v in sorted(vs, key=lambda v: -v["views"])[:3]:
-            print(f"- {v['views']:,} · {v['titulo'][:90]} ({v['canal']})".replace(",", "."))
+            print(f"- {num(v['views'])} · {v['titulo'][:90]} ({v['canal']})")
         grandes = [v for v in vs if v["views"] >= 50000]
         if grandes:
             o = max(grandes, key=lambda v: v["coments"] / v["views"])
             print(f"- outlier de comentários: {100 * o['coments'] / o['views']:.2f} % · {o['titulo'][:80]}")
     print("\n## Ranking por mediana\n")
     for med, q in sorted(linhas, reverse=True):
-        print(f"- {med:>12,.0f} · {q}".replace(",", "."))
+        print(f"- {num(med):>12} · {q}")
 
 
 if __name__ == "__main__":

@@ -81,6 +81,10 @@ class Filme:
 
     def renderizar(self, segs, total, tempos=None):
         """Renderiza todos os quadros (ou só os instantes em `tempos`, para conferir o enquadramento)."""
+        reusar = os.environ.get("TRES_PASTA")  # refazer só a parte 2D (legenda, títulos) com quadros 3D já prontos
+        if reusar and tempos is None and os.path.exists(os.path.join(reusar, "00000.jpg")):
+            self.pasta = reusar
+            return
         preparar()
         self.pasta = tempfile.mkdtemp(prefix="tres_")
         ts = tempos if tempos is not None else [i / FPS for i in range(int(total * FPS) + 2)]

@@ -29,6 +29,18 @@ O código de produção fica em `shorts/pipeline/`. Se ainda não existir (prime
   - Ele nunca morre nem se machuca de verdade: o perigo vira humor e ele escapa.
   - Fatos com números conferidos (docstring do episódio).
 - **Formato 3D "how it works"** (incluído a pedido do usuário em 30/10/2026; em alta no Brasil e nos EUA, mediana de ~113 mil em "how it works 3d animation"): um objeto em 3D de verdade (three.js renderizado no Chromium headless, `pipeline/tres.py` + uma cena em `pipeline/cenas3d/`), com física/cinemática real calculada no Python, câmera girando devagar e cada etapa narrada sincronizada com o movimento. Referência: `pipeline/episodes/tres_motor.py` (motor de 4 tempos). Tem dia fixo na agenda (quinta). Pode entrar em mais 1 dia da semana cujo tópico tenha um mecanismo para mostrar (relógio, eclusa, catapulta, olho humano, foguete, vulcão…). Ideia de abertura aprendida (referência "Claude Motion", 30/10): o objeto nasce como blueprint (linhas brancas sobre fundo azul-petróleo, cotas), ganha material e acende/liga. Escreva a cena como especificação: estilo com cores em hex + linha do tempo em segundos. Enquadramento: o objeto inteiro entre o cabeçalho (~20 % do topo) e as legendas (~75 %); confira com quadros de teste (`Filme.renderizar(..., tempos=[...])`) antes do render completo (~4 min).
+- **3D cinematográfico** (vídeo B do dia, desde 31/10/2026). Referências: `episodes/tres_turbina.py` + `cenas3d/turbina.js` e `episodes/tres_batida.py` + `cenas3d/batida.js`.
+  - **Tema:** o próximo da fila em `TOPICOS.md` que ainda não foi feito. Se der, meça antes com `python3 shorts/pesquisa.py "<busca>"`.
+  - **Roteiro em planos:**
+    1. abertura no cenário real, com movimento (0–4 s);
+    2. a câmera voa até o objeto;
+    3. o mecanismo por dentro, em 3 a 4 etapas, cada uma com cabeçalho e destaque (corte com clipping, câmera lenta com cronômetro do tempo real, ou raio-x com material translúcido);
+    4. a câmera recua (fato-síntese);
+    5. `seg_pergunta` com `fundo=lambda ctx, t, s: FILME.quadro(ctx, s.t0 + t)`.
+  - **Cenário:** use `cenas3d/ambiente.js` (céu com sol, nuvens, grama, estrada, árvores, morros) e só modele o objeto principal. A física e as câmeras são calculadas no Python (a função `estado(t, segs)`), e a cena JS só posa.
+  - **Conferência:** enquadre com `python3 shorts/pipeline/teste3d.py <episodio> <s> <s> ...` (cerca de 1 min, folha de contato com a zona segura) antes do render completo (15–20 min; rode em segundo plano). Para refazer só legenda e títulos sem renderizar o 3D de novo: `TRES_PASTA=/tmp/tres_xxxx python3 episodes/<ep>.py <saída>`.
+  - **Câmera:** nunca atravessa objetos e não aponta para o sol. O objeto principal ocupa a faixa entre 440 e 1270 px.
+  - Se o 3D não ficar bom a tempo, publique outro formato no lugar e registre no relatório. Nunca publique um 3D mal enquadrado.
 - **Voz:** Kokoro, TTS gratuito e de boa qualidade que roda offline. `pip install kokoro-onnx soundfile` e baixe do GitHub `https://github.com/thewh1teagle/kokoro-onnx/releases/download/model-files-v1.0/kokoro-v1.0.onnx` e `voices-v1.0.bin` (o Hugging Face está bloqueado). Voz animada em inglês americano, como `am_michael` ou `af_heart`; use sempre a mesma no canal. Cache dos modelos em `~/.cache/kokoro` (fora do Git).
 - **Música:** sintetizada pelo próprio pipeline ou nenhuma. Nunca use música baixada.
 

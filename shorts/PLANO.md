@@ -34,10 +34,11 @@ Todo vídeo tem 1 tópico do dia, 1 subtema que não se repetiu em 30 dias e 1 d
 | **Ranking** (#5 → #1) | O formato mais estável do canal (~1,2 mil) | 5 itens, cada um com uma cena animada. O conflito vem no **#2**: parece que ganha e é superado. O #1 é o mais visual. | `episodes/sat_loops_ranking.py`, `space_extreme_planets.py` |
 | **What if / why com o Quark** | Personagem + história: o formato que mais cresce nas referências | Arco de conflito: gancho (Quark em ação no 1º quadro) → subida → **conflito** → prova (fato real) → **virada** → recompensa → pergunta. Quark narra em 1ª pessoa. | `episodes/quark_jupiter.py` |
 | **Interativo** (quiz) | Comentários ("comment your score") | 3 a 5 rodadas com contagem 3-2-1. Uma rodada é **pegadinha** ("most people get this wrong"). A resposta sai da simulação ou de dados reais. | `episodes/sat_fill_quiz.py`, `geo_guess_shape.py`, `quiz.py` |
-| **Como funciona em 3D** | Mecanismos: alta demanda ("how it works 3d") | Objeto 3D real (three.js), física calculada no Python, câmera girando devagar, cada etapa narrada. Abertura "blueprint → material". O Quark pode aparecer em 2D só na pergunta final. | `episodes/tres_motor.py`, `tres.py`, `cenas3d/` |
+| **3D cinematográfico** (desde 31/10, a pedido do usuário) | O gênero com mais demanda medida: "how it works 3d animation" tem mediana de 1 mi | **Cenário real primeiro** (avião no céu, carro na estrada) → a câmera voa até o objeto → o mecanismo por dentro (carenagem cortada, câmera lenta com cronômetro, raio-x) → a câmera volta → o Quark faz a pergunta. Física e números reais calculados no Python. Fila de temas em `TOPICOS.md`. | `episodes/tres_turbina.py`, `tres_batida.py`, `cenas3d/ambiente.js` |
+| **Como funciona em 3D** (estúdio) | Mecanismo isolado, sem cenário | Objeto 3D sobre fundo neutro, câmera girando devagar, cada etapa narrada. Abertura "blueprint → material". Use quando o cenário não ajuda. | `episodes/tres_motor.py` |
 
 **Regras que valem para todos os formatos**
-- **Duração:** 25–35 s para Quark e ranking; quiz até 50 s; 3D até 45 s. Nunca acima de 60 s.
+- **Duração:** 25–35 s para Quark e ranking; quiz até 50 s; 3D cinematográfico 35–45 s. Nunca acima de 60 s.
 - **1º quadro já em movimento:** nada de tela parada com título. O título aparece *sobre* a ação.
 - **Cortes e mudanças visuais a cada 1–3 s.** Efeito sonoro em cada ação (whoosh, tick, ding); música sintetizada
   por baixo.
@@ -54,7 +55,9 @@ Todo vídeo tem 1 tópico do dia, 1 subtema que não se repetiu em 30 dias e 1 d
   - Padrão, 3 por dia: dias úteis 12h · 15h · 19h; fim de semana 10h · 14h · 19h.
   - **Teste de 02 a 08/11, 2 por dia:** dias úteis 12h · 19h; fim de semana 10h · 19h. Em Brasília, 14h e 21h nos
     dias úteis; 12h e 21h no fim de semana.
-- **Um tópico por dia da semana** (agenda em `TOPICOS.md`):
+- **Todo dia, 1 vídeo em 3D cinematográfico** (19h em Nova York). O outro vídeo é do tópico do dia (agenda e fila
+  de temas do 3D em `TOPICOS.md`).
+- **Um tópico por dia da semana:**
 
 | Dia | Tópico |
 |---|---|

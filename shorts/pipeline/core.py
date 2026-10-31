@@ -191,9 +191,23 @@ def pill(ctx, s, cx, cy, color, alpha=1.0, size=44):
     ctx.show_text(s)
 
 
+def _sombra(ctx, desenha):
+    """Desenha o texto com uma sombra escura atrás, para ler em fundo claro (céu, cenas 3D)."""
+    ctx.save()
+    ctx.translate(3, 4)
+    desenha(sombra=True)
+    ctx.restore()
+    desenha(sombra=False)
+
+
 def draw_header(ctx, h):
     if not h:
         return
+    tc = globals()["text_center"]
+
+    def text_center(c, s, x, y, size, color=WHITE, weight="Bold", alpha=1.0):  # noqa: F811
+        _sombra(c, lambda sombra: tc(c, s, x, y, size, (0.02, 0.03, 0.06) if sombra else color, weight,
+                                     alpha * (0.55 if sombra else 1.0)))
     if "big" in h:
         text_center(ctx, h["big"], W / 2, 278, h.get("big_size", 112), h.get("color", BLUE), "ExtraBold")
     if "sub" in h:
