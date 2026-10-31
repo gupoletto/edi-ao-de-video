@@ -6,7 +6,8 @@ cabeçalho, as legendas e os rótulos por cima.
 
 - three.js (MIT) vem do npm para ~/.cache/three, na primeira vez;
 - a cena é um arquivo .js em shorts/pipeline/cenas3d/ que define window.montar(THREE, cena, camera) e
-  window.posar(estado);
+  window.posar(estado); peças de cenário prontas (céu, nuvens, grama, estrada, árvores, morros) ficam em
+  cenas3d/ambiente.js (`import * as A from 'http://cena.local/ambiente.js'`);
 - render: Node + Playwright (já instalados) com WebGL por SwiftShader.
 """
 import json
@@ -84,7 +85,8 @@ class Filme:
         self.pasta = tempfile.mkdtemp(prefix="tres_")
         ts = tempos if tempos is not None else [i / FPS for i in range(int(total * FPS) + 2)]
         cfg = {"w": W, "h": H, "saida": self.pasta, "html": HTML % (W, H, W, H),
-               "arquivos": {"three.module.js": THREE, "cena.js": self.cena},
+               "arquivos": {"three.module.js": THREE, "cena.js": self.cena,
+                            "ambiente.js": os.path.join(AQUI, "cenas3d", "ambiente.js")},
                "estados": [self.estado(t, segs) for t in ts]}
         cfg_p = os.path.join(self.pasta, "cfg.json")
         js_p = os.path.join(self.pasta, "render.js")

@@ -391,15 +391,16 @@ def seg_pergunta(fala, titulo, fundo=None, expr="feliz"):
     """Último segmento de qualquer Short: o Quark aparece, acena e faz a pergunta (comentários + marca do canal).
 
         SEGMENTS.append(seg_pergunta("Which one was your number one? Comment below.", "WHICH ONE WAS YOUR #1?",
-                                     fundo=lambda ctx, t, s: sa.gears(ctx, t)))
-    `fundo(ctx, t, s)` redesenha a cena do vídeo atrás dele (opcional), escurecida para o Quark destacar.
+                                     fundo=lambda ctx, t, s: sa.gears(ctx, t + 4)))
+    `fundo(ctx, t, s)` redesenha a cena do vídeo atrás dele (opcional), escurecida para o Quark destacar; t é o tempo
+    local do segmento (no 3D use `FILME.quadro(ctx, s.t0 + t)` para a cena seguir rodando).
     """
     from core import AREA, Seg
 
     def draw(ctx, t, s):
         if fundo:
             ctx.save()
-            fundo(ctx, t + 4, s)
+            fundo(ctx, t, s)
             ctx.restore()
             ctx.set_source_rgba(0.02, 0.03, 0.06, 0.55)
             ctx.paint()
