@@ -45,3 +45,60 @@ Duas referências enviadas pelo usuário (transcritas em `edicao/trabalho/{monet
 Claude Code + MCP do Higgsfield geram o personagem em todas as poses (PNG sem fundo). Antes de animar, um "mood board". O código anima os PNGs no Remotion, com efeitos sonoros, música e voz.
 
 Nossa versão compatível com o PLANO troca o gerador de imagens por **poses desenhadas em código**: um módulo `personagem.py` com corpo, rosto e expressões parametrizados, que pode ser animado quadro a quadro. Fica 100% original e sem `containsSyntheticMedia`.
+
+---
+
+# Referências de 31/10/2026 (2ª leva)
+
+Transcrições em `edicao/trabalho/{postar_shorts,algoritmos}/`:
+- **C — "O jeito CERTO de postar Shorts no YouTube"** (canal de cortes de animação, 50 mil inscritos);
+- **D — "How Social Media Algorithms Actually Work"** (Callaway, 1 mi de seguidores).
+
+## 7. Como o algoritmo decide (D)
+1. **Mapa do tema:** a plataforma "assiste" ao vídeo. Lê a imagem (visão computacional), o áudio/transcrição e os metadados (título, descrição, hashtags, criador).
+2. **Fit score:** com esse mapa, ela prevê quem vai gostar e mostra o vídeo a uma **amostra de ~200 pessoas**, quase todas **não inscritas**.
+3. **Resultado da amostra:**
+   - bom → empurra para 2 mil, 20 mil, 200 mil… até os dados enfraquecerem;
+   - neutro → refaz o fit score e testa outra amostra de ~200;
+   - ruim → para quase na hora. Esse é o "presídio das 200 views", e talvez explique o nosso teto de ~1,1 mil.
+4. **As 3 métricas da amostra:**
+   - tempo médio assistido (e % concluída);
+   - **taxa de engajamento** = (likes + comentários + compartilhamentos) / views;
+   - fatia da sessão do espectador gasta nos seus vídeos (não dá para ver).
+
+## 8. Consistência de público é a alavanca principal (D)
+- **"Audience matching":** fazer sempre vídeos do **mesmo tema estreito para o mesmo perfil de espectador**. Assim o algoritmo aprende a quem mostrar e acerta a amostra.
+- **Temas variados confundem o algoritmo:** tecnologia, saúde e política em sequência geram uma amostra misturada e o vídeo seguinte flopa. Até **um viral fora do público principal** atrapalha os vídeos seguintes. É preciso dizer não a ideias "virais" que atraem outro público.
+- **Para nós:** isso questiona o rodízio de um tópico diferente por dia (ilusões → espaço → física → geografia → tamanho → satisfying → mitologia).
+  - Os nossos melhores ficam todos no guarda-chuva **"ciência visual e simulações satisfatórias"**: ilusões, física, espaço, tamanho e o 3D "como funciona".
+  - Mitologia, dinossauros e história fogem desse público.
+  - Ainda não decidido (precisa do ok do usuário): **estreitar o canal para esse guarda-chuva**.
+- Estude o que funciona no nicho com **pontuação de outlier** (views do vídeo / média do canal).
+
+## 9. O que faz a amostra engajar (D)
+- Tema relevante para o espectador ideal.
+- Informação **não óbvia**.
+- Fácil de absorver.
+- Algo que dá para "usar" logo. Nos nossos Shorts, um fato para contar a alguém ou um teste para fazer na hora.
+
+**Comentários:**
+- tomar posição firme, sem ficar em cima do muro;
+- escolher o lado do contra (quem discorda comenta);
+- amplificar a afirmação;
+- falar de coisas que todo mundo já tem opinião (marcas, ídolos);
+- provocar emoção.
+- **No nosso caso:** "o #1 é o mais satisfatório, discorda?" no ranking; "a maioria erra a rodada 3" no quiz; o pior-caso polêmico no what-if. Sempre sem desinformação: a posição é sobre opinião, nunca sobre os fatos.
+
+## 10. Mecânica de postagem (C)
+- **Título:** as **3–4 primeiras palavras** são as que aparecem no feed. Elas precisam ser fortes e dizer o tema. C sugere MAIÚSCULAS no começo do canal (opcional).
+- **Hashtags:** poucas. Muitas hashtags em canal novo parecem spam. `#shorts` + 2–3 do tema.
+- **Descrição:** 1 frase que resume o Short + 5–6 palavras-chave da busca, separadas por vírgula. Tags: várias. Pesam pouco, mas ajudam no público.
+- **Processamento:** subir como privado/não listado e só publicar depois de 20–30 min, quando o HD estiver processado. Um vídeo borrado no 1º impacto é pulado. **Já fazemos isso:** o `upload.py` sobe privado com `publishAt` horas depois.
+- **Capa do Short:** um quadro chamativo. Faça cada vídeo ter um momento visualmente forte. Pelo app dá para escolher o quadro; pela API o 1º quadro pesa mais, então o gancho visual precisa estar no começo.
+- **Pedidos de C que NÃO seguimos:**
+  - "adicionar música viral, mesmo no volume zero": viola a regra de música do PLANO, e a API não permite;
+  - "esconder contagem de likes": a API não tem esse campo.
+- **Horário:** C diz que horário incomum (19h, 21h, 22h) ajuda no começo; D diz que horário não importa. **Nossa regra:** seguir os dados do próprio canal quando houver.
+
+## 11. Conclusão das 4 referências
+O "bolo" é: tema estreito e consistente para um público + gancho visual + roteiro com conflito + informação não óbvia. Horário, hashtags e legenda são "cobertura".

@@ -31,7 +31,7 @@ Use um access token (`upload.py` tem `access_token`) e `search.list` com `type=v
 - **Todo dia:** 1 a 3 buscas dentro do tópico de amanhã (veja a agenda em `TOPICOS.md`), para achar subtemas e formatos que estão subindo agora.
 - **Todo domingo:** meça de novo os 10 tópicos de `TOPICOS.md` e mais até 5 candidatos novos que tenham aparecido nas buscas da semana. Reordene o top 10, refaça a agenda da semana seguinte e atualize a data no topo do arquivo.
 - **Troca no meio da semana:** se o tópico de amanhã caiu para menos da metade da mediana anterior e uma reserva está bem acima, use a reserva e atualize a agenda.
-- **Desempenho do próprio canal:** `videos.list?part=statistics` nos IDs de todos os `uploaded.json`, para ver quais tópicos e formatos foram melhor. Depois de 2 semanas de dados, a média do canal vale metade da nota de cada tópico.
+- **Desempenho do próprio canal:** `videos.list?part=statistics` nos IDs de todos os `uploaded.json`, para ver quais tópicos e formatos foram melhor. Registre views e **taxa de engajamento** = (likes + comentários) / views. Vídeo travado em ~200 views = amostra inicial reprovou (`ESTRATEGIA.md`, seção 7). Depois de 2 semanas de dados, a média do canal vale metade da nota de cada tópico.
 - vidIQ (se as ferramentas existirem): no máximo 1 chamada por dia, e só se `vidiq_balance` ≥ 5.
 - Salve um resumo em `shorts/tendencias/AAAA-MM-DD.md`.
 
@@ -45,7 +45,11 @@ Use um access token (`upload.py` tem `access_token`) e `search.list` com `type=v
   - nas buscas, calcule `comentários/views` e use o tema dos outliers;
   - roteiro com arco de conflito (gancho → subida → conflito → virada → recompensa), não linear;
   - movimento já no 1º quadro;
-  - what if/why e ranking com 25–35 s.
+  - what if/why e ranking com 25–35 s;
+  - as 3–4 primeiras palavras do título dizem o tema;
+  - descrição com 1 frase-resumo + 5–6 palavras-chave separadas por vírgula;
+  - `#shorts` + 2–3 hashtags;
+  - pergunta final que convida a discordar, sem nunca distorcer os fatos.
 
 ## 5. Produção e conferência (obrigatório para cada vídeo)
 
