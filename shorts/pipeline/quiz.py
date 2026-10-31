@@ -11,7 +11,7 @@ def head(q, n, sub):
             "color": PINK if q == n else BLUE}
 
 
-def countdown(ctx, t, start, cx=540, cy=1300):
+def countdown(ctx, t, start, cx=540, cy=1190):
     lt = t - start
     if not 0 <= lt < COUNT:
         return
@@ -30,7 +30,7 @@ def countdown(ctx, t, start, cx=540, cy=1300):
     text_center(ctx, str(n), cx, cy + 26, 72, WHITE, "ExtraBold")
 
 
-def answer(ctx, t, r, text, color, cy=1300):
+def answer(ctx, t, r, text, color, cy=1190):
     pill(ctx, text, 540, cy, color, ramp(t, r + 0.4, 0.3))
 
 

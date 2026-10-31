@@ -383,3 +383,30 @@ def quark(ctx, x, y, h, p=None, t=0.0, seed=0):
         ctx.set_line_width(lw * 1.2)
         ctx.stroke()
     ctx.restore()
+
+
+# ---------- assinatura do canal: o Quark faz a pergunta final de qualquer formato ----------
+
+def seg_pergunta(fala, titulo, fundo=None, expr="feliz"):
+    """Último segmento de qualquer Short: o Quark aparece, acena e faz a pergunta (comentários + marca do canal).
+
+        SEGMENTS.append(seg_pergunta("Which one was your number one? Comment below.", "WHICH ONE WAS YOUR #1?",
+                                     fundo=lambda ctx, t, s: sa.gears(ctx, t)))
+    `fundo(ctx, t, s)` redesenha a cena do vídeo atrás dele (opcional), escurecida para o Quark destacar.
+    """
+    from core import AREA, Seg
+
+    def draw(ctx, t, s):
+        if fundo:
+            ctx.save()
+            fundo(ctx, t + 4, s)
+            ctx.restore()
+            ctx.set_source_rgba(0.02, 0.03, 0.06, 0.55)
+            ctx.paint()
+        entra = min(1.0, t / 0.45)
+        y = AREA[3] - 40 + (1 - entra) ** 2 * 500  # sobe de baixo com um quique
+        p = Pose(expr=expr, boca=boca_da_voz(s, t), braco_e=0.3 + 2.3 * min(1.0, max(0.0, (t - 0.3) / 0.3)),
+                 braco_d=0.35, olhar=(0.25 * math.sin(t * 2.2), -0.25),
+                 squash=1 + 0.1 * math.sin(min(t, 1.2) * 12) * max(0.0, 1 - t / 1.2))
+        quark(ctx, (AREA[0] + AREA[2]) / 2, y, 560, p, t)
+    return Seg([fala], draw, {"title": titulo}, tail=0.8)

@@ -321,3 +321,15 @@ def draw_fill(ctx, t, sim, r, mostrar=True, cor=(0.36, 0.78, 0.98)):
         f = min(len(frames) - 1, int(t * 30))
         for i, (x, y) in enumerate(frames[f]):
             ball(ctx, x, y, r - 1, CORES[i % 5] if cor is None else cor)
+
+
+def capacidade(forma, r, n0, dur=6.2, tentativas=6):
+    """Simula de novo até toda bola solta caber no recipiente; devolve a simulação em que a resposta do quiz
+    (sim[1]) é exatamente o número de bolas na tela. Use no lugar de fill_sim nos quizzes."""
+    n = n0
+    for _ in range(tentativas):
+        sim = fill_sim(forma, r, n, dur=dur)
+        if sim[1] == len(sim[0][-1]):
+            return sim
+        n = sim[1]
+    raise RuntimeError(f"{forma}: a capacidade não convergiu ({n})")

@@ -53,16 +53,9 @@ o resultado em `tendencias/` e no relatório, e recomenda ao usuário: manter 2,
 
 ## Os vídeos do dia: sempre diferentes entre si
 
-Os vídeos do dia são do mesmo tópico, mas cada um tem **subtema e formato diferentes**:
-
-1. **Ranking** (#5 → #1).
-2. **"What if / Why"**. Desde 02/11 é contado pelo mascote Quark, com arco de conflito (gancho → subida → conflito →
-   virada → recompensa).
-3. **Interativo**: quiz, "can you spot it?", "guess which…".
-4. **Como funciona em 3D**, no lugar de um dos outros.
-
-Nenhum subtema se repete em 30 dias (controle em `historico.md`). O padrão de título também não se repete em dias
-seguidos.
+São do mesmo tópico, mas cada um tem **subtema e formato diferentes**. O catálogo de formatos (ranking, what if/why com o
+Quark, interativo, 3D) e as receitas estão no `PLANO.md`, seção 3. Todo vídeo termina com o Quark fazendo a pergunta
+final. Nenhum subtema se repete em 30 dias (controle em `historico.md`), nem o padrão de título em dias seguidos.
 
 ## Cuidados por tópico
 

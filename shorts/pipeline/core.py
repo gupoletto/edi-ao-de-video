@@ -33,7 +33,10 @@ WHITE = (1, 1, 1)
 GRAY = (0.45, 0.47, 0.52)
 
 # Illustration area (between header and captions).
-AREA = (60, 420, 1020, 1400)
+# Área das cenas. Fica fora das zonas que a interface do Shorts cobre (topo ~10 %, base 25 %, direita ~10 %):
+# cabeçalho 190–410 px, cena 440–1270 px, legenda centrada em 1372 px (anuncios/zonas.py --zona shorts).
+AREA = (90, 440, 990, 1270)
+LEGENDA_Y = 1372
 
 CACHE = os.path.expanduser("~/.cache")
 FONT_URL = "https://raw.githubusercontent.com/google/fonts/main/ofl/poppins/Poppins-{}.ttf"
@@ -192,26 +195,26 @@ def draw_header(ctx, h):
     if not h:
         return
     if "big" in h:
-        text_center(ctx, h["big"], W / 2, 220, h.get("big_size", 130), h.get("color", BLUE), "ExtraBold")
+        text_center(ctx, h["big"], W / 2, 278, h.get("big_size", 112), h.get("color", BLUE), "ExtraBold")
     if "sub" in h:
-        text_center(ctx, h["sub"], W / 2, 300, 52)
+        text_center(ctx, h["sub"], W / 2, 344, 48)
     if "title" in h:  # multi-line headline (intro / outro)
-        font(ctx, 72, "ExtraBold")
-        lines = wrap(ctx, h["title"].split(), 960)
+        font(ctx, 68, "ExtraBold")
+        lines = wrap(ctx, h["title"].split(), 920)
         for i, ln in enumerate(lines):
-            text_center(ctx, " ".join(ln), W / 2, 200 + i * 86, 72, WHITE, "ExtraBold")
+            text_center(ctx, " ".join(ln), W / 2, 262 + i * 80, 68, WHITE, "ExtraBold")
     if "dots" in h:
         labels, active = h["dots"]
         n = len(labels)
         for i, lab in enumerate(labels):
             x = W / 2 + (i - (n - 1) / 2) * 62
-            ctx.arc(x, 365, 21, 0, 2 * math.pi)
+            ctx.arc(x, 398, 19, 0, 2 * math.pi)
             if i == active:
                 ctx.set_source_rgb(*(h.get("color", BLUE)))
             else:
                 ctx.set_source_rgba(1, 1, 1, 0.16)
             ctx.fill()
-            text_center(ctx, lab, x, 374, 22, WHITE, "Bold")
+            text_center(ctx, lab, x, 406, 20, WHITE, "Bold")
 
 
 def draw_captions(ctx, seg, t):
@@ -221,8 +224,13 @@ def draw_captions(ctx, seg, t):
     else:
         return
     font(ctx, 52)
-    rows = wrap(ctx, [w for _, w in words], 900)
-    lh, top = 68, 1560 - (len(rows) * 68) / 2
+    rows = wrap(ctx, [w for _, w in words], 840)
+    lh = 68
+    if len(rows) > 2:  # 3 linhas passariam da área segura: letra menor
+        font(ctx, 44)
+        rows = wrap(ctx, [w for _, w in words], 860)
+        lh = 58
+    top = min(LEGENDA_Y - len(rows) * lh / 2, 1428 - len(rows) * lh - 18)
     widest = max(ctx.text_extents(" ".join(r)).x_advance for r in rows)
     round_rect(ctx, W / 2 - widest / 2 - 30, top - 18, widest + 60, len(rows) * lh + 36, 22)
     ctx.set_source_rgba(0, 0, 0, 0.55)
@@ -231,7 +239,7 @@ def draw_captions(ctx, seg, t):
     for i, r in enumerate(rows):
         line = " ".join(r)
         x = W / 2 - ctx.text_extents(line).x_advance / 2
-        y = top + i * lh + 52
+        y = top + i * lh + lh * 0.76
         for w in r:
             start = words[k][0] + a
             k += 1
