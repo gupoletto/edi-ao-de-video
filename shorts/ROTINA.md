@@ -41,6 +41,11 @@ Use um access token (`upload.py` tem `access_token`) e `search.list` com `type=v
 - **Tópico:** o de amanhã na agenda de `TOPICOS.md`, com os 3 formatos (ranking, "what if/why" e interativo), cada um com um subtema diferente.
 - Consulte `shorts/historico.md` (crie se não existir): nenhum subtema repetido em 30 dias, nem padrão de título em dias seguidos. Respeite os "Cuidados por tópico" de `TOPICOS.md`.
 - Inspire-se no que está subindo, mas faça a sua versão original. Nunca copie o vídeo de outro canal.
+- Aplique `shorts/ESTRATEGIA.md` (aprendido em 31/10/2026):
+  - nas buscas, calcule `comentários/views` e use o tema dos outliers;
+  - roteiro com arco de conflito (gancho → subida → conflito → virada → recompensa), não linear;
+  - movimento já no 1º quadro;
+  - what if/why e ranking com 25–35 s.
 
 ## 5. Produção e conferência (obrigatório para cada vídeo)
 
