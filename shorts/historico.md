@@ -21,3 +21,6 @@
 | 31/10/2026 | Comparação de tamanho | Prédios mais altos (Ping An, Abraj Al-Bait, Shanghai Tower, Merdeka 118, Burj Khalifa) vs Torre Eiffel | Ranking | "Ranking the Tallest X Ever Built (To Scale)" | lote-2026-10-31/size_tallest_buildings.mp4 |
 | 31/10/2026 | Comparação de tamanho | Terras dentro de Júpiter e do Sol (volume) | Why/how | "How Many X Fit Inside the Y?" | lote-2026-10-31/size_earths_in_sun.mp4 |
 | 31/10/2026 | Comparação de tamanho | Lua cobre o país? (Mongólia, Austrália, México, Chile, Argentina) | Interativo (quiz) | "Can the X Cover These Y? (N Rounds)" | lote-2026-10-31/size_moon_cover.mp4 |
+| 01/11/2026 | Satisfying (troca: mitologia fraca) | Loops: engrenagens, dominó em zigue-zague, ball sort, encaixe perfeito, linha completa | Ranking | "5 Oddly Satisfying X, Ranked (#1 Is …)" | lote-2026-11-01/sat_loops_ranking.mp4 |
+| 01/11/2026 | Como funciona (3D) | Motor de 4 tempos (admissão, compressão, explosão, escape) | Como funciona 3D | "How a X Actually Works (3D)" | lote-2026-11-01/tres_motor.mp4 |
+| 02/11/2026 | Satisfying | Bolas enchendo copo, tigela e funil (simulação) | Interativo (quiz) | "Guess How Many X Fill It (N Rounds)" | lote-2026-11-01/sat_fill_quiz.mp4 |
