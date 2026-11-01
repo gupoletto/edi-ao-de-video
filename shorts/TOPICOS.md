@@ -38,7 +38,7 @@ o mesmo espectador: curioso por ciência, que gosta de ver a coisa acontecer na 
 
 | Dia | Tópico do dia | Vídeo A (12h NY) | Vídeo B (19h NY), 3D cinematográfico |
 |---|---|---|---|
-| Seg 02/11 | Espaço | 3D: como o foguete chega à órbita (B trocado com A neste dia) | Quark: pular em Júpiter ✅ agendado |
+| Seg 02/11 | Espaço | 3D: por que o foguete vai de lado ✅ agendado | Quark: pular em Júpiter ✅ agendado |
 | Ter 03/11 | Ilusões de ótica | Interativo | E se o cabo do elevador arrebentar? |
 | Qua 04/11 | Simulações de física | Quark what-if | Carro × árvore a 30 mph ✅ agendado |
 | Qui 05/11 | Como funciona | Ranking | Turbina de avião ✅ agendada |
@@ -62,7 +62,7 @@ raio-x), a câmera volta e o Quark faz a pergunta.
 
 | # | Tema | Demanda medida | Cenário de abertura → mecanismo |
 |---|---|---|---|
-| 1 | Como o foguete chega à órbita (vai de lado) | foguetes 53 mil; "why rockets go sideways" 490 mil | Base de lançamento → subida, separação dos estágios, curva para a órbita |
+| 1 | ✅ (02/11) Como o foguete chega à órbita (vai de lado) | foguetes 53 mil; "why rockets go sideways" 490 mil | Base de lançamento → subida, separação dos estágios, curva para a órbita |
 | 2 | E se o cabo do elevador arrebentar? | 1 vídeo com 1,85 mi | Prédio à noite → poço do elevador, cabo arrebenta, freio de segurança trava nos trilhos |
 | 3 | Como o helicóptero voa | mediana 207 mil | Helicóptero sobre a cidade → cabeça do rotor (prato oscilante), rotor de cauda |
 | 4 | Como o trem de pouso funciona | 1 vídeo com 832 mil | Avião na aproximação → hidráulica abrindo as portas e baixando o trem |

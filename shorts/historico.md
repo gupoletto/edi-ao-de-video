@@ -27,3 +27,4 @@
 | 02/11/2026 | Espaço (nicho estreitado; teste 2/dia) | Pular em Júpiter: 60 km/s, sem chão, sonda Galileo (58 min), hidrogênio metálico | What if com o Quark (arco de conflito) | "What If You Jumped Into X?" | lote-2026-11-02/quark_jupiter.mp4 |
 | 04/11/2026 | 3D cinematográfico (física) | Carro × árvore a 30 mph: zona de deformação, airbag, cinto, boneco de crash test | 3D cinematográfico | "What Happens When a X Hits a Y at N MPH?" | lote-2026-11-04/tres_batida.mp4 |
 | 05/11/2026 | 3D cinematográfico (como funciona) | Turbina de avião: fan, bypass, compressor, combustão, turbinas | 3D cinematográfico | "How a X Actually Works (3D)" | lote-2026-11-05/tres_turbina.mp4 |
+| 02/11/2026 | 3D cinematográfico (espaço) | Por que o foguete vai de lado: lançamento, canhão de Newton, órbita = queda de lado | 3D cinematográfico | "Why X Fly Sideways to Reach Y" | lote-2026-11-02/tres_foguete.mp4 |
