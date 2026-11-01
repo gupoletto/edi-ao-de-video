@@ -97,6 +97,8 @@ def legendas(plano, tr, W, H, caminho):
     caixa: frase curta numa caixa escura discreta."""
     modo = plano.get("legenda_estilo") or ("palavra" if plano["estilo"] == "dinamico" else "caixa")
     texto_cor, chave_cor = ass_cor(hexrgb(CREME)), ass_cor(hexrgb(TAUPE))  # paleta do canal
+    if plano.get("tema") == "retro80":  # tema do episódio: palavra-chave em rosa neon
+        texto_cor, chave_cor = ass_cor(hexrgb("#FFF4FB")), ass_cor(hexrgb("#FF3EA5"))
     tc = "&H00" + texto_cor[2:-1]
     vertical = H > W
     if modo == "palavra":
@@ -301,22 +303,26 @@ def montar(fonte, previa=False, trecho=None, crf=18, k4=False):
 
     # 1. linha do tempo: abertura (gancho) + trechos mantidos, vídeo e áudio juntos
     g, a_g = [], []
+    # correção de cor/luz por trecho do bruto ("cor": [{"filtro": "...", "de": s, "ate": s}], sem de/ate = tudo).
+    # Aplicada antes do recorte, então os tempos são os do bruto (episódio 13: rosto estourado contra a janela).
+    cor = "".join(f",{c['filtro']}" + (f":enable='between(t\\,{c['de']}\\,{c['ate']})'" if "de" in c else "")
+                  for c in plano.get("cor", []))
     if abertura:
         # cada trecho da abertura é uma entrada própria (na ordem do plano, não na do bruto; um split
         # guardaria o vídeo todo na memória), recortado com trim/atrim nos mesmos instantes da grade de quadros
         h = 0.5 / fps
         for k, (a, b) in enumerate(abertura):
             entradas += ["-i", plano["fonte"]]
-            g.append(f"[{idx}:v]fps={fps},trim=start={a - h:.6f}:end={b - h:.6f},setpts=PTS-STARTPTS[va{k}]")
+            g.append(f"[{idx}:v]fps={fps}{cor},trim=start={a - h:.6f}:end={b - h:.6f},setpts=PTS-STARTPTS[va{k}]")
             a_g.append(f"[{idx}:a]aresample={SR},atrim=start={a:.6f}:end={b:.6f},asetpts=PTS-STARTPTS[aa{k}]")
             idx += 1
-        g.append(f"[0:v]fps={fps},select='{meio_aberto(manter, fps)}',setpts=N/FRAME_RATE/TB[vm]")
+        g.append(f"[0:v]fps={fps}{cor},select='{meio_aberto(manter, fps)}',setpts=N/FRAME_RATE/TB[vm]")
         a_g += audio_trechos("0:a", manter, "am")
         # concat precisa de vídeo e áudio juntos: aqui só vídeo e só áudio, cada um com seu concat
         g.append("".join(f"[va{k}]" for k in range(len(abertura))) + f"[vm]concat=n={len(abertura) + 1}:v=1:a=0[lin]")
         a_g.append("".join(f"[aa{k}]" for k in range(len(abertura))) + f"[am]concat=n={len(abertura) + 1}:v=0:a=1[alin]")
     else:
-        g.append(f"[0:v]fps={fps},select='{meio_aberto(manter, fps)}',setpts=N/FRAME_RATE/TB[lin]")
+        g.append(f"[0:v]fps={fps}{cor},select='{meio_aberto(manter, fps)}',setpts=N/FRAME_RATE/TB[lin]")
         a_g += audio_trechos("0:a", manter, "alin")
 
     # 2. geometria: corta para a proporção do formato, centrado no foco, e escala; zoom alternado
