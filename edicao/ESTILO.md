@@ -229,6 +229,17 @@ Só referência por enquanto (o usuário pediu para aprender, não para aplicar 
 - Possível elemento novo para o kit: `cartao_explica` (o rosto em cartão inclinado + título com etiqueta + desenho
   simples). Ainda não implementado.
 
+## 3j. Feedback do episódio 13 (retrô, 01/11/2026)
+
+- **Legenda sempre**, mesmo num tema criativo (`"legendas": true`). Se o tema põe selo embaixo (VHS do retro80), suba
+  a legenda com `"legenda_altura"` no plano (0.19 no ep. 13) para não encostar nele.
+- **Thumbnail no padrão do canal** (marinho, creme, taupe, recorte com contorno branco), mesmo quando o vídeo muda de
+  estilo: `thumb_treino.py` (ficha de treino) ou as outras do padrão. O tema do episódio fica no vídeo, não na thumb.
+- **Luz**: as gravações perto da janela saem estouradas e o rosto some. Corrija por trecho com `"cor"` no plano
+  (`[{"filtro": "...", "de": s, "ate": s}]`): segurar os pretos (0.1→0.075/0.08), puxar os realces (1→0.9) e
+  clarear só o meio onde o rosto está escuro. **Não** levante as sombras (0.15→0.2): fica leitoso. Compare sempre
+  bruto × corrigido em 4–5 quadros (`ffmpeg ... hstack`) antes de montar.
+
 ## 4. Quando usar cada elemento (regra para o plano)
 
 | Na fala... | Elemento |
