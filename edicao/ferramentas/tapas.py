@@ -86,10 +86,24 @@ def bordas_sem_rosto(fonte, emendas, fim, maximo=4.0):
     return out
 
 
+def sem_inicio_coberto(info):
+    """Câmera coberta logo no começo de um clipe (o celular saindo do bolso) não é tapa: não pode apagar o clipe
+    inteiro. Só a parte escura sai (vira "borda"). Bug visto no episódio 13: a fala do treino e a despedida sumiam."""
+    tapas, bordas = [], list(info.get("bordas", []))
+    for t in info["tapas"]:
+        inicio = t["tapa"] + ANTES
+        if any(0 <= inicio - e <= 1.0 for e in info["emendas"]):
+            if t["retoma"] is not None:
+                bordas.append([round(inicio - ANTES, 3), round(min(t["retoma"], inicio + 1.5), 3)])
+            continue
+        tapas.append(t)
+    return dict(info, tapas=tapas, bordas=bordas)
+
+
 def detectar(fonte, refazer=False):
     cache = os.path.join(pasta_trabalho(fonte), "tapas.json")
     if os.path.exists(cache) and not refazer:
-        return ler(cache)
+        return sem_inicio_coberto(ler(cache))
     fps, pico, mov, nit = sinais(fonte)
     emendas = []
     lim = max(25.0, 6 * float(np.median(mov)))
@@ -117,7 +131,7 @@ def detectar(fonte, refazer=False):
     info = {"tapas": tapas, "emendas": emendas,
             "bordas": bordas_sem_rosto(fonte, emendas, len(mov) / fps)}
     gravar(cache, info)
-    return info
+    return sem_inicio_coberto(info)
 
 
 def aplicar(intervalos, info, fim):

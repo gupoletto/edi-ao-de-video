@@ -20,6 +20,8 @@ Cada uma cobre a tela inteira no instante do corte (assim o corte some) e conta 
   anilhas  duas anilhas de academia fecham a tela, com "texto"
   vapor    vapor de comida quente cobre e se desfaz, com "texto"
   rebobinar fita VHS rebobinando: "de_hora" -> "para_hora", "rotulo", "texto"
+  arcade   tela de fliperama: pixels fecham, "STAGE CLEAR"/"texto" em letra de pixel, "fase" e "pontos" contando
+  horizonte  pôr do sol synthwave: sol listrado e grade neon em perspectiva sobem e cobrem a tela, "texto" em neon
 No plano: {"tipo": "transicao", "estilo": "...", "em": <s no bruto do 1º quadro da cena nova>, ...}.
 "antes"/"depois" (s) mudam quanto dura de cada lado do corte; o padrão depende do estilo.
 """
@@ -32,7 +34,8 @@ DURACAO = {"roda": (0.63, 0.63), "rota": (0.56, 1.26), "relogio": (0.63, 0.77), 
            "flash": (0.21, 0.56), "blocos": (0.56, 0.63), "tinta": (0.49, 0.63), "glitch": (0.42, 0.42),
            "papel": (0.49, 0.63), "iris": (0.56, 0.63), "persiana": (0.49, 0.56), "filme": (1.26, 0.35),
            "celular": (0.7, 1.4), "polaroid": (0.63, 1.12), "cronometro": (0.63, 1.54), "cupom": (0.63, 1.96),
-           "anilhas": (0.56, 0.98), "vapor": (0.56, 0.98), "rebobinar": (0.98, 0.7)}
+           "anilhas": (0.56, 0.98), "vapor": (0.56, 0.98), "rebobinar": (0.98, 0.7),
+           "arcade": (0.6, 1.3), "horizonte": (0.8, 1.2)}
 
 
 def ease(x):
@@ -944,7 +947,8 @@ def vapor(ctx, st, e, t, W, H, c):
     if e.get("texto"):
         a = min(ease((t - c * 0.6) / 0.2), 1 - dissolve)
         if a > 0:
-            ctx.select_font_face("Source Serif 4", cairo.FONT_SLANT_ITALIC, cairo.FONT_WEIGHT_BOLD)
+            ctx.select_font_face("Audiowide" if st.get("neon") else "Source Serif 4", cairo.FONT_SLANT_ITALIC,
+                                 cairo.FONT_WEIGHT_BOLD)  # tema retrô usa a fonte dos títulos dele
             ctx.set_font_size(H * 0.11)
             ext = ctx.text_extents(e["texto"])
             ctx.move_to(W / 2 - ext.width / 2 - ext.x_bearing, H / 2 + ext.height / 2 - H * 0.04 * ease((t - c) / 0.6))
@@ -992,10 +996,112 @@ def rebobinar(ctx, st, e, t, W, H, c):
     ctx.show_text("SP  " + e.get("texto", ""))
 
 
+def _pixel(ctx, st, tam):
+    ctx.select_font_face(st.get("pixel", "DejaVu Sans Mono"), cairo.FONT_SLANT_NORMAL, cairo.FONT_WEIGHT_BOLD)
+    ctx.set_font_size(tam)
+
+
+def arcade(ctx, st, e, t, W, H, c):
+    """Tela de fliperama: quadrados grandes fecham em espiral, "STAGE CLEAR" (ou "texto") em letra de pixel,
+    "fase" embaixo e "pontos" contando; depois os quadrados abrem. Linhas de varredura por cima."""
+    dur = e["ate"] - e["de"]
+    lado = W / 12
+    n_col, n_lin = 12, int(math.ceil(H / lado))
+    ordem = sorted(((abs(i + 0.5 - n_col / 2) + abs(j + 0.5 - n_lin / 2)), i, j) for i in range(n_col) for j in range(n_lin))
+    total = len(ordem)
+    cheio = min(1.0, t / c) if t <= c else max(0.0, 1 - (t - c - 0.55) / max(0.2, dur - c - 0.55))
+    for n, (_, i, j) in enumerate(ordem[::-1] if t <= c else ordem):
+        if n / total < cheio:
+            ctx.rectangle(i * lado, j * lado, lado + 0.6, lado + 0.6)
+    ctx.set_source_rgb(*st["fundo"])
+    ctx.fill()
+    if cheio > 0.95:
+        k = ease((t - c + 0.05) / 0.25)
+        _pixel(ctx, st, H * 0.07)
+        txt = e.get("texto", "STAGE CLEAR")
+        if int(t * 6) % 2 == 0 or t > c + 0.4:
+            _centro(ctx, txt, W / 2 + 5, H * 0.47 + 5, (0, 0, 0))
+            _centro(ctx, txt, W / 2, H * 0.47, st["destaque"])
+        _pixel(ctx, st, H * 0.032)
+        if e.get("fase"):
+            _centro(ctx, e["fase"], W / 2, H * 0.6, st["suave"])
+        if e.get("pontos") is not None:
+            p = int(e["pontos"] * ease((t - c) / 0.6))
+            _centro(ctx, f"SCORE {p:06d}", W / 2, H * 0.7, st["tinta"])
+    ctx.set_source_rgba(0, 0, 0, 0.18 * cheio)
+    for y in range(0, H, 6):
+        ctx.rectangle(0, y, W, 2)
+    ctx.fill()
+
+
+def horizonte(ctx, st, e, t, W, H, c):
+    """Pôr do sol synthwave: céu escuro, sol listrado e grade neon em perspectiva sobem de baixo e cobrem a tela
+    no corte, com o "texto" em neon; depois descem revelando a cena nova."""
+    dur = e["ate"] - e["de"]
+    k = ease(t / c) if t <= c else 1 - ease((t - c - 0.35) / max(0.2, dur - c - 0.35))
+    if k <= 0:
+        return
+    topo = H * (1 - k)
+    ctx.save()
+    ctx.rectangle(0, topo, W, H - topo)
+    ctx.clip()
+    g = cairo.LinearGradient(0, topo, 0, topo + H)
+    g.add_color_stop_rgb(0, *st["fundo"])
+    g.add_color_stop_rgb(0.55, 0.30, 0.05, 0.38)
+    g.add_color_stop_rgb(1, *st["fundo"])
+    ctx.rectangle(0, topo, W, H)
+    ctx.set_source(g)
+    ctx.fill()
+    hor = topo + H * 0.62
+    R = H * 0.26  # sol
+    sg = cairo.LinearGradient(0, hor - 2 * R, 0, hor)
+    sg.add_color_stop_rgb(0, 1.0, 0.85, 0.3)
+    sg.add_color_stop_rgb(1, *st["destaque"])
+    ctx.save()
+    ctx.arc(W / 2, hor, R, math.pi, 2 * math.pi)
+    ctx.clip()
+    ctx.rectangle(0, hor - 2 * R, W, 2 * R)
+    ctx.set_source(sg)
+    ctx.fill()
+    for i in range(6):  # faixas que cortam o sol
+        y = hor - R * 0.08 - i * R * 0.13 - (t * 40) % (R * 0.13)
+        ctx.rectangle(0, y, W, R * 0.035 * (1 + i * 0.25))
+    ctx.set_source_rgb(*st["fundo"])
+    ctx.fill()
+    ctx.restore()
+    ctx.rectangle(0, hor, W, topo + H - hor)  # chão
+    ctx.set_source_rgb(*st["fundo"])
+    ctx.fill()
+    ctx.set_source_rgb(*st["suave"])
+    ctx.set_line_width(2.5)
+    for i in range(-14, 15):  # linhas de fuga
+        ctx.move_to(W / 2 + i * W * 0.02, hor)
+        ctx.line_to(W / 2 + i * W * 0.22, topo + H)
+    for j in range(10):  # linhas horizontais andando para a frente
+        f = ((j + (t * 2.2) % 1) / 10) ** 2
+        y = hor + (topo + H - hor) * f
+        ctx.move_to(0, y)
+        ctx.line_to(W, y)
+    ctx.stroke()
+    if e.get("texto") and abs(t - c) < 0.9:
+        a = 1 - max(0.0, abs(t - c) - 0.5) / 0.4
+        ctx.select_font_face(st["titulo"][0], cairo.FONT_SLANT_ITALIC, cairo.FONT_WEIGHT_BOLD)
+        ctx.set_font_size(H * 0.1)
+        for d, cor, al in ((8, st["destaque"], 0.35), (4, st["destaque"], 0.6), (0, st["tinta"], 1.0)):
+            ctx.save()
+            ctx.translate(d * 0.3, d * 0.3)
+            ext = ctx.text_extents(e["texto"])
+            ctx.move_to(W / 2 - ext.x_bearing - ext.width / 2, topo + H * 0.3)
+            ctx.set_source_rgba(*cor, al * a)
+            ctx.show_text(e["texto"])
+            ctx.restore()
+    ctx.restore()
+
+
 ESTILOS = {"roda": roda, "rota": rota, "relogio": relogio, "cortina": cortina, "flash": flash, "blocos": blocos,
            "tinta": tinta, "glitch": glitch, "papel": papel, "iris": iris, "persiana": persiana, "filme": filme,
            "celular": celular, "polaroid": polaroid, "cronometro": cronometro, "cupom": cupom, "anilhas": anilhas,
-           "vapor": vapor, "rebobinar": rebobinar}
+           "vapor": vapor, "rebobinar": rebobinar, "arcade": arcade, "horizonte": horizonte}
 
 
 def desenhar(ctx, st, e, t, W, H):

@@ -216,7 +216,23 @@ def rebobinar_fita(d=1.1):  # motor de VCR acelerando + guinchos
     return _norm(y * np.minimum(1, t / 0.1) * np.minimum(1, (d - t) / 0.15), 0.2)
 
 
-EFEITOS = {"impressora": impressora, "metal": metal, "chiado": chiado, "rebobinar": rebobinar_fita,
+def moeda():  # fliperama: "pling" de moeda em duas notas de onda quadrada
+    out = []
+    for f, d in ((988, 0.08), (1319, 0.35)):
+        t = _t(d)
+        out.append(np.sign(np.sin(2 * np.pi * f * t)) * np.exp(-t * (6 if d > 0.1 else 1)) * 0.35)
+    return _norm(np.concatenate(out), 0.25)
+
+
+def varredura(d=1.2):  # synthwave: serra subindo com filtro abrindo + chiado
+    t = _t(d)
+    f = 110 * 2 ** (2 * t / d)
+    y = sum(np.sin(2 * np.pi * np.cumsum(f * h) / SR) / h for h in range(1, 7))
+    y = _passa_baixa(y, 3000) * np.minimum(1, t / (d * 0.8)) * np.minimum(1, (d - t) / 0.15)
+    return _norm(y, 0.22)
+
+
+EFEITOS = {"moeda": moeda, "varredura": varredura, "impressora": impressora, "metal": metal, "chiado": chiado, "rebobinar": rebobinar_fita,
            "whoosh": whoosh, "pop": pop, "clique": clique, "campainha": campainha, "tique": tique_taque,
            "ding": ding, "flash": flash_foto, "glitch": glitch, "splash": splash, "rasgo": rasgo, "boing": boing,
            "persiana": persiana, "projetor": projetor, "bipe": bipe_filme, "notificacao": notificacao,
@@ -224,6 +240,8 @@ EFEITOS = {"impressora": impressora, "metal": metal, "chiado": chiado, "rebobina
 
 # som de cada transição: [(efeito, segundos em relação ao corte)]
 DA_TRANSICAO = {
+    "arcade": [("blips", -0.4), ("moeda", 0.05)],
+    "horizonte": [("varredura", -1.0), ("whoosh", -0.2)],
     "roda": [("whoosh", -0.3), ("campainha", -0.45)],
     "rota": [("whoosh", -0.3), ("pop", 0.35), ("ding", 0.55)],
     "relogio": [("tique", -0.45), ("ding", 0.3)],

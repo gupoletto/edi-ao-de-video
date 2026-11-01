@@ -60,6 +60,18 @@ ESTILOS = {
     "editorial": dict(PALETA, titulo=("Source Serif 4 Semibold", False), corpo=("Inter", True)),  # Marcos Lemos
     "dinamico": dict(PALETA, titulo=("Poppins ExtraBold", False), corpo=("Poppins SemiBold", False)),  # Matheus F.
 }
+# Temas por episódio (plano.json: "tema"). Trocam paleta e fontes por cima do estilo.
+# retro80 (episódio 13): anos 80 / VHS / fliperama: roxo-noite, rosa e ciano neon, títulos Audiowide, brilho de neon.
+TEMAS = {
+    "retro80": {"fundo": hexrgb("#120626"), "cartao": hexrgb("#24104A"), "tinta": hexrgb("#FFF4FB"),
+                "suave": hexrgb("#3EE8FF"), "destaque": hexrgb("#FF3EA5"), "ok": hexrgb("#3EE8FF"),
+                "nao": hexrgb("#FF3EA5"), "titulo": ("Audiowide", False), "corpo": ("Poppins SemiBold", False),
+                "pixel": "Press Start 2P", "neon": True},
+}
+
+
+def estilo_do_plano(plano):
+    return dict(ESTILOS[plano["estilo"]], **TEMAS.get(plano.get("tema", ""), {}))
 
 
 def fonte(ctx, familia, negrito, tam):
@@ -436,6 +448,27 @@ def d_progresso(ctx, st, e, t, W, H):
 
 def d_selo(ctx, st, e, t, W, H):
     """Marcador fixo e discreto no canto (ex.: "DIA 10/30 · 07:06"), que acompanha o trecho inteiro."""
+    if st.get("pixel"):  # tema retrô: mostrador de filmadora VHS ("▶ PLAY" piscando + texto), sem pílula
+        tam = H * (0.027 if W > H else 0.019)
+        k = ease(t / 0.35)
+        ctx.select_font_face(st["pixel"], cairo.FONT_SLANT_NORMAL, cairo.FONT_WEIGHT_NORMAL)
+        ctx.set_font_size(tam)
+        x, y = W * 0.045, H * 0.09
+        for dx, dy, cor in ((3, 3, (0, 0, 0)), (0, 0, (1, 1, 1))):
+            ctx.set_source_rgba(*cor, (0.6 if dx else 0.95) * k)
+            ctx.move_to(x + dx, y + dy)
+            ctx.show_text("PLAY")
+            if int(t * 1.5) % 2 == 0:  # triângulo do "play" piscando (a fonte de pixel não tem o glifo)
+                tx = x + dx + ctx.text_extents("PLAY ").x_advance
+                ctx.move_to(tx, y + dy - tam)
+                ctx.line_to(tx + tam * 0.9, y + dy - tam / 2)
+                ctx.line_to(tx, y + dy)
+                ctx.close_path()
+                ctx.fill()
+            ctx.move_to(x + dx, y + dy + tam * 1.9)
+            ctx.show_text(e["texto"].upper().replace("·", "-").replace("Ã", "A").replace("Á", "A").replace("É", "E")
+                          .replace("Í", "I").replace("Ó", "O").replace("Ú", "U").replace("Ç", "C").replace("Ê", "E"))
+        return
     tam = H * (0.024 if W > H else 0.018)
     fonte(ctx, *st["corpo"], tam)
     s = e["texto"].upper()
@@ -455,10 +488,54 @@ def d_selo(ctx, st, e, t, W, H):
     ctx.paint_with_alpha(k)
 
 
-TIPOS = {"titulo": d_titulo, "lista": d_lista, "letreiro": d_letreiro, "numero": d_numero,
+def d_barras(ctx, st, e, t, W, H):
+    """Gráfico de barras que cresce barra por barra ("itens" rótulos, "valores" números, "tempos" de cada barra,
+    "unidade", "texto" título com "destaque"). A última barra vem na cor de destaque (o recorde)."""
+    ctx.set_source_rgb(*st["fundo"])
+    ctx.paint()
+    tam = H * (0.07 if W > H else 0.045)
+    titulo_com_destaque(ctx, st, e.get("texto", ""), e.get("destaque"), W / 2, H * 0.18, tam, W * 0.85, centro=True)
+    vals, rot = e["valores"], e.get("itens", [""] * len(e["valores"]))
+    n = len(vals)
+    x0, x1, yb, ytop = W * 0.14, W * 0.86, H * 0.82, H * 0.32
+    larg = (x1 - x0) / n
+    vmax = max(vals)
+    ctx.set_source_rgba(*st["suave"], 0.5)  # chão do gráfico
+    ctx.rectangle(x0 - 10, yb, x1 - x0 + 20, 3)
+    ctx.fill()
+    for i, (v, r) in enumerate(zip(vals, rot)):
+        t0 = (e["tempos"][i] - e["de"]) if e.get("tempos") else 0.3 + i * 0.5
+        k = ease((t - t0) / 0.7)
+        if t < t0:
+            continue
+        h = (yb - ytop) * v / vmax * k
+        cx = x0 + larg * (i + 0.5)
+        bw = larg * 0.56
+        cor = st["destaque"] if i == n - 1 else st["suave"]
+        g = cairo.LinearGradient(0, yb, 0, yb - h)
+        g.add_color_stop_rgba(0, *cor, 0.35)
+        g.add_color_stop_rgba(1, *cor, 1.0)
+        ctx.rectangle(cx - bw / 2, yb - h, bw, h)
+        ctx.set_source(g)
+        ctx.fill()
+        ctx.set_source_rgb(*st["tinta"])
+        ctx.rectangle(cx - bw / 2, yb - h, bw, 4)
+        ctx.fill()
+        fonte(ctx, *st["titulo"], tam * 0.62)
+        s = f"{v * k:.0f}{e.get('unidade', '')}"
+        ctx.set_source_rgba(*st["tinta"], k)
+        ctx.move_to(cx - ctx.text_extents(s).x_advance / 2, yb - h - tam * 0.3)
+        ctx.show_text(s)
+        fonte(ctx, *st["corpo"], tam * 0.3)
+        ctx.set_source_rgba(*st["suave"], k)
+        ctx.move_to(cx - ctx.text_extents(r).x_advance / 2, yb + tam * 0.55)
+        ctx.show_text(r)
+
+
+TIPOS = {"titulo": d_titulo, "barras": d_barras, "lista": d_lista, "letreiro": d_letreiro, "numero": d_numero,
          "sumario": d_sumario, "dividido": d_dividido, "progresso": d_progresso, "selo": d_selo,
          "transicao": transicoes.desenhar}
-TELA_CHEIA = {"titulo", "lista", "numero", "sumario", "dividido", "progresso"}
+TELA_CHEIA = {"titulo", "lista", "numero", "sumario", "dividido", "progresso", "barras"}
 SO_MONTAR = {"tela", "foco", "popup", "vertical"}  # não geram clipe: o montar.py faz com o próprio vídeo
 FADE = 0.4
 COM_DESFOQUE = TELA_CHEIA | {"transicao"}  # o montar.py desfoca o vídeo por baixo destes ("vidro")
@@ -479,6 +556,22 @@ def vidro(px, st, veu):
     suave = ndimage.gaussian_filter(longe.astype(np.float32), 5)
     fator = 1 - (1 - veu) * np.repeat(np.repeat(suave, 2, 0), 2, 1)[:px.shape[0], :px.shape[1]]
     px[..., 3] *= fator
+
+
+def neon(px, sigma=12.0, forca=1.0):
+    """Brilho de néon: as cores claras e saturadas "vazam" luz em volta (px em BGRA, cor não pré-multiplicada)."""
+    from scipy import ndimage
+    a = px[..., 3:4] / 255.0
+    cor = px[..., :3] * a
+    luz = (cor.max(axis=2) - cor.min(axis=2) > 60).astype(np.float32)[..., None] * cor  # só o que é colorido brilha
+    pequeno = luz[::2, ::2]
+    b = np.stack([ndimage.gaussian_filter(pequeno[..., i], sigma / 2) for i in range(3)], 2)
+    b = np.repeat(np.repeat(b, 2, 0), 2, 1)[:px.shape[0], :px.shape[1]] * forca
+    ab = np.clip(b.max(axis=2, keepdims=True) / 255.0, 0, 1)
+    novo_a = a + ab * (1 - a)
+    novo = (cor + b * (1 - a)) / np.maximum(novo_a, 1e-4)
+    px[..., :3] = novo
+    px[..., 3:4] = novo_a * 255
 
 
 def quadro(st, e, t, W, H):
@@ -526,7 +619,7 @@ def renderizar(fonte_video, amostra=False):
     pasta = pasta_trabalho(fonte_video)
     plano = ler(os.path.join(pasta, "plano.json"))
     ajustar(plano)
-    st = ESTILOS[plano["estilo"]]
+    st = estilo_do_plano(plano)
     W, H = resolucao(plano)
     out_dir = os.path.join(pasta, "elementos")
     os.makedirs(out_dir, exist_ok=True)
@@ -542,14 +635,27 @@ def renderizar(fonte_video, amostra=False):
         enc = subprocess.Popen(["ffmpeg", "-v", "error", "-y", "-f", "rawvideo", "-pix_fmt", "bgra", "-s", f"{W}x{H}",
                                 "-r", str(FPS), "-i", "-", "-c:v", "qtrle", os.path.join(out_dir, nome + ".mov")],
                                stdin=subprocess.PIPE)
+        ultimo = (None, None)
         for f in range(int(math.ceil(dur * FPS))):
-            s = quadro(st, e, f / FPS, W, H)
+            t = f / FPS
+            if e["tipo"] == "selo":  # o selo é estático fora da entrada/saída: repete o quadro (o tema retrô só pisca)
+                chave = (min(f, 12), int(t * 1.5) % 2 if st.get("pixel") else 0,
+                         round(min(1.0, (dur - t) / FADE), 2))
+                if chave == ultimo[0]:
+                    enc.stdin.write(ultimo[1])
+                    continue
+            s = quadro(st, e, t, W, H)
             px = np.frombuffer(s.get_data(), np.uint8).reshape(H, W, 4).astype(np.float32)
             a = px[..., 3:4]
             px[..., :3] = np.where(a > 0, px[..., :3] * 255 / np.maximum(a, 1), 0)  # cairo é pré-multiplicado
             if plano.get("vidro"):
                 vidro(px, st, VEU_GRANDE if e["tipo"] in COM_DESFOQUE else VEU_PEQUENO)
-            enc.stdin.write(px.clip(0, 255).astype(np.uint8).tobytes())
+            if st.get("neon") and e["tipo"] != "selo":
+                neon(px)
+            dados = px.clip(0, 255).astype(np.uint8).tobytes()
+            enc.stdin.write(dados)
+            if e["tipo"] == "selo":
+                ultimo = (chave, dados)
         enc.stdin.close()
         enc.wait()
         print(f"  {nome}: {dur:.1f}s")

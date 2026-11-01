@@ -116,6 +116,9 @@ def escrever_md(pasta, plano, tr):
         L.append("_(ainda vazio: o Claude preenche lendo a transcrição e o ESTILO.md)_")
     for i, e in enumerate(plano["elementos"], 1):
         txt = e.get("texto") or " · ".join(e.get("itens", []))
+        if e["tipo"] == "transicao":
+            L.append(f"{i}. **{hms(saida(plano, e['em']))}** transição {e['estilo']}: {txt}  ({hms(e['em'])})")
+            continue
         L.append(f"{i}. **{hms(saida(plano, e['de']))}–{hms(saida(plano, e['ate']))}** {e['tipo']}: {txt}"
                  f"  ({hms(e['de'])})")
     if plano.get("abertura"):

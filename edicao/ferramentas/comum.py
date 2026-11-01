@@ -19,6 +19,10 @@ FONT_URLS = {  # todas com licença OFL
     "Poppins-SemiBold.ttf": "https://raw.githubusercontent.com/google/fonts/main/ofl/poppins/Poppins-SemiBold.ttf",
     "SourceSerif4-Regular.ttf": "https://raw.githubusercontent.com/adobe-fonts/source-serif/release/TTF/SourceSerif4-Regular.ttf",
     "SourceSerif4-Semibold.ttf": "https://raw.githubusercontent.com/adobe-fonts/source-serif/release/TTF/SourceSerif4-Semibold.ttf",
+    # tema "retro80" (anos 80 / VHS / fliperama)
+    "Audiowide-Regular.ttf": "https://raw.githubusercontent.com/google/fonts/main/ofl/audiowide/Audiowide-Regular.ttf",
+    "PressStart2P-Regular.ttf": "https://raw.githubusercontent.com/google/fonts/main/ofl/pressstart2p/PressStart2P-Regular.ttf",
+    "Monoton-Regular.ttf": "https://raw.githubusercontent.com/google/fonts/main/ofl/monoton/Monoton-Regular.ttf",
 }
 
 

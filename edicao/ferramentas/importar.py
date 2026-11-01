@@ -12,8 +12,9 @@
 - Até 4K: reduz para 1080p com lanczos (mais nítido que gravar em 1080p) ou mantém (--4k).
 - Taxa de quadros variável vira fixa (30 ou 60): o corte quadro a quadro do montar.py precisa disso para a voz
   não descolar da boca.
-- Vídeo quase sem perda (x264 crf 12, quadro-chave a cada 1 s) e áudio PCM 48 kHz, para nenhuma etapa seguinte
-  depender de outra compressão.
+- Vídeo quase sem perda (x264 crf 12, quadro-chave a cada 1 s) e áudio PCM 48 kHz **estéreo**, para nenhuma etapa
+  seguinte depender de outra compressão. Estéreo sempre: alguns clipes do iPhone vêm mono, e um clipe mono no meio
+  de estéreos, juntado com `concat -c copy`, toca com metade da duração e desalinha o resto (episódio 13).
 """
 import json
 import os
@@ -60,7 +61,7 @@ def importar(arq, nome=None, cor="cinema", k4=False, fps_fixo=None):
     subprocess.run(["ffmpeg", "-v", "error", "-stats", "-y", "-i", arq, "-map", "0:v:0", "-map", "0:a:0",
                     "-vf", ",".join(filtros), "-c:v", "libx264", "-preset", "faster", "-crf", "12",
                     "-x264-params", f"keyint={fps}", "-color_primaries", "bt709", "-color_trc", "bt709",
-                    "-colorspace", "bt709", "-c:a", "pcm_s16le", "-ar", "48000", destino], check=True)
+                    "-colorspace", "bt709", "-c:a", "pcm_s16le", "-ar", "48000", "-ac", "2", destino], check=True)
     print(f"pronto: {destino}")
     return destino
 

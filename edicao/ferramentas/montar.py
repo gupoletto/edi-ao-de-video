@@ -440,6 +440,15 @@ def montar(fonte, previa=False, trecho=None, crf=18, k4=False):
         if tipo == "vertical":  # laterais pretas viram o próprio quadro ampliado e desfocado
             vw = round(W * e.get("largura", 0.316) / 2) * 2
             x0 = (W - vw) // 2
+            if e.get("girar") and e.get("inteiro"):  # o quadro inteiro gravado de lado: vira faixa em pé no meio
+                sentido = 2 if e["girar"] == "anti-horario" else 1
+                g.append(f"[{copia(a, b)}]transpose={sentido},split[vr{i}][vs{i}]")
+                g.append(f"[vr{i}]scale={W}:{H}:force_original_aspect_ratio=increase,crop={W}:{H},boxblur=30:2,"
+                         f"eq=brightness=-0.06:saturation=1.1[vrb{i}]")
+                g.append(f"[vs{i}]scale=-2:{H}:flags=lanczos[vsf{i}]")
+                g.append(f"[vrb{i}][vsf{i}]overlay=(W-w)/2:0[vg{i}]")
+                camada(f"[{atual}][vg{i}]overlay=0:0:eof_action=pass:{quando}")
+                continue
             if e.get("girar"):  # gravado de lado: a faixa girada 90° já tem a proporção da tela
                 sentido = 2 if e["girar"] == "anti-horario" else 1
                 g.append(f"[{copia(a, b)}]crop={vw}:{H}:{x0}:0,transpose={sentido},"
