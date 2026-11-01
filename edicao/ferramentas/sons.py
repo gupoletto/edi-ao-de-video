@@ -271,6 +271,14 @@ ESTILOS_TRILHA = {
     "epico": dict(bpm=100, swing=0.5, prog=[("D", "m"), ("A#", "maj"), ("F", "maj"), ("C", "maj")],
                   bumbo=(0, 1.5, 2, 3.5), caixa=(), chimbal=0, timbre="cordas", vinil=False, arpejo=False,
                   tambores=True, volume=0.8),
+    # anos 80: arpejo de serra em semicolcheias, baixo pulsando em colcheias, caixa gigante (reverb "gated")
+    "synthwave": dict(bpm=104, swing=0.5, prog=[("A", "m"), ("F", "maj"), ("C", "maj"), ("G", "maj")],
+                      bumbo=(0, 2), caixa=(1, 3), chimbal=8, timbre="serra", vinil=False, arpejo=False,
+                      synthwave=True, volume=0.8),
+    # phonk: cowbell com melodia, 808 grave deslizando, chimbal picotado com rolos, caixa seca no 3
+    "phonk": dict(bpm=140, swing=0.5, prog=[("C#", "m"), ("C#", "m"), ("A", "maj"), ("G#", "m")],
+                  bumbo=(0, 2.5), caixa=(2,), chimbal=0, timbre="cowbell", vinil=False, arpejo=False,
+                  phonk=True, volume=0.85),
 }
 
 
@@ -306,6 +314,12 @@ def _nota(f, d, timbre):
     elif timbre == "pad":
         y = sum(np.sin(2 * np.pi * f * (1 + dt) * t) for dt in (-0.004, 0, 0.004)) / 3
         y *= np.minimum(1, t / 0.4) * np.minimum(1, (d - t) / 0.4)
+    elif timbre == "serra":  # sintetizador dos anos 80: duas serras desafinadas, filtro abrindo e fechando
+        y = sum(sum(np.sin(2 * np.pi * f * (1 + dt) * h * t) / h for h in range(1, 9)) for dt in (-0.006, 0.006)) / 2
+        y = _passa_baixa(y, 2500) * _env(len(t), 0.004, d * 0.8)
+    elif timbre == "cowbell":  # cowbell de 808: duas quadradas desafinadas com decaimento curto
+        y = (np.sign(np.sin(2 * np.pi * f * t)) + np.sign(np.sin(2 * np.pi * f * 1.48 * t))) * 0.5
+        y = _passa_baixa(y, 3500) * np.exp(-t * 14)
     else:  # cordas: serra suavizada, ataque lento
         y = sum(np.sin(2 * np.pi * f * h * t) / h for h in range(1, 7)) * np.minimum(1, t / 0.25) * np.minimum(1, (d - t) / 0.3)
     return y
@@ -333,7 +347,18 @@ def trilha(estilo, duracao, inicio_suave=1.5, fim_suave=2.5):
         t0 = c * compasso
         raiz, tipo = p["prog"][c % len(p["prog"])]
         notas = _acorde(raiz, tipo)
-        if p["timbre"] in ("pad", "cordas"):
+        if p.get("synthwave"):  # arpejo em semicolcheias + pad de fundo + baixo em colcheias
+            seq = [notas[0], notas[1], notas[2], notas[3], notas[2], notas[1]]
+            for k in range(16):
+                por(_nota(seq[k % len(seq)] * 4, tempo * 0.24, "serra"), t0 + k * tempo / 4, 0.09,
+                    0.5 * np.sin(k * 0.8))
+            for f in notas[:3]:
+                por(_nota(f * 2, compasso, "pad"), t0, 0.07)
+        elif p.get("phonk"):  # riff de cowbell (o mesmo em todo compasso, transposto pela harmonia)
+            riff = [(0, 0, 0.5), (0.75, 7, 0.25), (1.5, 3, 0.5), (2.25, 0, 0.25), (2.75, 5, 0.25), (3.5, 3, 0.5)]
+            for b, semi, dur in riff:
+                por(_nota(notas[0] * 4 * 2 ** (semi / 12), tempo * dur, "cowbell"), t0 + b * tempo, 0.16, -0.2)
+        elif p["timbre"] in ("pad", "cordas"):
             for k, f in enumerate(notas):
                 por(_nota(f * 2, compasso, p["timbre"]), t0, 0.16, (k - 1.5) * 0.3)
         elif p["arpejo"]:  # colcheias subindo e descendo
@@ -348,7 +373,24 @@ def trilha(estilo, duracao, inicio_suave=1.5, fim_suave=2.5):
                 for k, f in enumerate(notas):
                     por(_nota(f * 2, tempo * 2.2, p["timbre"]), t0 + at * tempo + k * 0.012, g, (k - 1.5) * 0.25)
         baixo = _hz(raiz, 2)
-        for b in ((0, 2) if not p["arpejo"] else (0, 0.5, 1, 1.5, 2, 2.5, 3, 3.5)):
+        if p.get("phonk"):  # 808: senoide longa e distorcida, deslizando para a nota
+            for b, dur in ((0, 2.2), (2.5, 1.4)):
+                t = _t(tempo * dur)
+                f = baixo * (1 + 0.5 * np.exp(-t * 18))
+                nota = np.tanh(2.2 * np.sin(2 * np.pi * np.cumsum(f) / SR)) * _env(len(t), 0.005, tempo * dur * 0.9)
+                por(nota, t0 + b * tempo, 0.42)
+        if p.get("phonk") or p.get("synthwave"):
+            if p.get("synthwave"):  # baixo pulsando em colcheias
+                for k in range(8):
+                    t = _t(tempo * 0.45)
+                    por(_nota(baixo, tempo * 0.45, "serra") * 1.6, t0 + k * tempo / 2, 0.3)
+            if p.get("phonk"):  # chimbal em semicolcheias com rolo em tercinas no fim do compasso
+                for k in range(16):
+                    por(_chimbal(), t0 + k * tempo / 4, 0.18 if k % 2 else 0.24, 0.3)
+                for k in range(6):
+                    por(_chimbal(), t0 + 3 * tempo + k * tempo / 6, 0.16, -0.3)
+        for b in (() if (p.get("phonk") or p.get("synthwave")) else
+                  ((0, 2) if not p["arpejo"] else (0, 0.5, 1, 1.5, 2, 2.5, 3, 3.5))):
             dur = tempo * (1.8 if not p["arpejo"] else 0.45)
             t = _t(dur)
             nota = np.sin(2 * np.pi * baixo * t) * _env(len(t), 0.01, dur * 0.6)
@@ -357,7 +399,10 @@ def trilha(estilo, duracao, inicio_suave=1.5, fim_suave=2.5):
             por(bumbo, t0 + b * tempo, 0.55)
         for b in p["caixa"]:
             por(caixa, t0 + b * tempo, 0.32)
-        if p["chimbal"]:
+            if p.get("synthwave"):  # reverb "gated": cauda de ruído cortada seca
+                cauda = _passa_baixa(_rng.standard_normal(int(0.28 * SR)), 6000) * 0.25
+                por(cauda, t0 + b * tempo + 0.01, 0.2)
+        if p["chimbal"] and not p.get("phonk"):
             passo = 4 / p["chimbal"]
             for k in range(p["chimbal"]):
                 sw = (p["swing"] - 0.5) * 2 * passo * tempo if k % 2 else 0
