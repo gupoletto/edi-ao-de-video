@@ -11,3 +11,6 @@ edicao/final/*
 *.mov
 anuncios/zonas/
 shorts/previa-3d/
+
+# quadros de conferência da zona segura (anuncios/zonas.py --conferir)
+*_zona_*.png
