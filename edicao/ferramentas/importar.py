@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Etapa 1: prepara o vídeo da câmera para o kit, sem perder qualidade.
 
-    python3 edicao/ferramentas/importar.py ~/Downloads/IMG_1234.MOV [nome] [--cor=neutra] [--4k]
+    python3 edicao/ferramentas/importar.py ~/Downloads/IMG_1234.MOV [nome] [--cor=neutra] [--4k] [--fps=60]
         -> edicao/bruto/<nome>.mkv
 
 - HDR (iPhone: HLG/Dolby Vision, BT.2020, 10 bits) vira SDR BT.709 com tonemapping "hable" (branco de referência
@@ -42,12 +42,12 @@ def fracao(s):
     return float(n) / float(d) if float(d) else 0.0
 
 
-def importar(arq, nome=None, cor="cinema", k4=False):
+def importar(arq, nome=None, cor="cinema", k4=False, fps_fixo=None):
     v = sondar(arq)
     nome = nome or os.path.splitext(os.path.basename(arq))[0]
     destino = os.path.join(BRUTO, nome + ".mkv")
     fps_med = fracao(v["avg_frame_rate"]) or fracao(v["r_frame_rate"])
-    fps = 60 if fps_med > 45 else 30
+    fps = fps_fixo or (60 if fps_med > 45 else 30)  # vários clipes de um episódio: force o mesmo (--fps=60)
     filtros = list(TONEMAP) if v.get("color_transfer") in HDR else []
     if cor == "cinema":
         filtros += CINEMA
@@ -69,4 +69,6 @@ if __name__ == "__main__":
     if len(sys.argv) < 2:
         sys.exit(__doc__)
     args = [x for x in sys.argv[1:] if not x.startswith("--")]
-    importar(args[0], *(args[1:2]), cor="neutra" if "--cor=neutra" in sys.argv else "cinema", k4="--4k" in sys.argv)
+    fps_arg = next((int(x.split("=")[1]) for x in sys.argv if x.startswith("--fps=")), None)
+    importar(args[0], *(args[1:2]), cor="neutra" if "--cor=neutra" in sys.argv else "cinema", k4="--4k" in sys.argv,
+             fps_fixo=fps_arg)
