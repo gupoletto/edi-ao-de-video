@@ -102,3 +102,44 @@ Transcrições em `edicao/trabalho/{postar_shorts,algoritmos}/`:
 
 ## 11. Conclusão das 4 referências
 O "bolo" é: tema estreito e consistente para um público + gancho visual + roteiro com conflito + informação não óbvia. Horário, hashtags e legenda são "cobertura".
+
+
+---
+
+# Referência de 01/11/2026: "How to Escape EVERY YouTube Shorts View Jail"
+
+Transcrição em `edicao/trabalho/view_jail/`. O vídeo descreve exatamente o nosso momento: Shorts que travam sempre
+perto de 1 mil views.
+
+## 12. Os três "presídios" de views e a saída de cada um
+1. **Presídio de 1K** (300–1.000 views em todo vídeo). O seed audience não gosta o bastante. **Postar mais do mesmo
+   não resolve.** É preciso mudar algo de verdade, o tema ou o formato:
+   - um canal de games saiu quando trocou a pessoa parada na frente de uma página estática pelo jogo em movimento;
+   - outro saiu quando parou de falar de tudo e focou num assunto só.
+   - **Nós:** a mudança de 31/10 foi essa: nicho estreito, 3D cinematográfico e Quark.
+2. **Presídio de 10K.** A amostra gostou, mas o público mais amplo não entende por que deveria se importar. **Dar um
+   motivo para quem não é do nicho:** um mistério, um problema, uma decisão, uma memória/nostalgia, e uma pergunta clara
+   com recompensa visível desde o início. Exemplo: "a coleção mais rara que você nunca ouviu falar" no lugar de
+   "completei minha coleção". Depois disso, consertar o meio do vídeo (onde a curva cai).
+3. **Presídio de 30K.** Tema e formato bons. Agora o trabalho é achar o **vazamento**: o segundo exato em que as pessoas
+   saem. Um segundo a mais pode custar centenas de milhares de views.
+   - Se saem logo no início, o gancho vaza.
+   - Se saem no meio, o meio vaza.
+   - Se saem no fim, o vídeo "avisa" que acabou antes de acabar.
+   - **Shorts devem só acabar:** sem "obrigado por assistir", sem "se inscreva", sem enrolar depois da recompensa.
+- **Aviso:** canais de IA produzida em massa (vídeo após vídeo só com prompts) estão indo a zero views e perdendo a
+  monetização. O YouTube atualizou o YPP em 15/07/2025 contra conteúdo "produzido em massa e repetitivo". O nosso
+  diferencial precisa continuar visível: simulação e física de verdade, roteiro próprio, formatos variados.
+
+## 13. O que a curva de retenção do nosso canal mostrou (01/11, `metricas.py --retencao`)
+- **O maior vazamento em 4 de 9 vídeos é o final.** A tela da pergunta para comentários perde 19 a 24 pontos nos
+  últimos 2–3 s. Exemplos: Optical Illusions −19 entre 44–46 s; Which Is Bigger −20 entre 44–46 s; Physics Races −24
+  entre 51–54 s.
+- **O segundo vazamento é logo após a abertura (4–8 s)** em rankings e what-ifs, com −12 a −16 pontos. É a fala de
+  apresentação antes do conteúdo ("Five ... ranked. Number one is...").
+- **A partir de agora:**
+  - o conteúdo começa no 1º segundo, sem segmento de apresentação; o título aparece *sobre* a ação;
+  - o final do Quark tem no máximo 9 palavras e ~2,5 s (`seg_pergunta` recusa perguntas longas);
+  - a pergunta é curta e direta ("Rocket or helicopter next?");
+  - nada de "comment below", "subscribe" ou "thanks for watching" falados.
+- **Toda semana:** rodar `metricas.py --retencao` e consertar o vazamento mais comum nos vídeos seguintes.

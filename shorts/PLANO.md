@@ -45,8 +45,12 @@ Todo vídeo tem 1 tópico do dia, 1 subtema que não se repetiu em 30 dias e 1 d
 - **Layout dentro da área segura dos Shorts:** cabeçalho em 190–410 px, cena em 440–1270 px, legenda até 1430 px,
   nada importante nos 10 % da direita. O `core.py` já faz isso; confira com
   `python3 anuncios/zonas.py --conferir <vídeo> --em <s> --zona shorts`.
-- **Final:** `seg_pergunta` com uma pergunta que **convida a discordar** ("which one was your #1?", "Jupiter or
-  Saturn?"), sem distorcer fatos. Se der, a última cena emenda no começo (loop).
+- **Começo:** o conteúdo começa no 1º segundo, sem segmento de apresentação. O título aparece sobre a ação.
+  (A curva de retenção mostrou queda de 12–16 pontos aos 4–8 s nos vídeos com apresentação.)
+- **Final curto:** `seg_pergunta` com no máximo 9 palavras (~2,5 s) e uma pergunta que **convida a discordar**
+  ("Rocket or helicopter next?"), sem distorcer fatos. Nada de "comment below", "subscribe" ou "thanks for watching".
+  O final era o maior vazamento do canal: −19 a −24 pontos nos últimos 2–3 s (`ESTRATEGIA.md`, seção 13). Se der, a
+  última cena emenda no começo (loop).
 - **Fatos conferidos:** números e fontes na docstring do episódio.
 
 ## 4. Agenda e cadência
@@ -88,6 +92,10 @@ Todo vídeo tem 1 tópico do dia, 1 subtema que não se repetiu em 30 dias e 1 d
 
 ## 6. Métricas e decisões
 
+- **Vazamentos:** `python3 shorts/metricas.py --retencao` mostra, para cada vídeo com mais de 48 h, quanto da
+  audiência fica no 1º s, aos 25/50/75 % e no fim, e o trecho de maior queda. **Toda semana** a rotina conserta o
+  vazamento mais comum nos vídeos seguintes. Os presídios de 1K, 10K e 30K e a saída de cada um estão em
+  `ESTRATEGIA.md`, seção 12.
 - **Painel:** `python3 shorts/metricas.py` gera a tabela por vídeo e o resumo por formato e por tópico (views,
   engajamento, duração média, % assistida). A rotina cola o resultado em `tendencias/AAAA-MM-DD.md` todos os dias.
 - **Para que serve cada métrica:**

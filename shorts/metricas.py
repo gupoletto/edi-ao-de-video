@@ -4,6 +4,7 @@
     python3 shorts/metricas.py            # vídeos desde 27/10: tabela por vídeo + resumo por formato e por tópico
     python3 shorts/metricas.py --desde 2026-10-25                     # inclui o lote 1
     python3 shorts/metricas.py --desde 2026-11-02 --ate 2026-11-08   # só vídeos publicados nesse intervalo
+    python3 shorts/metricas.py --retencao                              # + onde cada vídeo "vaza" (curva de retenção)
 
 Junta três fontes:
 - uploaded.json de cada lote (id e data de publicação);
@@ -78,6 +79,43 @@ def analytics(token, ids, inicio):
             for row in d.get("rows", []) if row[1] and row[2]}
 
 
+def duracao_s(iso):
+    """PT1M2S -> 62."""
+    import re
+    m = re.match(r"PT(?:(\d+)M)?(?:(\d+)S)?", iso or "")
+    return int(m.group(1) or 0) * 60 + int(m.group(2) or 0) if m else 0
+
+
+def retencao(token, vid, inicio):
+    """Curva de retenção [(fração do vídeo, % ainda assistindo)] do Analytics; [] se não houver dado ainda."""
+    q = urllib.parse.urlencode({"ids": "channel==MINE", "startDate": inicio, "endDate": dt.date.today().isoformat(),
+                                "metrics": "audienceWatchRatio", "dimensions": "elapsedVideoTimeRatio",
+                                "filters": f"video=={vid}"})
+    req = urllib.request.Request("https://youtubeanalytics.googleapis.com/v2/reports?" + q,
+                                 headers={"Authorization": f"Bearer {token}"})
+    try:
+        with urllib.request.urlopen(req) as r:
+            return [(row[0], row[1]) for row in json.load(r).get("rows", [])]
+    except urllib.error.HTTPError:
+        return []
+
+
+def vazamentos(curva, dur):
+    """Resumo da curva: quanto fica no 1º segundo, aos 25/50/75 % e no fim, e o trecho com a maior queda."""
+    if len(curva) < 10 or not dur:
+        return None
+    def em(f):
+        return min(curva, key=lambda c: abs(c[0] - f))[1]
+    quedas = []
+    passo = max(1, len(curva) // 20)  # janelas de ~5 % do vídeo
+    for i in range(0, len(curva) - passo, passo):
+        quedas.append((curva[i][1] - curva[i + passo][1], curva[i][0], curva[i + passo][0]))
+    meio = [q for q in quedas if q[1] >= 0.05]  # ignora o 1º instante (o gancho é avaliado à parte)
+    pior = max(meio) if meio else max(quedas)
+    return {"1s": em(1 / dur), "25": em(0.25), "50": em(0.5), "75": em(0.75), "fim": curva[-1][1],
+            "pior": (pior[0], pior[1] * dur, pior[2] * dur)}
+
+
 def main():
     # padrão: desde 27/10, quando começou o formato atual (o lote 1, satisfying genérico, distorce as medianas)
     desde = sys.argv[sys.argv.index("--desde") + 1] if "--desde" in sys.argv else "2026-10-27"
@@ -114,6 +152,27 @@ def main():
         obs = "presa na amostra" if x["presa"] else ""
         print(f"| {x['publica'][:10]} | {x['titulo'][:48]} | {x['topico']} | {x['formato']} | {x['views']:,} | "
               f"{100 * x['eng']:.1f} % | {avd} | {pct} | {obs} |".replace(",", "."))
+    if "--retencao" in sys.argv:
+        ids = [x["id"] for x in linhas if x["horas"] >= 48]
+        durs = {}
+        for i in range(0, len(ids), 50):
+            for it in upload.api_get(token, "videos", part="contentDetails", id=",".join(ids[i:i + 50]))["items"]:
+                durs[it["id"]] = duracao_s(it["contentDetails"]["duration"])
+        print("\n**Retenção** (fração da audiência ainda assistindo; > 100 % no início = replays; \"vazamento\" = "
+              "trecho de ~5 % do vídeo com a maior queda depois do gancho)\n")
+        print("| Vídeo | Duração | 1º s | 25 % | 50 % | 75 % | Fim | Maior vazamento |")
+        print("|---|---:|---:|---:|---:|---:|---:|---|")
+        for x in sorted(linhas, key=lambda x: x["publica"]):
+            if x["id"] not in durs:
+                continue
+            r = vazamentos(retencao(token, x["id"], x["publica"][:10]), durs[x["id"]])
+            if not r:
+                print(f"| {x['titulo'][:40]} | {durs[x['id']]} s | — | — | — | — | — | (sem dados ainda) |")
+                continue
+            q, a, b = r["pior"]
+            print(f"| {x['titulo'][:40]} | {durs[x['id']]} s | {100 * r['1s']:.0f} % | {100 * r['25']:.0f} % | "
+                  f"{100 * r['50']:.0f} % | {100 * r['75']:.0f} % | {100 * r['fim']:.0f} % | "
+                  f"−{100 * q:.0f} pts entre {a:.0f} e {b:.0f} s |")
     for chave, nome in (("formato", "formato"), ("topico", "tópico")):
         print(f"\n**Por {nome}** (mediana de views; engajamento e % assistida médios)\n")
         print(f"| {nome.capitalize()} | Vídeos | Mediana de views | Engaj. | % assistida |")

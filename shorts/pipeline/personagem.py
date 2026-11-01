@@ -389,8 +389,9 @@ def quark(ctx, x, y, h, p=None, t=0.0, seed=0):
 
 def seg_pergunta(fala, titulo, fundo=None, expr="feliz"):
     """Último segmento de qualquer Short: o Quark aparece, acena e faz a pergunta (comentários + marca do canal).
+    Curto de propósito (até 9 palavras, ~2,5 s): os maiores vazamentos de audiência do canal são os finais longos.
 
-        SEGMENTS.append(seg_pergunta("Which one was your number one? Comment below.", "WHICH ONE WAS YOUR #1?",
+        SEGMENTS.append(seg_pergunta("Which one was your number one?", "WHICH ONE WAS YOUR #1?",
                                      fundo=lambda ctx, t, s: sa.gears(ctx, t + 4)))
     `fundo(ctx, t, s)` redesenha a cena do vídeo atrás dele (opcional), escurecida para o Quark destacar; t é o tempo
     local do segmento (no 3D use `FILME.quadro(ctx, s.t0 + t)` para a cena seguir rodando).
@@ -410,4 +411,6 @@ def seg_pergunta(fala, titulo, fundo=None, expr="feliz"):
                  braco_d=0.35, olhar=(0.25 * math.sin(t * 2.2), -0.25),
                  squash=1 + 0.1 * math.sin(min(t, 1.2) * 12) * max(0.0, 1 - t / 1.2))
         quark(ctx, (AREA[0] + AREA[2]) / 2, y, 560, p, t)
-    return Seg([fala], draw, {"title": titulo}, tail=0.8)
+    if len(fala.split()) > 9:  # o final é onde mais perdemos gente (metricas.py --retencao): pergunta curta
+        raise ValueError(f"pergunta final longa demais ({len(fala.split())} palavras, máx. 9): {fala!r}")
+    return Seg([fala], draw, {"title": titulo}, tail=0.15)
