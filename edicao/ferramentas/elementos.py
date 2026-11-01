@@ -453,7 +453,7 @@ def d_selo(ctx, st, e, t, W, H):
         k = ease(t / 0.35)
         ctx.select_font_face(st["pixel"], cairo.FONT_SLANT_NORMAL, cairo.FONT_WEIGHT_NORMAL)
         ctx.set_font_size(tam)
-        x, y = W * 0.045, H * 0.09
+        x, y = W * 0.045, H * 0.88  # embaixo, como a data de uma filmadora (em cima ficam os letreiros)
         for dx, dy, cor in ((3, 3, (0, 0, 0)), (0, 0, (1, 1, 1))):
             ctx.set_source_rgba(*cor, (0.6 if dx else 0.95) * k)
             ctx.move_to(x + dx, y + dy)
