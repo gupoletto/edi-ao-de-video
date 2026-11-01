@@ -108,7 +108,7 @@ def legendas(plano, tr, W, H, caminho):
     elif modo == "frase":
         tam, max_pal = (84 if vertical else 70), 3
         estilo = (f"Style: L,Poppins ExtraBold,{tam},{tc},{tc},&H503A1001,&H783A1001,0,0,0,0,100,100,-1,0,"
-                  f"1,2,4,2,60,60,{int(H * (0.26 if vertical else 0.12))},1")
+                  f"1,2,4,2,60,60,{int(H * plano.get('legenda_altura', 0.26 if vertical else 0.12))},1")
     else:
         tam, max_pal = (64 if vertical else 46), 6
         estilo = (f"Style: L,Inter,{tam},{tc},{tc},&H003A1001,&H303A1001,-1,0,0,0,100,100,0,0,"
