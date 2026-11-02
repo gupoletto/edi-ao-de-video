@@ -93,13 +93,18 @@ def api_get(token, path, **params):
         return json.load(r)
 
 
+CANAL = "UCUVaO7rhj5SbRhkEJ09xptQ"  # @funstuff-67
+
+
 def channel_videos(token):
     """Title -> {id, publishAt} for every video already on the channel, scheduled ones included.
 
     The channel itself is the source of truth, so a run that could not push uploaded.json
     never causes a duplicate upload.
     """
-    channel = api_get(token, "channels", part="contentDetails", mine="true")["items"][0]
+    channel = api_get(token, "channels", part="id,contentDetails", mine="true")["items"][0]
+    if channel["id"] != CANAL:  # trava do usuário: só publica no Fun Stuff
+        sys.exit(f"ABORTED: the token belongs to channel {channel['id']}, not {CANAL}. Nothing was uploaded.")
     uploads = channel["contentDetails"]["relatedPlaylists"]["uploads"]
     ids, page = [], None
     while True:
