@@ -28,3 +28,5 @@
 | 04/11/2026 | 3D cinematográfico (física) | Carro × árvore a 30 mph: zona de deformação, airbag, cinto, boneco de crash test | 3D cinematográfico | "What Happens When a X Hits a Y at N MPH?" | lote-2026-11-04/tres_batida.mp4 |
 | 05/11/2026 | 3D cinematográfico (como funciona) | Turbina de avião: fan, bypass, compressor, combustão, turbinas | 3D cinematográfico | "How a X Actually Works (3D)" | lote-2026-11-05/tres_turbina.mp4 |
 | 02/11/2026 | 3D cinematográfico (espaço) | Por que o foguete vai de lado: lançamento, canhão de Newton, órbita = queda de lado | 3D cinematográfico | "Why X Fly Sideways to Reach Y" | lote-2026-11-02/tres_foguete.mp4 |
+| 03/11/2026 | Ilusões de ótica (teste 2/dia) | Tamanho e alinhamento: Jastrow, Ponzo, mesas de Shepard, Poggendorff (pegadinha) | Interativo (quiz) | "Which One Is Bigger? N Illusions That Fool Your Brain" | lote-2026-11-03/illusions_which_bigger.mp4 |
+| 03/11/2026 | 3D cinematográfico (engenharia) | Cabo do elevador arrebentando: regulador de velocidade, cunhas de segurança, Otis 1854 | 3D cinematográfico | "What Happens If an X Snaps? (3D)" | lote-2026-11-03/tres_elevador.mp4 |

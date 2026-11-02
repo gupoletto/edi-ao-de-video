@@ -192,3 +192,162 @@ def munker(ctx, fade=0.0):
                 ctx.set_source_rgba(*other, 1 - fade)
             ctx.rectangle(x0, y, 360, sh)
             ctx.fill()
+
+
+# ---------- size / alignment (Tue 03/11/2026) ----------
+
+def _sector(ctx, cx, cy, r1, r2, a0, a1):
+    ctx.new_path()
+    ctx.arc(cx, cy, r2, a0, a1)
+    ctx.arc_negative(cx, cy, r1, a1, a0)
+    ctx.close_path()
+
+
+def jastrow(ctx, t=0.0, overlay=0.0, sway=1.0):
+    """Jastrow: two identical ring sectors stacked; the lower one looks bigger. overlay 0->1 slides the top
+    one down onto the bottom one (they match exactly)."""
+    panel(ctx)
+    r1, r2 = 330, 500
+    a0, a1 = math.radians(-120), math.radians(-60)
+    dx = 22 * math.sin(t * 2.4) * sway * (1 - overlay)
+    cy_b = 1300
+    cy_a = 1060 + (cy_b - 1060) * overlay
+    _sector(ctx, CX - dx, cy_b, r1, r2, a0, a1)
+    ctx.set_source_rgb(0.36, 0.78, 0.98)
+    ctx.fill()
+    _sector(ctx, CX + dx, cy_a, r1, r2, a0, a1)
+    ctx.set_source_rgba(1.0, 0.36, 0.54, 1 - 0.45 * overlay)
+    ctx.fill()
+
+
+def ponzo(ctx, t=0.0, fade=0.0, slide=0.0):
+    """Ponzo: two equal yellow bars on converging rails; the far (top) bar looks longer. slide moves the top
+    bar down beside the bottom one."""
+    panel(ctx, (0.10, 0.10, 0.12))
+    vx, vy = CX, Y0 + 30
+    a = 1 - fade
+    ctx.set_line_cap(1)
+    ctx.set_source_rgba(0.55, 0.42, 0.30, a)  # sleepers, spaced like a real track in perspective
+    for k in range(1, 15):
+        y = vy + (Y1 - vy) * (k / 14) ** 1.7  # closer together toward the horizon
+        f = (y - vy) / (Y1 - vy)
+        half = 380 * f
+        ctx.set_line_width(4 + 16 * f)
+        ctx.move_to(vx - half * 1.15, y)
+        ctx.line_to(vx + half * 1.15, y)
+        ctx.stroke()
+    ctx.set_source_rgba(0.85, 0.87, 0.92, a)
+    ctx.set_line_width(12)
+    for s in (-1, 1):
+        ctx.move_to(vx, vy)
+        ctx.line_to(vx + s * 380, Y1)
+        ctx.stroke()
+    L = 230
+    y_top, y_bot = 640, 1110
+    y_t = y_top + (y_bot - 70 - y_top) * slide
+    ctx.set_line_width(26)
+    ctx.set_line_cap(0)
+    for y, rgb in ((y_t, (1.0, 0.85, 0.25)), (y_bot, (1.0, 0.85, 0.25))):
+        ctx.set_source_rgb(*rgb)
+        ctx.move_to(CX - L / 2, y)
+        ctx.line_to(CX + L / 2, y)
+        ctx.stroke()
+
+
+def _mesa(ctx, c, u, v, alpha=1.0, pernas=1.0, cor=(0.80, 0.55, 0.33), topo=True):
+    """Shepard table top = parallelogram c ± u/2 ± v/2, with four legs behind it and a thin front edge."""
+    pts = [(c[0] + sa * u[0] / 2 + sb * v[0] / 2, c[1] + sa * u[1] / 2 + sb * v[1] / 2)
+           for sa, sb in ((-1, -1), (1, -1), (1, 1), (-1, 1))]
+    if pernas > 0:
+        ctx.set_source_rgba(0.45, 0.28, 0.16, pernas)
+        for x, y in pts:
+            ctx.rectangle(x - 9, y, 18, 150)
+            ctx.fill()
+        low = max(range(4), key=lambda i: pts[i][1])  # corner nearest the viewer: thickness along its two edges
+        ctx.set_source_rgba(0.55, 0.34, 0.19, pernas * (1 if topo else 0))
+        for j in ((low + 1) % 4, (low + 3) % 4):
+            ctx.move_to(*pts[low])
+            ctx.line_to(*pts[j])
+            ctx.line_to(pts[j][0], pts[j][1] + 22)
+            ctx.line_to(pts[low][0], pts[low][1] + 22)
+            ctx.close_path()
+            ctx.fill()
+    if not topo:
+        return
+    ctx.move_to(*pts[0])
+    for p in pts[1:]:
+        ctx.line_to(*p)
+    ctx.close_path()
+    ctx.set_source_rgba(*cor, alpha)
+    ctx.fill()
+
+
+def _rot(v, a):
+    return (v[0] * math.cos(a) - v[1] * math.sin(a), v[0] * math.sin(a) + v[1] * math.cos(a))
+
+
+SHEP_U = _rot((300, 0), math.radians(-62))  # long side, receding into depth
+SHEP_V = _rot((135, 0), math.radians(12))
+SHEP_ROT = math.radians(78)  # the right table is the same top turned by this angle
+
+
+def shepard(ctx, match=0.0):
+    """Shepard tables: identical table tops, one turned; the left looks long and thin, the right short and wide.
+    match 0->1 lifts the right top off its legs, turns it and lays it on the left one."""
+    panel(ctx)
+    cl, cr = (330, 830), (765, 900)
+    _mesa(ctx, cl, SHEP_U, SHEP_V)
+    a = SHEP_ROT * (1 - match)
+    c = (cr[0] + (cl[0] - cr[0]) * match, cr[1] + (cl[1] - cr[1]) * match)
+    sai = min(1.0, match * 3)  # the legs stay behind and fade while the top flies over
+    if sai < 1:
+        _mesa(ctx, cr, _rot(SHEP_U, SHEP_ROT), _rot(SHEP_V, SHEP_ROT), pernas=1 - sai, topo=False)
+    k = min(1.0, match * 1.4)
+    cor = (0.80 + (0.36 - 0.80) * k, 0.55 + (0.78 - 0.55) * k, 0.33 + (0.98 - 0.33) * k)
+    _mesa(ctx, c, _rot(SHEP_U, a), _rot(SHEP_V, a), pernas=0, alpha=1 - 0.25 * k, cor=cor)
+
+
+POGG_W = 170
+POGG_SLOPE = math.tan(math.radians(33))
+POGG_X0 = CX - POGG_W / 2
+
+
+def poggendorff(ctx, truth=0.0, opcoes=(-115, -45, 0), certo=2):
+    """Poggendorff: a diagonal disappears behind a bar; which of the lines on the right is its continuation?
+    opcoes = vertical offsets (px) of A/B/C from the true continuation. truth 0->1 makes the bar see-through and
+    draws the real line across it."""
+    panel(ctx)
+    x0, x1 = POGG_X0, POGG_X0 + POGG_W
+    y_in = 760
+
+    def y_at(x, off=0.0):
+        return y_in + (x - x0) * POGG_SLOPE + off
+    ctx.set_line_cap(1)
+    ctx.set_line_width(12)
+    ctx.set_source_rgb(1, 1, 1)
+    ctx.move_to(X0 + 50, y_at(X0 + 50))
+    ctx.line_to(x0, y_in)
+    ctx.stroke()
+    from core import font
+    for i, off in enumerate(opcoes):
+        ok = i == certo
+        cor = (0.30, 0.90, 0.50) if (ok and truth > 0) else (1, 1, 1)
+        al = 1.0 if (ok or truth == 0) else 1 - 0.65 * truth
+        ctx.set_source_rgba(*cor, al)
+        xe = x1 + 260
+        ctx.move_to(x1, y_at(x1, off))
+        ctx.line_to(xe, y_at(xe, off))
+        ctx.stroke()
+        font(ctx, 46, "ExtraBold")
+        ctx.move_to(xe + 22, y_at(xe, off) + 16)
+        ctx.show_text("ABC"[i])
+    ctx.set_source_rgba(0.55, 0.58, 0.66, 1 - 0.7 * truth)
+    ctx.rectangle(x0, Y0 + 40, POGG_W, Y1 - Y0 - 80)
+    ctx.fill()
+    if truth > 0:
+        ctx.set_source_rgb(0.30, 0.90, 0.50)
+        ctx.set_dash([20, 14])
+        ctx.move_to(x0, y_in)
+        ctx.line_to(x0 + (x1 - x0) * truth, y_at(x0 + (x1 - x0) * truth))
+        ctx.stroke()
+        ctx.set_dash([])

@@ -39,7 +39,7 @@ o mesmo espectador: curioso por ciência, que gosta de ver a coisa acontecer na 
 | Dia | Tópico do dia | Vídeo A (12h NY) | Vídeo B (19h NY), 3D cinematográfico |
 |---|---|---|---|
 | Seg 02/11 | Espaço | 3D: por que o foguete vai de lado ✅ agendado | Quark: pular em Júpiter ✅ agendado |
-| Ter 03/11 | Ilusões de ótica | Interativo | E se o cabo do elevador arrebentar? |
+| Ter 03/11 | Ilusões de ótica | Interativo (tamanho e alinhamento) ✅ agendado | E se o cabo do elevador arrebentar? ✅ agendado |
 | Qua 04/11 | Simulações de física | Quark what-if | Carro × árvore a 30 mph ✅ agendado |
 | Qui 05/11 | Como funciona | Ranking | Turbina de avião ✅ agendada |
 | Sex 06/11 | Terra e natureza | Interativo | Como o helicóptero voa |
@@ -63,7 +63,7 @@ raio-x), a câmera volta e o Quark faz a pergunta.
 | # | Tema | Demanda medida | Cenário de abertura → mecanismo |
 |---|---|---|---|
 | 1 | ✅ (02/11) Como o foguete chega à órbita (vai de lado) | foguetes 53 mil; "why rockets go sideways" 490 mil | Base de lançamento → subida, separação dos estágios, curva para a órbita |
-| 2 | E se o cabo do elevador arrebentar? | 1 vídeo com 1,85 mi | Prédio à noite → poço do elevador, cabo arrebenta, freio de segurança trava nos trilhos |
+| 2 | ✅ (03/11) E se o cabo do elevador arrebentar? | 1 vídeo com 1,85 mi (busca 02/11: mediana 27,6 mil) | Prédio de vidro de dia → poço panorâmico, cabo arrebenta, freio de segurança trava nos trilhos |
 | 3 | Como o helicóptero voa | mediana 207 mil | Helicóptero sobre a cidade → cabeça do rotor (prato oscilante), rotor de cauda |
 | 4 | Como o trem de pouso funciona | 1 vídeo com 832 mil | Avião na aproximação → hidráulica abrindo as portas e baixando o trem |
 | 5 | Como a eletricidade chega à tomada | 1 vídeo com 5,7 mi | Casa à noite → fiação na parede, fase/neutro/terra, disjuntor |
