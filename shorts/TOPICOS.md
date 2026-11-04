@@ -40,8 +40,8 @@ o mesmo espectador: curioso por ciência, que gosta de ver a coisa acontecer na 
 |---|---|---|---|
 | Seg 02/11 | Espaço | 3D: por que o foguete vai de lado ✅ agendado | Quark: pular em Júpiter ✅ agendado |
 | Ter 03/11 | Ilusões de ótica | Interativo (tamanho e alinhamento) ✅ agendado | E se o cabo do elevador arrebentar? ✅ agendado |
-| Qua 04/11 | Simulações de física | Quark what-if | Carro × árvore a 30 mph ✅ agendado |
-| Qui 05/11 | Como funciona | Ranking | Turbina de avião ✅ agendada |
+| Qua 04/11 | Simulações de física | Quark what-if (moeda do Empire State) ✅ agendado | Carro × árvore a 30 mph ✅ agendado |
+| Qui 05/11 | Como funciona | Ranking (5 mecanismos) ✅ agendado | Turbina de avião ✅ agendada |
 | Sex 06/11 | Terra e natureza | Interativo | Como o helicóptero voa |
 | Sáb 07/11 | Tamanho e escala | Ranking | Como o trem de pouso funciona |
 | Dom 08/11 | Satisfying | Quark what-if | Como a eletricidade chega à tomada |
