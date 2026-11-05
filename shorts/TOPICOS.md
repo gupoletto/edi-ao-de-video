@@ -42,7 +42,7 @@ o mesmo espectador: curioso por ciência, que gosta de ver a coisa acontecer na 
 | Ter 03/11 | Ilusões de ótica | Interativo (tamanho e alinhamento) ✅ agendado | E se o cabo do elevador arrebentar? ✅ agendado |
 | Qua 04/11 | Simulações de física | Quark what-if (moeda do Empire State) ✅ agendado | Carro × árvore a 30 mph ✅ agendado |
 | Qui 05/11 | Como funciona | Ranking (5 mecanismos) ✅ agendado | Turbina de avião ✅ agendada |
-| Sex 06/11 | Terra e natureza | Interativo | Como o helicóptero voa |
+| Sex 06/11 | Terra e natureza | Interativo (qual é mais fundo?) ✅ agendado | E se o motor do helicóptero parar? ✅ agendado |
 | Sáb 07/11 | Tamanho e escala | Ranking | Como o trem de pouso funciona |
 | Dom 08/11 | Satisfying | Quark what-if | Como a eletricidade chega à tomada |
 
@@ -64,7 +64,7 @@ raio-x), a câmera volta e o Quark faz a pergunta.
 |---|---|---|---|
 | 1 | ✅ (02/11) Como o foguete chega à órbita (vai de lado) | foguetes 53 mil; "why rockets go sideways" 490 mil | Base de lançamento → subida, separação dos estágios, curva para a órbita |
 | 2 | ✅ (03/11) E se o cabo do elevador arrebentar? | 1 vídeo com 1,85 mi (busca 02/11: mediana 27,6 mil) | Prédio de vidro de dia → poço panorâmico, cabo arrebenta, freio de segurança trava nos trilhos |
-| 3 | Como o helicóptero voa | mediana 207 mil | Helicóptero sobre a cidade → cabeça do rotor (prato oscilante), rotor de cauda |
+| 3 | ✅ (06/11) E se o motor do helicóptero parar? (autorrotação) | mediana 207 mil; busca 05/11 "helicopter engine fails": mediana 30,7 mil, topo 8,2 mi | Helicóptero sobre o campo → raio-x do motor e da roda livre, ar subindo pelo rotor, planeio, flare, pouso |
 | 4 | Como o trem de pouso funciona | 1 vídeo com 832 mil | Avião na aproximação → hidráulica abrindo as portas e baixando o trem |
 | 5 | Como a eletricidade chega à tomada | 1 vídeo com 5,7 mi | Casa à noite → fiação na parede, fase/neutro/terra, disjuntor |
 | 6 | Turbo do carro | 445 mil e 908 mil | Carro acelerando → turbina do escape girando o compressor da admissão |
