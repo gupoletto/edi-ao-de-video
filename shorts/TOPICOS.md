@@ -44,7 +44,7 @@ o mesmo espectador: curioso por ciência, que gosta de ver a coisa acontecer na 
 | Qui 05/11 | Como funciona | Ranking (5 mecanismos) ✅ agendado | Turbina de avião ✅ agendada |
 | Sex 06/11 | Terra e natureza | Interativo (qual é mais fundo?) ✅ agendado | E se o motor do helicóptero parar? ✅ agendado |
 | Sáb 07/11 | Tamanho e escala | Ranking (5 maiores animais em escala) ✅ agendado | E se o trem de pouso não descer? ✅ agendado |
-| Dom 08/11 | Satisfying | Quark what-if | Como a eletricidade chega à tomada |
+| Dom 08/11 | Satisfying | Quark what-if (piscina de oobleck) ✅ agendado | E se um raio atingir o avião? ✅ agendado (troca: o #7 da fila reaproveita a cena do avião e tem gancho de "what happens if"; a tomada fica para a próxima semana) |
 
 No domingo 08/11 a rotina compara a semana de 2/dia com a semana anterior (3/dia), olhando a média de views por vídeo,
 a taxa de engajamento, a % assistida e o desempenho do 3D cinematográfico contra os outros formatos. Ela registra o
@@ -68,7 +68,7 @@ raio-x), a câmera volta e o Quark faz a pergunta.
 | 4 | ✅ (07/11) E se o trem de pouso não descer? (descida por gravidade) | 1 vídeo com 832 mil; busca 06/11: mediana 34,4 mil | Avião na aproximação → hidráulica abrindo as portas e baixando o trem |
 | 5 | Como a eletricidade chega à tomada | 1 vídeo com 5,7 mi | Casa à noite → fiação na parede, fase/neutro/terra, disjuntor |
 | 6 | Turbo do carro | 445 mil e 908 mil | Carro acelerando → turbina do escape girando o compressor da admissão |
-| 7 | Por que o raio não derruba o avião | 855 mil | Tempestade → raio entra na fuselagem e sai pela cauda (gaiola de Faraday) |
+| 7 | ✅ (08/11) E se um raio atingir o avião? | 855 mil | Tempestade → raio entra na fuselagem e sai pela cauda (gaiola de Faraday) |
 | 8 | Como o submarino mergulha | mediana 58 mil | Superfície do mar → tanques de lastro enchendo, mergulho |
 | 9 | Prédio contra terremoto (isolamento de base) | mediana 22 mil; vídeos de 345 mil | Cidade → terremoto, prédio comum × prédio sobre isoladores |
 | 10 | Como a descarga do vaso funciona (sifão) | mediana 20 mil; encanamento 136 mil | Banheiro → caixa acoplada, sifão, ventilação |
