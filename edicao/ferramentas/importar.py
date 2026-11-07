@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Etapa 1: prepara o vídeo da câmera para o kit, sem perder qualidade.
 
-    python3 edicao/ferramentas/importar.py ~/Downloads/IMG_1234.MOV [nome] [--cor=neutra] [--4k] [--fps=60]
+    python3 edicao/ferramentas/importar.py ~/Downloads/IMG_1234.MOV [nome] [--cor=neutra] [--4k] [--fps=60] [--deitado]
         -> edicao/bruto/<nome>.mkv
 
 - HDR (iPhone: HLG/Dolby Vision, BT.2020, 10 bits) vira SDR BT.709 com tonemapping "hable" (branco de referência
@@ -9,6 +9,8 @@
   rosto e janela e deixava as cores saturadas demais (queixa do usuário nos episódios 10 e 11).
 - Tratamento de cor "cinema" (padrão): saturação 0,92, sombras levemente frias, meios-tons e altas quentes, curva
   suave que segura os brancos. --cor neutra desliga.
+- --deitado: o celular marcou o vídeo como em pé (rotação 90°), mas foi segurado deitado; mantém o quadro
+  horizontal como foi gravado, em vez de virar retrato.
 - Até 4K: reduz para 1080p com lanczos (mais nítido que gravar em 1080p) ou mantém (--4k).
 - Taxa de quadros variável vira fixa (30 ou 60): o corte quadro a quadro do montar.py precisa disso para a voz
   não descolar da boca.
@@ -33,7 +35,8 @@ CINEMA = ["eq=saturation=0.92",
 
 def sondar(arq):
     r = subprocess.run(["ffprobe", "-v", "error", "-select_streams", "v:0", "-show_entries",
-                        "stream=width,height,r_frame_rate,avg_frame_rate,color_transfer,pix_fmt", "-of", "json", arq],
+                        "stream=width,height,r_frame_rate,avg_frame_rate,color_transfer,pix_fmt:stream_side_data=rotation",
+                        "-of", "json", arq],
                        capture_output=True, text=True, check=True)
     return json.loads(r.stdout)["streams"][0]
 
@@ -43,8 +46,13 @@ def fracao(s):
     return float(n) / float(d) if float(d) else 0.0
 
 
-def importar(arq, nome=None, cor="cinema", k4=False, fps_fixo=None):
+def importar(arq, nome=None, cor="cinema", k4=False, fps_fixo=None, deitado=False):
     v = sondar(arq)
+    rot = next((abs(int(d.get("rotation", 0))) for d in v.get("side_data_list", []) if "rotation" in d), 0)
+    # celular marcado como "em pé" (rotação ±90) mas segurado deitado: --deitado ignora a marcação e mantém o quadro
+    # gravado (paisagem, de pé). Sem isso, o ffmpeg gira para retrato.
+    em_pe = rot in (90, 270) and not deitado
+    w, h = (v["height"], v["width"]) if em_pe else (v["width"], v["height"])
     nome = nome or os.path.splitext(os.path.basename(arq))[0]
     destino = os.path.join(BRUTO, nome + ".mkv")
     fps_med = fracao(v["avg_frame_rate"]) or fracao(v["r_frame_rate"])
@@ -52,13 +60,14 @@ def importar(arq, nome=None, cor="cinema", k4=False, fps_fixo=None):
     filtros = list(TONEMAP) if v.get("color_transfer") in HDR else []
     if cor == "cinema":
         filtros += CINEMA
-    if v["width"] > 1920 and not k4:
-        filtros.append("scale=1920:1080:flags=lanczos")
+    if max(w, h) > 1920 and not k4:  # nunca força 16:9: um quadro em pé vira 1080x1920, não é espremido
+        filtros.append("scale=1920:1080:flags=lanczos" if w >= h else "scale=1080:1920:flags=lanczos")
     filtros += ["format=yuv420p", f"fps={fps}"]
-    print(f"{os.path.basename(arq)}: {v['width']}x{v['height']}, {fps_med:.2f} fps, "
+    print(f"{os.path.basename(arq)}: {w}x{h}{' (deitado)' if deitado else ''}, {fps_med:.2f} fps, "
           f"{'HDR ' + v['color_transfer'] if v.get('color_transfer') in HDR else 'SDR'} -> {fps} fps SDR BT.709",
           flush=True)
-    subprocess.run(["ffmpeg", "-v", "error", "-stats", "-y", "-i", arq, "-map", "0:v:0", "-map", "0:a:0",
+    entrada = ["-noautorotate"] if deitado else []
+    subprocess.run(["ffmpeg", "-v", "error", "-stats", "-y", *entrada, "-i", arq, "-map", "0:v:0", "-map", "0:a:0",
                     "-vf", ",".join(filtros), "-c:v", "libx264", "-preset", "faster", "-crf", "12",
                     "-x264-params", f"keyint={fps}", "-color_primaries", "bt709", "-color_trc", "bt709",
                     "-colorspace", "bt709", "-c:a", "pcm_s16le", "-ar", "48000", "-ac", "2", destino], check=True)
@@ -72,4 +81,4 @@ if __name__ == "__main__":
     args = [x for x in sys.argv[1:] if not x.startswith("--")]
     fps_arg = next((int(x.split("=")[1]) for x in sys.argv if x.startswith("--fps=")), None)
     importar(args[0], *(args[1:2]), cor="neutra" if "--cor=neutra" in sys.argv else "cinema", k4="--4k" in sys.argv,
-             fps_fixo=fps_arg)
+             fps_fixo=fps_arg, deitado="--deitado" in sys.argv)
