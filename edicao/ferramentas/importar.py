@@ -9,8 +9,8 @@
   rosto e janela e deixava as cores saturadas demais (queixa do usuário nos episódios 10 e 11).
 - Tratamento de cor "cinema" (padrão): saturação 0,92, sombras levemente frias, meios-tons e altas quentes, curva
   suave que segura os brancos. --cor neutra desliga.
-- --deitado: o celular marcou o vídeo como em pé (rotação 90°), mas foi segurado deitado; mantém o quadro
-  horizontal como foi gravado, em vez de virar retrato.
+- --deitado[=horario]: o celular marcou o vídeo como em pé (rotação 90°), mas foi segurado deitado; gira o quadro
+  de volta para a horizontal (anti-horário por padrão) em vez de deixar a cena de lado.
 - Até 4K: reduz para 1080p com lanczos (mais nítido que gravar em 1080p) ou mantém (--4k).
 - Taxa de quadros variável vira fixa (30 ou 60): o corte quadro a quadro do montar.py precisa disso para a voz
   não descolar da boca.
@@ -49,15 +49,20 @@ def fracao(s):
 def importar(arq, nome=None, cor="cinema", k4=False, fps_fixo=None, deitado=False):
     v = sondar(arq)
     rot = next((abs(int(d.get("rotation", 0))) for d in v.get("side_data_list", []) if "rotation" in d), 0)
-    # celular marcado como "em pé" (rotação ±90) mas segurado deitado: --deitado ignora a marcação e mantém o quadro
-    # gravado (paisagem, de pé). Sem isso, o ffmpeg gira para retrato.
-    em_pe = rot in (90, 270) and not deitado
+    # celular marcado como "em pé" (rotação ±90) mas segurado deitado: o ffmpeg vira o quadro para retrato e a cena
+    # fica de lado; --deitado gira de volta 90° (anti-horário; --deitado=horario para o outro lado) e o arquivo sai
+    # em paisagem, sem marcação de rotação.
+    em_pe = rot in (90, 270)
     w, h = (v["height"], v["width"]) if em_pe else (v["width"], v["height"])
+    giro = []
+    if deitado:
+        giro = ["transpose=1" if deitado == "horario" else "transpose=2"]
+        w, h = h, w
     nome = nome or os.path.splitext(os.path.basename(arq))[0]
     destino = os.path.join(BRUTO, nome + ".mkv")
     fps_med = fracao(v["avg_frame_rate"]) or fracao(v["r_frame_rate"])
     fps = fps_fixo or (60 if fps_med > 45 else 30)  # vários clipes de um episódio: force o mesmo (--fps=60)
-    filtros = list(TONEMAP) if v.get("color_transfer") in HDR else []
+    filtros = giro + (list(TONEMAP) if v.get("color_transfer") in HDR else [])
     if cor == "cinema":
         filtros += CINEMA
     if max(w, h) > 1920 and not k4:  # nunca força 16:9: um quadro em pé vira 1080x1920, não é espremido
@@ -66,8 +71,7 @@ def importar(arq, nome=None, cor="cinema", k4=False, fps_fixo=None, deitado=Fals
     print(f"{os.path.basename(arq)}: {w}x{h}{' (deitado)' if deitado else ''}, {fps_med:.2f} fps, "
           f"{'HDR ' + v['color_transfer'] if v.get('color_transfer') in HDR else 'SDR'} -> {fps} fps SDR BT.709",
           flush=True)
-    entrada = ["-noautorotate"] if deitado else []
-    subprocess.run(["ffmpeg", "-v", "error", "-stats", "-y", *entrada, "-i", arq, "-map", "0:v:0", "-map", "0:a:0",
+    subprocess.run(["ffmpeg", "-v", "error", "-stats", "-y", "-i", arq, "-map", "0:v:0", "-map", "0:a:0",
                     "-vf", ",".join(filtros), "-c:v", "libx264", "-preset", "faster", "-crf", "12",
                     "-x264-params", f"keyint={fps}", "-color_primaries", "bt709", "-color_trc", "bt709",
                     "-colorspace", "bt709", "-c:a", "pcm_s16le", "-ar", "48000", "-ac", "2", destino], check=True)
@@ -81,4 +85,4 @@ if __name__ == "__main__":
     args = [x for x in sys.argv[1:] if not x.startswith("--")]
     fps_arg = next((int(x.split("=")[1]) for x in sys.argv if x.startswith("--fps=")), None)
     importar(args[0], *(args[1:2]), cor="neutra" if "--cor=neutra" in sys.argv else "cinema", k4="--4k" in sys.argv,
-             fps_fixo=fps_arg, deitado="--deitado" in sys.argv)
+             fps_fixo=fps_arg, deitado=next((x.split("=")[1] if "=" in x else "anti-horario" for x in sys.argv if x.startswith("--deitado")), None))
