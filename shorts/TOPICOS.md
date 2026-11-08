@@ -1,7 +1,8 @@
 # Top 10 tópicos em alta + agenda da semana
 
 > Arquivo vivo: a rotina diária o atualiza (ranking completo todo domingo; troca no meio da semana se um tópico despencar).
-> Última atualização: **31/10/2026**: nicho estreitado (ver abaixo). A medição original de 25/10 cobriu 24 tópicos.
+> Última atualização: **08/11/2026**: ranking remedido e agenda de 09–15/11 (fim do teste de 2/dia; comparação em
+> `tendencias/2026-11-08.md`). Nicho estreitado em 31/10.
 
 ## Nicho do canal (decidido em 31/10/2026): **ciência visual e simulações satisfatórias**
 
@@ -17,34 +18,37 @@ o mesmo espectador: curioso por ciência, que gosta de ver a coisa acontecer na 
   Mercator, tamanho real).
 - Candidatos novos no ranking de domingo só se couberem no guarda-chuva.
 
-## Ranking atual (medido em 25–31/10; o domingo reordena só dentro do nicho)
+## Ranking atual (medido em 08/11/2026, `pesquisa.py`, últimos 30 dias)
 
-| # | Tópico | Mediana de views (7 dias) | Desempenho no canal | Formato original possível |
+| # | Tópico | Mediana de views | Desempenho no canal (02–08/11) | Formato original possível |
 |---|---|---:|---|---|
-| 1 | **Ilusões de ótica** | 376 mil | 1.256 / 1.040 | Ilusões geradas por código |
-| 2 | **Simulações de física** | 358 mil | 925–1.228 | Integração numérica de verdade |
-| 3 | **Espaço** | 111 mil | 650–1.182 | Órbitas, planetas, escalas |
-| 4 | **Satisfying** (loops, encaixes, enchimento) | 153 mil | (01/11) | `pipeline/satisfying.py` |
-| 5 | **Comparação de tamanho e escala** | 130 mil | (31/10) | Escala real, contornos reais |
-| 6 | **Como funciona em 3D** (cinematográfico) | **1 mi** em "how it works 3d animation" (31/10) | (01/11) | three.js (`pipeline/tres.py`, `cenas3d/`) |
-| 7 | **Terra e natureza em simulação** | a medir no domingo 08/11 | — | Vulcões, placas, ondas, clima |
+| 1 | **Ilusões de ótica** | 2,40 mi | ranking 1.256; quizzes 169 | Ilusões geradas por código (ranking, não quiz) |
+| 2 | **3D "What happens if…"** | 1,75 mi | 1.085–1.150 (4 vídeos) | three.js (`pipeline/tres.py`, `cenas3d/`) |
+| 3 | **Simulações de física** | 1,46 mi | Quark da moeda 1.350 | Integração numérica de verdade |
+| 4 | **Como funciona em 3D** | 1,15 mi | "how it works" 29–322 | Só com gancho de "what happens if" |
+| 5 | **Espaço** | 968 mil | Quark Júpiter 621 | Órbitas, planetas, escalas |
+| 6 | **Comparação de tamanho e escala** | 805 mil | animais 38 (< 1 dia) | Escala real |
+| 7 | **Satisfying** | 715 mil | quiz 358 | `pipeline/satisfying.py` |
+| 8 | **Terra e natureza em simulação** | 98 mil (terremoto) | quiz 62 | Terremotos; vulcão e oceano medem pouco |
 
-## Agenda da semana (a partir de 02/11)
+## Agenda da semana (09–15/11)
 
-**Teste de 2 vídeos por dia, de 02/11 a 08/11** (aprovado em 31/10; os horários estão no `upload.py`):
-- **Vídeo A** (12h em Nova York): o tópico do dia, alternando o formato entre Quark what-if, ranking e interativo.
-- **Vídeo B** (19h em Nova York): **3D cinematográfico** (formato fixo desde 31/10, a pedido do usuário). O tema vem
-  da fila abaixo, sempre dentro do nicho, e não precisa ser o tópico do dia.
+O teste de 2/dia terminou (comparação em `tendencias/2026-11-08.md`). Até o usuário decidir, ficam **3 vídeos por
+dia** (padrão do `upload.py`), com a mistura que funcionou e **sem quizzes**:
+- **A** (12h NY): Quark what-if do tópico do dia (ou de física/espaço quando o tópico não render um what-if);
+- **B** (15h NY): ranking do tópico do dia;
+- **C** (19h NY): 3D cinematográfico com título "What happens if/when…", da fila abaixo.
+Roteiros: 1ª frase ≤ 2,5 s já mostrando o perigo ou o resultado; conflito antes dos 5 s (vazamento medido em 08/11).
 
-| Dia | Tópico do dia | Vídeo A (12h NY) | Vídeo B (19h NY), 3D cinematográfico |
-|---|---|---|---|
-| Seg 02/11 | Espaço | 3D: por que o foguete vai de lado ✅ agendado | Quark: pular em Júpiter ✅ agendado |
-| Ter 03/11 | Ilusões de ótica | Interativo (tamanho e alinhamento) ✅ agendado | E se o cabo do elevador arrebentar? ✅ agendado |
-| Qua 04/11 | Simulações de física | Quark what-if (moeda do Empire State) ✅ agendado | Carro × árvore a 30 mph ✅ agendado |
-| Qui 05/11 | Como funciona | Ranking (5 mecanismos) ✅ agendado | Turbina de avião ✅ agendada |
-| Sex 06/11 | Terra e natureza | Interativo (qual é mais fundo?) ✅ agendado | E se o motor do helicóptero parar? ✅ agendado |
-| Sáb 07/11 | Tamanho e escala | Ranking (5 maiores animais em escala) ✅ agendado | E se o trem de pouso não descer? ✅ agendado |
-| Dom 08/11 | Satisfying | Quark what-if (piscina de oobleck) ✅ agendado | E se um raio atingir o avião? ✅ agendado (troca: o #7 da fila reaproveita a cena do avião e tem gancho de "what happens if"; a tomada fica para a próxima semana) |
+| Dia | Tópico do dia | A: Quark what-if | B: ranking | C: 3D "what happens if" |
+|---|---|---|---|---|
+| Seg 09/11 | Ilusões de ótica + espaço | Pular em cada planeta ✅ agendado | 5 formas impossíveis ✅ agendado | Prédio no terremoto ✅ agendado |
+| Ter 10/11 | Simulações de física | a definir | a definir | Tomada sobrecarregada (disjuntor) |
+| Qua 11/11 | Espaço | a definir | a definir | Freio ABS na chuva |
+| Qui 12/11 | Como funciona | a definir | a definir | Descarga do vaso (sifão) |
+| Sex 13/11 | Tamanho e escala | a definir | a definir | Máquina de escrever |
+| Sáb 14/11 | Satisfying | a definir | a definir | Submarino (lastro) |
+| Dom 15/11 | Terra e natureza | a definir | a definir | a definir |
 
 No domingo 08/11 a rotina compara a semana de 2/dia com a semana anterior (3/dia), olhando a média de views por vídeo,
 a taxa de engajamento, a % assistida e o desempenho do 3D cinematográfico contra os outros formatos. Ela registra o
