@@ -43,8 +43,8 @@ Roteiros: 1ª frase ≤ 2,5 s já mostrando o perigo ou o resultado; conflito an
 | Dia | Tópico do dia | A: Quark what-if | B: ranking | C: 3D "what happens if" |
 |---|---|---|---|---|
 | Seg 09/11 | Ilusões de ótica + espaço | Pular em cada planeta ✅ agendado | 5 formas impossíveis ✅ agendado | Prédio no terremoto ✅ agendado |
-| Ter 10/11 | Simulações de física | a definir | a definir | Tomada sobrecarregada (disjuntor) |
-| Qua 11/11 | Espaço | a definir | a definir | Freio ABS na chuva |
+| Ter 10/11 | Simulações de física | — | — | — (disparo atrasou, dia sem vídeos; tomada passa para depois) |
+| Qua 11/11 | Espaço | O Sol sumir ✅ agendado | 5 maiores estrelas ✅ agendado | Freada no molhado (ABS) ✅ agendado |
 | Qui 12/11 | Como funciona | a definir | a definir | Descarga do vaso (sifão) |
 | Sex 13/11 | Tamanho e escala | a definir | a definir | Máquina de escrever |
 | Sáb 14/11 | Satisfying | a definir | a definir | Submarino (lastro) |
