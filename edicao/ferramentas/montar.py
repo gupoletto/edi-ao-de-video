@@ -146,6 +146,7 @@ def legendas(plano, tr, W, H, caminho):
                     texto = r"{\fscx80\fscy80\t(0,90,\fscx100\fscy100)}" + texto  # "pulo" curto na entrada
                 elif modo == "frase":
                     texto = r"{\fad(120,60)\blur8\t(0,160,\blur0)}" + texto  # entra desfocada, como no Léo Lamera
+                b = min(b, b0)  # a palavra pode passar alguns centésimos do fim do trecho (fica dentro do corte)
                 if onde == "main":
                     ta, tb = saida(plano, a), saida(plano, b)
                 else:
