@@ -45,7 +45,7 @@ Roteiros: 1ª frase ≤ 2,5 s já mostrando o perigo ou o resultado; conflito an
 | Seg 09/11 | Ilusões de ótica + espaço | Pular em cada planeta ✅ agendado | 5 formas impossíveis ✅ agendado | Prédio no terremoto ✅ agendado |
 | Ter 10/11 | Simulações de física | — | — | — (disparo atrasou, dia sem vídeos; tomada passa para depois) |
 | Qua 11/11 | Espaço | O Sol sumir ✅ agendado | 5 maiores estrelas ✅ agendado | Freada no molhado (ABS) ✅ agendado |
-| Qui 12/11 | Como funciona | a definir | a definir | Descarga do vaso (sifão) |
+| Qui 12/11 | Como funciona | Cair no vulcão ✅ agendado | 5 coisas mais quentes ✅ agendado | Descarga do vaso (sifão) ✅ agendado |
 | Sex 13/11 | Tamanho e escala | a definir | a definir | Máquina de escrever |
 | Sáb 14/11 | Satisfying | a definir | a definir | Submarino (lastro) |
 | Dom 15/11 | Terra e natureza | a definir | a definir | a definir |
