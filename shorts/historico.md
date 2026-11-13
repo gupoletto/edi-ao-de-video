@@ -47,3 +47,6 @@
 | 12/11/2026 | Terra e física (Quark) | Cair no vulcão: lava ~3x mais densa (não afunda), calor de 1.100 °C, fuga "brasa" | What if com o Quark (arco de conflito) | "What If You Fell Into a X?" | lote-2026-11-12/quark_volcano.mp4 |
 | 12/11/2026 | Física / espaço | Coisas mais quentes: Vênus, superfície do Sol, raio, núcleo do Sol, colisor do CERN | Ranking | "5 Hottest X in the Y (#1 Was Made by Humans)" | lote-2026-11-12/space_hottest.mp4 |
 | 12/11/2026 | 3D cinematográfico (casa) | Descarga do vaso em raio-x: caixa, sifão, gorgolejo, selo d'água | 3D cinematográfico | "What Happens When You X? (3D)" | lote-2026-11-12/tres_descarga.mp4 |
+| 13/11/2026 | Tamanho e escala (Quark) | Terra do tamanho de Júpiter: 11x mais larga, 11 g, pior que piloto de caça, 125 km/s para escapar | What if com o Quark (arco de conflito) | "What If Earth Was the Size of X?" | lote-2026-11-13/quark_giant_earth.mp4 |
+| 13/11/2026 | Tamanho e escala | Coisas minúsculas em escala: fio de cabelo, hemácia, vírus, átomo, comprimento de Planck | Ranking | "How Small Can Things Get? N Tiny X to Scale (#1 …)" | lote-2026-11-13/size_smallest.mp4 |
+| 13/11/2026 | 3D cinematográfico (mar) | Submarino: tanques de lastro enchem, afunda, equilíbrio, ar comprimido, sobe | 3D cinematográfico | "What Happens When a X Dives? (3D)" | lote-2026-11-13/tres_submarino.mp4 |
