@@ -47,7 +47,7 @@ Roteiros: 1ª frase ≤ 2,5 s já mostrando o perigo ou o resultado; conflito an
 | Qua 11/11 | Espaço | O Sol sumir ✅ agendado | 5 maiores estrelas ✅ agendado | Freada no molhado (ABS) ✅ agendado |
 | Qui 12/11 | Como funciona | Cair no vulcão ✅ agendado | 5 coisas mais quentes ✅ agendado | Descarga do vaso (sifão) ✅ agendado |
 | Sex 13/11 | Tamanho e escala | Terra do tamanho de Júpiter ✅ agendado | Coisas minúsculas em escala ✅ agendado | Submarino (lastro) ✅ agendado (troca com sábado) |
-| Sáb 14/11 | Satisfying | a definir | a definir | Máquina de escrever |
+| Sáb 14/11 | Satisfying | Looping na bola gigante ✅ agendado | Padrões da natureza ✅ agendado | Dominós 1,5x maiores ✅ agendado (máquina de escrever caiu para 1,3 mil) |
 | Dom 15/11 | Terra e natureza | a definir | a definir | a definir |
 
 No domingo 08/11 a rotina compara a semana de 2/dia com a semana anterior (3/dia), olhando a média de views por vídeo,
