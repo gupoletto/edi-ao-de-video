@@ -1,7 +1,7 @@
 # Top 10 tópicos em alta + agenda da semana
 
 > Arquivo vivo: a rotina diária o atualiza (ranking completo todo domingo; troca no meio da semana se um tópico despencar).
-> Última atualização: **08/11/2026**: ranking remedido e agenda de 09–15/11 (fim do teste de 2/dia; comparação em
+> Última atualização: **15/11/2026** (ranking remedido e agenda 16–22/11). Anterior: **08/11/2026**: ranking remedido e agenda de 09–15/11 (fim do teste de 2/dia; comparação em
 > `tendencias/2026-11-08.md`). Nicho estreitado em 31/10.
 
 ## Nicho do canal (decidido em 31/10/2026): **ciência visual e simulações satisfatórias**
@@ -48,12 +48,28 @@ Roteiros: 1ª frase ≤ 2,5 s já mostrando o perigo ou o resultado; conflito an
 | Qui 12/11 | Como funciona | Cair no vulcão ✅ agendado | 5 coisas mais quentes ✅ agendado | Descarga do vaso (sifão) ✅ agendado |
 | Sex 13/11 | Tamanho e escala | Terra do tamanho de Júpiter ✅ agendado | Coisas minúsculas em escala ✅ agendado | Submarino (lastro) ✅ agendado (troca com sábado) |
 | Sáb 14/11 | Satisfying | Looping na bola gigante ✅ agendado | Padrões da natureza ✅ agendado | Dominós 1,5x maiores ✅ agendado (máquina de escrever caiu para 1,3 mil) |
-| Dom 15/11 | Terra e natureza | a definir | a definir | a definir |
+| Dom 15/11 | Terra e natureza | E se a Terra parasse de girar ✅ | Ventos mais rápidos ✅ | Tsunami chegando ✅ |
 
 No domingo 08/11 a rotina compara a semana de 2/dia com a semana anterior (3/dia), olhando a média de views por vídeo,
 a taxa de engajamento, a % assistida e o desempenho do 3D cinematográfico contra os outros formatos. Ela registra o
 resultado em `tendencias/` e no relatório, e recomenda ao usuário: manter 2, voltar para 3 ou testar 1. **Quem decide
 é o usuário.** Até ele decidir, o `upload.py` volta sozinho para 3 slots a partir de 09/11.
+
+## Agenda da semana (16–22/11)
+
+3 vídeos por dia (A Quark what-if, B ranking, C 3D "what happens if"), sem quizzes. 1º segmento com 2 frases e a
+mesma cena (6–7 s); palavra-chave da busca nas primeiras palavras do título. No 3D, no máximo 1 tema de aviação a
+cada 3 dias.
+
+| Dia | Tópico do dia | A: Quark what-if | B: ranking | C: 3D |
+|---|---|---|---|---|
+| Seg 16/11 | Ilusões de ótica | a definir | ilusões de movimento | a definir |
+| Ter 17/11 | Simulações de física | a definir | a definir | a definir |
+| Qua 18/11 | Espaço | a definir | a definir | a definir |
+| Qui 19/11 | Como funciona | a definir | a definir | como a tomada funciona |
+| Sex 20/11 | Tamanho e escala | a definir | a definir | a definir |
+| Sáb 21/11 | Satisfying (dominós em alta) | a definir | a definir | a definir |
+| Dom 22/11 | Terra e natureza | a definir | a definir | tornado |
 
 ## Fila do 3D cinematográfico
 
