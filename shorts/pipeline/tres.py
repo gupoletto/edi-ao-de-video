@@ -29,6 +29,8 @@ const fs = require('fs');
   const cfg = JSON.parse(fs.readFileSync(process.argv[2], 'utf8'));
   const browser = await chromium.launch({args: ['--use-gl=angle', '--use-angle=swiftshader', '--enable-unsafe-swiftshader']});
   const page = await browser.newPage({viewport: {width: cfg.w, height: cfg.h}});
+  page.on('pageerror', e => console.error('ERRO NA CENA:', e.message));
+  page.on('console', m => { if (m.type() === 'error') console.error('CONSOLE:', m.text()); });
   await page.route('http://cena.local/**', r => {
     const nome = r.request().url().split('/').pop();
     const corpo = nome === 'index.html' ? cfg.html : fs.readFileSync(cfg.arquivos[nome], 'utf8');

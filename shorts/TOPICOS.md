@@ -63,7 +63,7 @@ cada 3 dias.
 
 | Dia | Tópico do dia | A: Quark what-if | B: ranking | C: 3D |
 |---|---|---|---|---|
-| Seg 16/11 | Ilusões de ótica | a definir | ilusões de movimento | a definir |
+| Seg 16/11 | Ilusões de ótica | Espiral + pós-efeito ✅ | Ilusões que o olho cria ✅ | Quarto de Ames ✅ |
 | Ter 17/11 | Simulações de física | a definir | a definir | a definir |
 | Qua 18/11 | Espaço | a definir | a definir | a definir |
 | Qui 19/11 | Como funciona | a definir | a definir | como a tomada funciona |
