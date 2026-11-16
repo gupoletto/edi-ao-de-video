@@ -14,6 +14,11 @@ autorização, não entra.
 - Desde setembro de 2026, violência gráfica de jogo nos primeiros ~7 s pode tirar o vídeo da monetização: o gancho
   dos cortes é a reação do streamer ou o contexto, e a cena violenta só depois.
 
+## Ferramenta
+
+`shorts/gta6/cortar.py` (recusa criador fora de `gta6/permissoes.md`). Pasta do Drive para o material: **a definir
+pelo usuário**.
+
 ## Como cada corte é feito
 
 1. O criador autoriza; o arquivo vem dele (link de download, Drive) ou de um clipe que ele mesmo publicou.

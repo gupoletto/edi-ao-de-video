@@ -1,3 +1,25 @@
+# A PARTIR DE 19/11/2026: CANAL DE CORTES DE GTA 6 (decisão do usuário em 16/11)
+
+De 19/11 em diante o Fun Stuff publica **só cortes de GTA 6 em inglês**, sem vídeos de ciência e sem animações.
+Até 18/11 vale a rotina de ciência abaixo. Leia `shorts/GTA6.md` antes de começar.
+
+1. **Permissão primeiro.** Só corte vídeo de criador listado em `shorts/gta6/permissoes.md`. O `gta6/cortar.py`
+   recusa os outros. Nunca baixe nem use vídeo de criador sem autorização registrada, nem trailers da Rockstar.
+   Se ninguém autorizou ainda, não publique nada: avise o usuário no relatório e na notificação.
+2. **Material:** os arquivos que o usuário ou o criador deixar na pasta do Drive de GTA 6 indicada em `GTA6.md`
+   (ou link de download enviado pelo próprio criador).
+3. **Escolha:** os momentos mais fortes do dia (reação, glitch, segredo do mapa, perseguição), 15–40 s cada, sem
+   spoiler de história (finais, cutscenes de missão principal).
+4. **Corte:** `python3 shorts/gta6/cortar.py <vídeo> --de … --ate … --criador @… --gancho "…" [--cam x,y,w,h]
+   [--contexto "…"] --saida shorts/lote-AAAA-MM-DD/…mp4`. O gancho começa pela reação ou pelo contexto; violência
+   gráfica nunca nos primeiros 7 s (regra de monetização do YouTube de set/2026).
+5. **Publicação:** igual à rotina abaixo (`videos.json`, `upload.py`, horários livres de `--free-slots`), título
+   começando com "GTA 6", descrição com o crédito "Gameplay: @criador (used with permission)" e link do canal dele,
+   categoria 20 (Gaming). Registre em `historico.md`.
+6. **Relatório:** quantos cortes, de quais criadores, links; métricas com `metricas.py`.
+
+---
+
 # Rotina diária de produção (instruções para a sessão agendada)
 
 Leia `shorts/PLANO.md` (documento-mestre: nicho, marca, catálogo de formatos, regras de qualidade, métricas e decisões), `shorts/TOPICOS.md` e `shorts/ESTRATEGIA.md` antes de começar. As regras de monetização dele valem acima de tudo: na dúvida, produza menos vídeos, nunca um vídeo que as viole.
