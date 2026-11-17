@@ -59,3 +59,6 @@
 | 16/11/2026 | Ilusões de ótica (Quark) | Espiral e pós-efeito de movimento: encara o ponto, o Quark parado parece crescer | What if com o Quark | "Stare at This X, Then Look at Me" | lote-2026-11-16/quark_spiral.mp4 |
 | 16/11/2026 | Ilusões de ótica | Ilusões que o olho cria: grade de Hermann, grade cintilante, Troxler, lilac chaser, pós-imagem | Ranking | "5 Optical Illusions Your Eyes Make Up (#1 …)" | lote-2026-11-16/illusions_eye_tricks.mp4 |
 | 16/11/2026 | 3D cinematográfico (ilusão) | Quarto de Ames: duas pessoas iguais parecem gigante e anã; vista de cima revela o trapézio | 3D cinematográfico | "Why Does This X Make People Y? (3D)" | lote-2026-11-16/tres_ames.mp4 |
+| 17/11/2026 | Física (Quark) | Terra plana com gravidade real: chão vira ladeira perto da borda, oceano no centro, vira bola | What if com o Quark | "What If Earth Was Actually X?" | lote-2026-11-17/quark_flat_earth.mp4 |
+| 17/11/2026 | Física | Coisas mais rápidas feitas pelo homem: ThrustSSC, X-15, Apollo 10, New Horizons, Parker | Ranking | "The 5 Fastest X Humans Ever Made (#1 …)" | lote-2026-11-17/physics_fastest_made.mp4 |
+| 17/11/2026 | 3D (física) | Onda de 15 pêndulos: cobra, caos, duas fileiras, alinhamento aos 30 s | 3D cinematográfico | "N X, Each a Bit Y: Wait for Z (3D)" | lote-2026-11-17/tres_pendulos.mp4 |
