@@ -62,3 +62,6 @@
 | 17/11/2026 | Física (Quark) | Terra plana com gravidade real: chão vira ladeira perto da borda, oceano no centro, vira bola | What if com o Quark | "What If Earth Was Actually X?" | lote-2026-11-17/quark_flat_earth.mp4 |
 | 17/11/2026 | Física | Coisas mais rápidas feitas pelo homem: ThrustSSC, X-15, Apollo 10, New Horizons, Parker | Ranking | "The 5 Fastest X Humans Ever Made (#1 …)" | lote-2026-11-17/physics_fastest_made.mp4 |
 | 17/11/2026 | 3D (física) | Onda de 15 pêndulos: cobra, caos, duas fileiras, alinhamento aos 30 s | 3D cinematográfico | "N X, Each a Bit Y: Wait for Z (3D)" | lote-2026-11-17/tres_pendulos.mp4 |
+| 18/11/2026 | Espaço (Quark) | Cair num buraco negro: espaguetificação, o gigante é suave na borda, congelado para quem vê de fora | What if com o Quark | "What If You Fell Into a X?" | lote-2026-11-18/quark_black_hole.mp4 |
+| 18/11/2026 | Espaço | Lugares mais frios: Antártida, Plutão, espaço vazio, Nebulosa do Bumerangue, laboratório em Bremen | Ranking | "The 5 Coldest X in the Y (#1 Is on Earth)" | lote-2026-11-18/space_coldest.mp4 |
+| 18/11/2026 | 3D (espaço) | Asteroide de 1 km atingindo a Terra: reentrada, impacto, cratera, onda de choque, poeira; ninguém vindo | 3D cinematográfico | "What Happens If an X Hits Y? (3D)" | lote-2026-11-18/tres_asteroide.mp4 |
