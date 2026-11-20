@@ -16,6 +16,7 @@ foco em **storytelling**: histórias curtas, com gancho forte, que expliquem bem
    história/drama → `cinema`; ranking/lista → `pop`; perigo/desastre → `suspense`; estranho/espaço → `misterio`;
    construção/conquista → `epico`; Quark/engraçado → `alegre`. Varie entre os vídeos do mesmo dia.
 5. Fatos sempre conferidos e listados na docstring do episódio. Nada de vídeo de terceiros.
+6. **3 vídeos por dia** (confirmado pelo usuário em 20/11), nos horários livres de `upload.py --free-slots`.
 
 ---
 
