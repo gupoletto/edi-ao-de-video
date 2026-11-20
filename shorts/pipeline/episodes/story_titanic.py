@@ -25,7 +25,7 @@ import core  # noqa: E402
 import personagem as pq  # noqa: E402
 from core import GREEN, H, PINK, W, WHITE, YELLOW, Seg, ramp, render, round_rect, text_center  # noqa: E402
 
-core.MUSICA = "cinema"
+core.MUSICA = "historia"   # tom -> cinema
 MAR = 1150
 CASCO = (0.10, 0.10, 0.12)
 N_COMP = 16

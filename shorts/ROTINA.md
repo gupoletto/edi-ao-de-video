@@ -11,8 +11,10 @@ foco em **storytelling**: histórias curtas, com gancho forte, que expliquem bem
    problema/conflito → a virada (o "como" ou o "porquê") → desfecho → pergunta. Frases curtas, números concretos.
 3. **Animação caprichada**, 2D (cairo, `episodes/story_*.py`) ou 3D (`tres.py`): toda cena se mexe, caixas de
    informação longe do título e das legendas; confira frames com a prévia e a zona segura antes de publicar.
-4. **Voz e música:** a voz padrão agora é `af_heart` (1.05) e a música vem do gerador novo de `core.music`
-   (estilos `lofi`, `cinema`, `pop`; force com `core.MUSICA = "…"` no episódio), com ducking sob a voz.
+4. **Voz e música:** a voz é `am_puck` (1.05), escolhida pelo usuário. A música varia **de acordo com o tom do vídeo**:
+   todo episódio define `core.MUSICA` com o tom ou o estilo (`core.TONS`): curioso/explicativo → `lofi`;
+   história/drama → `cinema`; ranking/lista → `pop`; perigo/desastre → `suspense`; estranho/espaço → `misterio`;
+   construção/conquista → `epico`; Quark/engraçado → `alegre`. Varie entre os vídeos do mesmo dia.
 5. Fatos sempre conferidos e listados na docstring do episódio. Nada de vídeo de terceiros.
 
 ---

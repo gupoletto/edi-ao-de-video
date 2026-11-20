@@ -22,7 +22,7 @@ import core  # noqa: E402
 import personagem as pq  # noqa: E402
 from core import GREEN, H, PINK, W, WHITE, YELLOW, Seg, render, round_rect, text_center  # noqa: E402
 
-core.MUSICA = "pop"
+core.MUSICA = "construcao"   # tom -> épico
 CHAO = 1180
 AZUL = (0.4, 0.75, 1.0)
 LARANJA = (1.0, 0.62, 0.25)

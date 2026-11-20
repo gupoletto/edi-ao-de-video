@@ -21,7 +21,7 @@ import soundfile as sf
 
 W, H, FPS = 1080, 1920, 30
 SR = 24000
-VOICE, SPEED = "af_heart", 1.05   # desde 20/11/2026 (antes am_michael 1.08)
+VOICE, SPEED = "am_puck", 1.05   # escolhida pelo usuário em 20/11/2026 (antes af_heart; am_michael 1.08)
 HANDLE = "@funstuff-67"
 
 BLUE = (0.36, 0.78, 0.98)
@@ -317,15 +317,34 @@ def _soma(out, s, p):
     out[s:e] += p[:e - s]
 
 
-MUSICA = os.environ.get("FUNSTUFF_MUSICA", "")   # força um estilo: lofi, cinema, pop
+MUSICA = os.environ.get("FUNSTUFF_MUSICA", "")   # estilo da trilha; cada episódio escolhe pelo tom (ver TONS)
+
+# Tom do vídeo -> estilo da trilha (pedido do usuário em 20/11: música variada de acordo com o tom do vídeo).
+TONS = {
+    "curioso": "lofi", "calmo": "lofi", "explicativo": "lofi",
+    "historia": "cinema", "dramatico": "cinema", "triste": "cinema",
+    "animado": "pop", "ranking": "pop", "lista": "pop",
+    "tenso": "suspense", "perigo": "suspense", "desastre": "suspense",
+    "misterio": "misterio", "estranho": "misterio", "espaco": "misterio",
+    "epico": "epico", "construcao": "epico", "conquista": "epico",
+    "divertido": "alegre", "quark": "alegre", "engracado": "alegre",
+}
+ESTILOS = ["lofi", "cinema", "pop", "suspense", "misterio", "epico", "alegre"]
 
 
 def music(dur, estilo=None):
-    """Trilha original sintetizada (desde 20/11/2026). Três estilos, escolhidos por vídeo:
-    lofi  - acordes de sétima com Rhodes suave, bateria hip-hop lenta (~84 BPM) e baixo;
-    cinema - pulso de cordas em colcheias, tambor grave e pad crescendo (~100 BPM), para histórias;
-    pop   - acordes brilhantes em síncope, palmas e baixo saltado (~112 BPM), para listas e rankings."""
-    estilo = estilo or MUSICA or ["lofi", "cinema", "pop"][int(dur * 10) % 3]
+    """Trilha original sintetizada (desde 20/11/2026). O estilo segue o tom do vídeo (core.MUSICA = estilo ou tom):
+    lofi     - acordes de sétima com Rhodes suave, bateria hip-hop lenta (~84 BPM): curioso, calmo, explicativo;
+    cinema   - pulso de cordas em colcheias, tambor grave e pad crescendo (~100 BPM): história, drama;
+    pop      - acordes brilhantes em síncope, palmas e baixo saltado (~112 BPM): listas e rankings;
+    suspense - drone grave, batida de coração e tremolo agudo em menor (~70 BPM): perigo, desastre, tensão;
+    misterio - caixinha de música em arpejos com eco sobre pad (~76 BPM): estranho, espaço, enigmas;
+    epico    - tambores tipo taiko, acordes graves cheios e cordas subindo (~90 BPM): construções, conquistas;
+    alegre   - pizzicato saltitante, baixo alternado e palmas (~120 BPM): Quark, temas leves e engraçados."""
+    estilo = estilo or MUSICA or "lofi"
+    estilo = TONS.get(estilo, estilo)
+    if estilo not in ESTILOS:
+        raise ValueError(f"estilo de música desconhecido: {estilo}")
     n = int(dur * SR)
     out = np.zeros(n, np.float32)
     nota = lambda m: 440.0 * 2 ** ((m - 69) / 12)
@@ -333,8 +352,16 @@ def music(dur, estilo=None):
         bpm, prog = 84, [(57, 60, 64, 67), (53, 57, 60, 64), (55, 59, 62, 65), (52, 55, 59, 62)]  # Am7 Fmaj7 G7 Em7
     elif estilo == "cinema":
         bpm, prog = 100, [(57, 60, 64), (53, 57, 60), (48, 52, 55), (55, 59, 62)]                  # Am F C G
-    else:
+    elif estilo == "pop":
         bpm, prog = 112, [(60, 64, 67), (55, 59, 62), (57, 60, 64), (53, 57, 60)]                  # C G Am F
+    elif estilo == "suspense":
+        bpm, prog = 70, [(50, 53, 57), (46, 50, 53), (43, 46, 50), (45, 49, 52)]                   # Dm Bb Gm A
+    elif estilo == "misterio":
+        bpm, prog = 76, [(52, 55, 59), (48, 52, 55, 59), (45, 48, 52), (47, 51, 54, 57)]           # Em Cmaj7 Am B7
+    elif estilo == "epico":
+        bpm, prog = 90, [(50, 53, 57), (46, 50, 53), (53, 57, 60), (48, 52, 55)]                   # Dm Bb F C
+    else:
+        bpm, prog = 120, [(60, 64, 67), (57, 60, 64), (53, 57, 60), (55, 59, 62)]                  # C Am F G
     bt = 60 / bpm
     compasso = 4 * bt
     for k in range(int(dur / compasso) + 1):
@@ -360,6 +387,55 @@ def music(dur, estilo=None):
                                                            attack=0.005, decay=0.12, kind="tri"))
             _soma(out, s0, _kick(0.28))
             _soma(out, s0 + int(2 * bt * SR), _kick(0.18))
+        elif estilo == "suspense":
+            _soma(out, s0, tone(nota(c[0] - 24), compasso + 0.2, 0.09, attack=0.8))   # drone
+            _soma(out, s0, tone(nota(c[0] - 12), compasso + 0.2, 0.03 * cresce, attack=1.2, kind="tri"))
+            for b in range(4):   # coração: tum-tum
+                _soma(out, s0 + int(b * bt * SR), _kick(0.24))
+                _soma(out, s0 + int((b + 0.3) * bt * SR), _kick(0.14))
+            for j in range(16):  # tremolo agudo em segunda menor, crescendo
+                m = c[2] + 12 + (j % 2)
+                _soma(out, s0 + int(j * bt / 4 * SR), tone(nota(m), bt / 4, 0.010 + 0.012 * cresce, attack=0.01,
+                                                           decay=0.08, kind="tri"))
+        elif estilo == "misterio":
+            for m in c:
+                _soma(out, s0, tone(nota(m - 12), compasso + 0.4, 0.016, attack=0.9, kind="tri"))
+            arp = list(c) + list(c[::-1][1:-1])
+            for j in range(8):   # caixinha de música em colcheias, com eco
+                m = arp[j % len(arp)] + 24
+                p = tone(nota(m), 1.0, 0.035, attack=0.003, decay=0.35)
+                at = s0 + int(j * bt / 2 * SR)
+                _soma(out, at, p)
+                _soma(out, at + int(0.75 * bt * SR), p * 0.35)
+            _soma(out, s0, _kick(0.12))
+        elif estilo == "epico":
+            for m in c:   # acordes graves cheios
+                p = tone(nota(m - 12), compasso + 0.3, 0.03 + 0.02 * cresce, attack=0.25, kind="tri")
+                _soma(out, s0, p)
+            _soma(out, s0, tone(nota(c[0] - 24), compasso, 0.08, attack=0.05, decay=1.5))
+            for b in (0, 1.5, 2, 3, 3.5):   # taiko
+                _soma(out, s0 + int(b * bt * SR), _kick(0.34 if b in (0, 2) else 0.22))
+            if k >= 2:
+                for b in (1, 3):
+                    _soma(out, s0 + int(b * bt * SR), _snare(0.08, k * 4 + int(b)))
+            if k >= 4:   # cordas subindo em semicolcheias
+                for j in range(16):
+                    m = c[j % len(c)] + 12 + 12 * (j // 8)
+                    _soma(out, s0 + int(j * bt / 4 * SR), tone(nota(m), bt / 4, 0.016, attack=0.004, decay=0.07,
+                                                               kind="tri"))
+        elif estilo == "alegre":
+            for b in range(4):
+                raiz = c[0] - 12 if b % 2 == 0 else c[2] - 24   # baixo alternado
+                _soma(out, s0 + int(b * bt * SR), tone(nota(raiz), bt * 0.8, 0.07, decay=0.15))
+                for i, m in enumerate(c):   # pizzicato no contratempo, "dedilhado"
+                    _soma(out, s0 + int(((b + 0.5) * bt + i * 0.012) * SR),
+                          tone(nota(m + 12), 0.25, 0.024, attack=0.002, decay=0.07, kind="tri"))
+                if b in (1, 3):
+                    _soma(out, s0 + int(b * bt * SR), _snare(0.07, k * 4 + b))
+                _soma(out, s0 + int((b + 0.5) * bt * SR), _hat(0.02, k * 7 + b))
+            if k % 2 == 1:   # assobio de melodia simples
+                for j, m in enumerate((c[2] + 24, c[1] + 24, c[0] + 24, c[1] + 24)):
+                    _soma(out, s0 + int(j * bt * SR), tone(nota(m), bt * 0.9, 0.018, attack=0.04, decay=0.3))
         else:
             for j, b in enumerate((0, 0.75, 1.5, 2.5, 3.0)):   # acordes em síncope
                 for m in c:
@@ -373,6 +449,9 @@ def music(dur, estilo=None):
                 _soma(out, s0 + int((b + 0.5) * bt * SR), _hat(0.025, k * 9 + b))
     pico = np.max(np.abs(out)) or 1
     out = out / pico * 0.22          # a mixagem final abaixa sob a voz
+    rms = float(np.sqrt(np.mean(out ** 2))) or 1
+    if rms > 0.031:                  # estilos mais densos (suspense, épico) ficam no mesmo volume médio dos outros
+        out *= 0.031 / rms
     fade = int(0.8 * SR)
     out[:fade] *= np.linspace(0, 1, fade)
     out[-fade:] *= np.linspace(1, 0, fade)
