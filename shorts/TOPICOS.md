@@ -4,6 +4,13 @@
 > Última atualização: **15/11/2026** (ranking remedido e agenda 16–22/11). Anterior: **08/11/2026**: ranking remedido e agenda de 09–15/11 (fim do teste de 2/dia; comparação em
 > `tendencias/2026-11-08.md`). Nicho estreitado em 31/10.
 
+## Ampliação de 20/11/2026: storytelling
+
+Pedido do usuário: além da ciência visual, histórias curtas e bem contadas sobre **história do mundo, atualidades,
+como as coisas funcionam e como são construídas**, em 2D ou 3D (ver bloco no topo de `ROTINA.md`). Demanda medida em
+20/11: "what happened to" 4.49M, "how it's made" 3.44M, "history explained" 940k, "how were skyscrapers built" 35k.
+O espectador continua o mesmo curioso que gosta de ver a coisa acontecer na tela.
+
 ## Nicho do canal (decidido em 31/10/2026): **ciência visual e simulações satisfatórias**
 
 O algoritmo testa cada vídeo com uma amostra de ~200 pessoas parecidas com quem já gostou do canal (`ESTRATEGIA.md`,

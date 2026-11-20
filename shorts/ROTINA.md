@@ -1,22 +1,19 @@
-# A PARTIR DE 19/11/2026: CANAL DE CORTES DE GTA 6 (decisão do usuário em 16/11)
+# A PARTIR DE 20/11/2026: STORYTELLING ANIMADO (decisão do usuário em 20/11; GTA 6 pausado)
 
-De 19/11 em diante o Fun Stuff publica **só cortes de GTA 6 em inglês**, sem vídeos de ciência e sem animações.
-Até 18/11 vale a rotina de ciência abaixo. Leia `shorts/GTA6.md` antes de começar.
+Os cortes de GTA 6 estão **pausados** (`GTA6.md` fica só como referência). O canal volta às animações, agora com
+foco em **storytelling**: histórias curtas, com gancho forte, que expliquem bem as coisas.
 
-1. **Permissão primeiro.** Só corte vídeo de criador listado em `shorts/gta6/permissoes.md`. O `gta6/cortar.py`
-   recusa os outros. Nunca baixe nem use vídeo de criador sem autorização registrada, nem trailers da Rockstar.
-   Se ninguém autorizou ainda, não publique nada: avise o usuário no relatório e na notificação.
-2. **Material:** os arquivos que o usuário ou o criador deixar na pasta do Drive de GTA 6 indicada em `GTA6.md`
-   (ou link de download enviado pelo próprio criador).
-3. **Escolha:** os momentos mais fortes do dia (reação, glitch, segredo do mapa, perseguição), 15–40 s cada, sem
-   spoiler de história (finais, cutscenes de missão principal).
-4. **Corte:** `python3 shorts/gta6/cortar.py <vídeo> --de … --ate … --criador @… --gancho "…" [--cam x,y,w,h]
-   [--contexto "…"] --saida shorts/lote-AAAA-MM-DD/…mp4`. O gancho começa pela reação ou pelo contexto; violência
-   gráfica nunca nos primeiros 7 s (regra de monetização do YouTube de set/2026).
-5. **Publicação:** igual à rotina abaixo (`videos.json`, `upload.py`, horários livres de `--free-slots`), título
-   começando com "GTA 6", descrição com o crédito "Gameplay: @criador (used with permission)" e link do canal dele,
-   categoria 20 (Gaming). Registre em `historico.md`.
-6. **Relatório:** quantos cortes, de quais criadores, links; métricas com `metricas.py`.
+1. **Temas variados:** história do mundo (ex.: Titanic), atualidades, como as coisas funcionam, como as coisas são
+   construídas (ex.: Burj Khalifa, arranha-céus, pontes), além dos formatos que já funcionam (what if 3D, Quark,
+   ilusões, tamanho, espaço). Escolha pelo que está bombando: `pesquisa.py` com variações de "how was … built",
+   "how it's made", "what happened to", "why did … ", "history explained" e o assunto do momento.
+2. **Arco de história** em todo vídeo: gancho (fato surpreendente ou promessa, 2 frases na mesma cena) → contexto →
+   problema/conflito → a virada (o "como" ou o "porquê") → desfecho → pergunta. Frases curtas, números concretos.
+3. **Animação caprichada**, 2D (cairo, `episodes/story_*.py`) ou 3D (`tres.py`): toda cena se mexe, caixas de
+   informação longe do título e das legendas; confira frames com a prévia e a zona segura antes de publicar.
+4. **Voz e música:** a voz padrão agora é `af_heart` (1.05) e a música vem do gerador novo de `core.music`
+   (estilos `lofi`, `cinema`, `pop`; force com `core.MUSICA = "…"` no episódio), com ducking sob a voz.
+5. Fatos sempre conferidos e listados na docstring do episódio. Nada de vídeo de terceiros.
 
 ---
 

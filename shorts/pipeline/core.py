@@ -21,7 +21,7 @@ import soundfile as sf
 
 W, H, FPS = 1080, 1920, 30
 SR = 24000
-VOICE, SPEED = "am_michael", 1.08
+VOICE, SPEED = "af_heart", 1.05   # desde 20/11/2026 (antes am_michael 1.08)
 HANDLE = "@funstuff-67"
 
 BLUE = (0.36, 0.78, 0.98)
@@ -289,29 +289,91 @@ SFX = {
 }
 
 
-def music(dur):
-    """Original synth bed: slow I–V–vi–IV pad with a gentle arpeggio."""
+def _kick(amp=0.35):
+    n = int(0.35 * SR)
+    t = np.arange(n) / SR
+    f = 50 + 90 * np.exp(-t * 30)
+    return (amp * np.sin(2 * np.pi * np.cumsum(f) / SR) * np.exp(-t * 9)).astype(np.float32)
+
+
+def _snare(amp=0.12, seed=0):
+    n = int(0.25 * SR)
+    t = np.arange(n) / SR
+    ruido = np.random.default_rng(seed).standard_normal(n)
+    return (amp * (0.7 * ruido + 0.3 * np.sin(2 * np.pi * 190 * t)) * np.exp(-t * 18)).astype(np.float32)
+
+
+def _hat(amp=0.035, seed=0):
+    n = int(0.06 * SR)
+    r = np.random.default_rng(seed).standard_normal(n)
+    r = np.diff(r, prepend=0)          # agudo
+    return (amp * r * np.exp(-np.arange(n) / SR * 70)).astype(np.float32)
+
+
+def _soma(out, s, p):
+    if s >= len(out):
+        return
+    e = min(len(out), s + len(p))
+    out[s:e] += p[:e - s]
+
+
+MUSICA = os.environ.get("FUNSTUFF_MUSICA", "")   # força um estilo: lofi, cinema, pop
+
+
+def music(dur, estilo=None):
+    """Trilha original sintetizada (desde 20/11/2026). Três estilos, escolhidos por vídeo:
+    lofi  - acordes de sétima com Rhodes suave, bateria hip-hop lenta (~84 BPM) e baixo;
+    cinema - pulso de cordas em colcheias, tambor grave e pad crescendo (~100 BPM), para histórias;
+    pop   - acordes brilhantes em síncope, palmas e baixo saltado (~112 BPM), para listas e rankings."""
+    estilo = estilo or MUSICA or ["lofi", "cinema", "pop"][int(dur * 10) % 3]
     n = int(dur * SR)
     out = np.zeros(n, np.float32)
-    chords = [(261.6, 329.6, 392.0), (196.0, 246.9, 293.7), (220.0, 261.6, 329.6), (174.6, 220.0, 261.6)]
-    bar = 2.0
-    for k in range(int(dur / bar) + 1):
-        c = chords[k % 4]
-        s = int(k * bar * SR)
-        for f in c:
-            p = tone(f / 2, bar + 0.3, 0.05, attack=0.4, kind="tri")
-            p *= np.linspace(1, 0.3, len(p)).astype(np.float32)
-            e = min(n, s + len(p))
-            if s < n:
-                out[s:e] += p[:e - s]
-        for j in range(4):
-            f = c[j % 3] * 2
-            ss = s + int(j * bar / 4 * SR)
-            p = tone(f, 0.45, 0.035, decay=0.18)
-            e = min(n, ss + len(p))
-            if ss < n:
-                out[ss:e] += p[:e - ss]
-    fade = int(0.5 * SR)
+    nota = lambda m: 440.0 * 2 ** ((m - 69) / 12)
+    if estilo == "lofi":
+        bpm, prog = 84, [(57, 60, 64, 67), (53, 57, 60, 64), (55, 59, 62, 65), (52, 55, 59, 62)]  # Am7 Fmaj7 G7 Em7
+    elif estilo == "cinema":
+        bpm, prog = 100, [(57, 60, 64), (53, 57, 60), (48, 52, 55), (55, 59, 62)]                  # Am F C G
+    else:
+        bpm, prog = 112, [(60, 64, 67), (55, 59, 62), (57, 60, 64), (53, 57, 60)]                  # C G Am F
+    bt = 60 / bpm
+    compasso = 4 * bt
+    for k in range(int(dur / compasso) + 1):
+        c = prog[k % 4]
+        s0 = int(k * compasso * SR)
+        cresce = min(1.0, k / 4)
+        if estilo == "lofi":
+            for m in c:   # Rhodes: dois toques por compasso, um pouco "atrasados"
+                for b in (0, 2.5):
+                    p = tone(nota(m), 1.6, 0.028, attack=0.01, decay=0.8) + tone(nota(m) * 2, 1.6, 0.008, decay=0.3)
+                    _soma(out, s0 + int((b * bt + 0.02) * SR), p)
+            _soma(out, s0, tone(nota(c[0] - 24), compasso, 0.07, attack=0.02, decay=1.2))
+            for b in range(4):
+                _soma(out, s0 + int(b * bt * SR), _kick(0.22) if b in (0, 2) else _snare(0.07, k * 4 + b))
+                for h in (0, 0.5):
+                    _soma(out, s0 + int((b + h) * bt * SR), _hat(0.02, k * 8 + b))
+        elif estilo == "cinema":
+            for m in c:   # pad
+                p = tone(nota(m), compasso + 0.3, 0.02 + 0.015 * cresce, attack=0.6, kind="tri")
+                _soma(out, s0, p * np.linspace(1, 0.6, len(p)).astype(np.float32))
+            for j in range(8):   # pulso de cordas em colcheias
+                _soma(out, s0 + int(j * bt / 2 * SR), tone(nota(c[0] - 12), bt / 2, 0.05 * (0.5 + 0.5 * cresce),
+                                                           attack=0.005, decay=0.12, kind="tri"))
+            _soma(out, s0, _kick(0.28))
+            _soma(out, s0 + int(2 * bt * SR), _kick(0.18))
+        else:
+            for j, b in enumerate((0, 0.75, 1.5, 2.5, 3.0)):   # acordes em síncope
+                for m in c:
+                    _soma(out, s0 + int(b * bt * SR), tone(nota(m + 12), 0.35, 0.022, attack=0.005, decay=0.15, kind="tri"))
+            for b in range(4):
+                _soma(out, s0 + int(b * bt * SR), _kick(0.25))
+                _soma(out, s0 + int((b + 0.5) * bt * SR), tone(nota(c[0] - 12 + (12 if b % 2 else 0)), bt / 2, 0.06,
+                                                                decay=0.12))
+                if b in (1, 3):
+                    _soma(out, s0 + int(b * bt * SR), _snare(0.09, k * 4 + b))
+                _soma(out, s0 + int((b + 0.5) * bt * SR), _hat(0.025, k * 9 + b))
+    pico = np.max(np.abs(out)) or 1
+    out = out / pico * 0.22          # a mixagem final abaixa sob a voz
+    fade = int(0.8 * SR)
     out[:fade] *= np.linspace(0, 1, fade)
     out[-fade:] *= np.linspace(1, 0, fade)
     return out
@@ -379,6 +441,9 @@ def render(segments, out, music_on=True, preparo=None):
     mix = voice + fx
     if music_on:
         m = music(n / SR)[:n]  # pode vir 1 amostra menor por arredondamento
+        env = np.convolve(np.abs(voice[:len(m)]), np.ones(int(0.25 * SR)) / int(0.25 * SR), mode="same")
+        env = np.clip(env / (np.percentile(env, 95) + 1e-6), 0, 1)
+        m = m * (1 - 0.55 * env).astype(np.float32)   # abaixa a trilha enquanto a voz fala
         mix[:len(m)] += m
     tmp = tempfile.mkdtemp()
     wav, aac, vid = (os.path.join(tmp, f) for f in ("mix.wav", "mix.m4a", "video.mp4"))
