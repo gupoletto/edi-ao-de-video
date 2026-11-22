@@ -1,7 +1,7 @@
 # Top 10 tópicos em alta + agenda da semana
 
 > Arquivo vivo: a rotina diária o atualiza (ranking completo todo domingo; troca no meio da semana se um tópico despencar).
-> Última atualização: **15/11/2026** (ranking remedido e agenda 16–22/11). Anterior: **08/11/2026**: ranking remedido e agenda de 09–15/11 (fim do teste de 2/dia; comparação em
+> Última atualização: **22/11/2026** (agenda storytelling 23–29/11). Anterior: **15/11/2026** (ranking remedido e agenda 16–22/11). Anterior: **08/11/2026**: ranking remedido e agenda de 09–15/11 (fim do teste de 2/dia; comparação em
 > `tendencias/2026-11-08.md`). Nicho estreitado em 31/10.
 
 ## Ampliação de 20/11/2026: storytelling
@@ -10,6 +10,17 @@ Pedido do usuário: além da ciência visual, histórias curtas e bem contadas s
 como as coisas funcionam e como são construídas**, em 2D ou 3D (ver bloco no topo de `ROTINA.md`). Demanda medida em
 20/11: "what happened to" 4.49M, "how it's made" 3.44M, "history explained" 940k, "how were skyscrapers built" 35k.
 O espectador continua o mesmo curioso que gosta de ver a coisa acontecer na tela.
+
+### Agenda 23–29/11/2026 (storytelling; definida em 22/11)
+
+Três por dia, um de cada tipo, com trilha variando pelo tom:
+1. **How it's made** (comida/objeto do dia a dia, maior demanda): aço 375k, lápis 255k, giz de cera 41k, espelho 33k,
+   chiclete, pasta de dente, pneus, latas, vidro temperado (medir antes).
+2. **How it was built / como funciona** (épica ou lofi): arranha-céus 35k, Estátua da Liberdade 32k, Torre Eiffel 27k,
+   Canal do Panamá, túnel sob o mar, Golden Gate 19k.
+3. **História ou atualidade contada como história** (cinema/suspense): escolher pelo que estiver em alta no dia em
+   "explained"/"what happened to"; evitar temas com mediana < 5k.
+Reavaliar no domingo 29/11 com a retenção dos vídeos novos (ver `tendencias/2026-11-22.md`).
 
 ## Nicho do canal (decidido em 31/10/2026): **ciência visual e simulações satisfatórias**
 
