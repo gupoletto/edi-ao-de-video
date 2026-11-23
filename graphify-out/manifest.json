@@ -1036,5 +1036,125 @@
     "seen": 1795438623.7044165,
     "ast_hash": "ef308194dc259b92e698080972517e27",
     "semantic_hash": ""
+  },
+  "shorts/cartoon/package.json": {
+    "mtime": 1795439662.4298055,
+    "seen": 1795443400.5747957,
+    "ast_hash": "3316b976075c2071eea88a039e1c5099",
+    "semantic_hash": ""
+  },
+  "shorts/cartoon/scripts/render.mjs": {
+    "mtime": 1795440779.2528818,
+    "seen": 1795443400.574798,
+    "ast_hash": "22944144829f3680efb76e98a41ee0d1",
+    "semantic_hash": ""
+  },
+  "shorts/cartoon/scripts/stills.mjs": {
+    "mtime": 1795440245.997337,
+    "seen": 1795443400.574799,
+    "ast_hash": "ccd32a966b5f61daa94aa7bbf858ab61",
+    "semantic_hash": ""
+  },
+  "shorts/cartoon/src/Root.tsx": {
+    "mtime": 1795439670.7266824,
+    "seen": 1795443400.5748,
+    "ast_hash": "ee303b802781e49f9f9f7ac6f445929e",
+    "semantic_hash": ""
+  },
+  "shorts/cartoon/src/index.ts": {
+    "mtime": 1795439670.7256799,
+    "seen": 1795443400.574801,
+    "ast_hash": "43d7445a2c4b3ad60de8389366f83bc2",
+    "semantic_hash": ""
+  },
+  "shorts/cartoon/src/videos/bridge/Bridge.tsx": {
+    "mtime": 1795439647.7327824,
+    "seen": 1795443400.5748017,
+    "ast_hash": "30ae6fb07e8c5f0645bc90b1e530b5e9",
+    "semantic_hash": ""
+  },
+  "shorts/cartoon/src/videos/bridge/build.ts": {
+    "mtime": 1795439647.7328079,
+    "seen": 1795443400.5748024,
+    "ast_hash": "e4bc17560c71fa50229e87313767b93d",
+    "semantic_hash": ""
+  },
+  "shorts/cartoon/src/videos/bridge/cardshade.ts": {
+    "mtime": 1795439647.7328348,
+    "seen": 1795443400.574804,
+    "ast_hash": "67f34907558dea57540d3aae712cbc7c",
+    "semantic_hash": ""
+  },
+  "shorts/cartoon/src/videos/bridge/cast.ts": {
+    "mtime": 1795439647.7328475,
+    "seen": 1795443400.574805,
+    "ast_hash": "85511370389c1595ae20f575fbb0c562",
+    "semantic_hash": ""
+  },
+  "shorts/cartoon/src/videos/bridge/grade.ts": {
+    "mtime": 1795439647.73287,
+    "seen": 1795443400.574806,
+    "ast_hash": "02e3f7e9c7fd49e2fdce0b1ad2d13799",
+    "semantic_hash": ""
+  },
+  "shorts/cartoon/src/videos/bridge/ink.ts": {
+    "mtime": 1795439647.7328818,
+    "seen": 1795443400.574807,
+    "ast_hash": "4094eb732370b118e21406a8ba281bb2",
+    "semantic_hash": ""
+  },
+  "shorts/cartoon/src/videos/bridge/lensblur.ts": {
+    "mtime": 1795439647.732902,
+    "seen": 1795443400.574808,
+    "ast_hash": "cd2910be8cb78070355ac907183ae4b0",
+    "semantic_hash": ""
+  },
+  "shorts/cartoon/src/videos/bridge/lights.ts": {
+    "mtime": 1795439647.7329123,
+    "seen": 1795443400.5748086,
+    "ast_hash": "9b63c4ebe4a39b434fb0c2026b5964d4",
+    "semantic_hash": ""
+  },
+  "shorts/cartoon/src/videos/bridge/paint.ts": {
+    "mtime": 1795439647.7329226,
+    "seen": 1795443400.5748093,
+    "ast_hash": "b497b5128fae1d3afd113fb24cd66112",
+    "semantic_hash": ""
+  },
+  "shorts/cartoon/src/videos/bridge/shade.ts": {
+    "mtime": 1795439647.7329404,
+    "seen": 1795443400.5748103,
+    "ast_hash": "84dfa610f5010eea30f85419b124a978",
+    "semantic_hash": ""
+  },
+  "shorts/cartoon/src/videos/bridge/story.ts": {
+    "mtime": 1795439647.732951,
+    "seen": 1795443400.5748112,
+    "ast_hash": "553694548e3a1231d32d2540431db758",
+    "semantic_hash": ""
+  },
+  "shorts/cartoon/src/videos/bridge/toon.ts": {
+    "mtime": 1795439647.7329652,
+    "seen": 1795443400.5748122,
+    "ast_hash": "9a0894343c126de5c8632ada03180ace",
+    "semantic_hash": ""
+  },
+  "shorts/cartoon/src/videos/bridge/world.ts": {
+    "mtime": 1795439647.7329876,
+    "seen": 1795443400.574813,
+    "ast_hash": "d063798f5e21fb9cc670fe4efcc3a5ff",
+    "semantic_hash": ""
+  },
+  "shorts/cartoon/README.md": {
+    "mtime": 1795441541.272738,
+    "seen": 1795443400.5749488,
+    "ast_hash": "ced817e12a9454d485a63a9f78cdf621",
+    "semantic_hash": ""
+  },
+  "shorts/cartoon/package-lock.json": {
+    "mtime": 1795439662.4698055,
+    "seen": 1795443400.574981,
+    "ast_hash": "4eedce5f532147e21f43d2d7046a3c68",
+    "semantic_hash": ""
   }
 }
