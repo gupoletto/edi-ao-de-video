@@ -127,6 +127,27 @@ class Seg:
         return self.starts[i]
 
 
+def mola(t, dur=0.5):
+    """Entrada com mola (0 -> passa de 1 -> assenta em 1), estilo "pop" dos motion graphics; t em s desde a entrada."""
+    if t <= 0:
+        return 0.0
+    x = t / dur
+    return 1 - math.exp(-6 * x) * math.cos(9 * x)
+
+
+def pop_caixa(ctx, t, cx, cy, desenha, dur=0.5):
+    """Desenha algo (função sem argumentos) com entrada de mola, escalando em volta de (cx, cy)."""
+    k = mola(t, dur)
+    if k <= 0.001:
+        return
+    ctx.save()
+    ctx.translate(cx, cy)
+    ctx.scale(k, k)
+    ctx.translate(-cx, -cy)
+    desenha()
+    ctx.restore()
+
+
 def ramp(t, start, length=0.6):
     """0 -> 1 smoothly between start and start+length."""
     x = min(1.0, max(0.0, (t - start) / length))
