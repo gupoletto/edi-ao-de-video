@@ -1,0 +1,22 @@
+{
+  "name": "funstuff-cartoon",
+  "private": true,
+  "description": "Shorts no estilo personagens 2D em mundo 3D (three.js + Remotion), base: skill MIT claude-animated-shorts",
+  "scripts": {
+    "stills": "node scripts/stills.mjs"
+  },
+  "dependencies": {
+    "@react-three/fiber": "^8.18.0",
+    "@react-three/postprocessing": "^2.19.1",
+    "@remotion/bundler": "^4.0.546",
+    "@remotion/cli": "^4.0.546",
+    "@remotion/renderer": "^4.0.546",
+    "@remotion/three": "^4.0.546",
+    "postprocessing": "^6.39.6",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "remotion": "^4.0.546",
+    "three": "^0.169.0",
+    "typescript": "^7.0.2"
+  }
+}
