@@ -6,7 +6,7 @@ import path from "node:path";
 const [comp, prefixo, frames, escala = "0.5"] = process.argv.slice(2);
 const t0 = Date.now();
 const serveUrl = await bundle({ entryPoint: path.resolve("src/index.ts") });
-const chrome = { browserExecutable: process.env.CHROME || "/opt/pw-browsers/chromium", chromiumOptions: { gl: "swiftshader" } };
+const chrome = { browserExecutable: process.env.CHROME || "/opt/pw-browsers/chromium", chromiumOptions: { gl: process.env.GL || "swangle" } };
 const comps = await getCompositions(serveUrl, chrome);
 const c = comps.find((x) => x.id === comp);
 console.log(`bundle ${((Date.now() - t0) / 1000).toFixed(1)} s`);

@@ -8,4 +8,4 @@ Os quadros de referência do canal estudado pela skill NÃO estão aqui (são de
 - `npm install` (node_modules fica fora do git)
 - Quadros de teste sem GPU: `CHROME=/opt/pw-browsers/chromium_headless_shell-1243/chrome-headless-shell-linux64/chrome-headless-shell node scripts/stills.mjs BridgeShort <prefixo> 100,700 0.5`
 
-Situação (23/11/2026): projeto monta; o render de teste ainda não foi validado neste ambiente (sem GPU).
+Situação (23/11/2026): render validado sem GPU (Chromium headless shell + `gl: "swangle"`): ~3,5 s por quadro em 1080x1920, ~1h45 para 60 s. Vídeo: `node scripts/render.mjs <Comp> <saida.mp4> [inicio-fim] [escala, ex. 2/3]` (CONC=1 é o mais rápido; TMPDIR numa pasta limpável).
