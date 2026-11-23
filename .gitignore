@@ -1,0 +1,22 @@
+client_secret.json
+token.json
+*.mp4
+__pycache__/
+# edição pessoal: vídeos e arquivos gerados ficam só no computador
+edicao/bruto/*
+edicao/estilo/*
+edicao/trabalho/
+edicao/final/*
+!edicao/*/.gitkeep
+*.mov
+anuncios/zonas/
+shorts/previa-3d/
+
+# quadros de conferência da zona segura (anuncios/zonas.py --conferir)
+*_zona_*.png
+
+# graphify: versiona só o grafo e o relatório; cache e visualização são regenerados com `graphify update .`
+graphify-out/cache/
+graphify-out/graph.html
+graphify-out/.graphify_partition_cache.json
+graphify-out/.graphify_labels.pending.json

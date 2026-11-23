@@ -1,0 +1,670 @@
+#!/usr/bin/env python3
+"""Etapa 4: renderiza cada elemento do plano como um clipe curto (.mov com transparência).
+
+    python3 edicao/ferramentas/elementos.py edicao/bruto/meu-video.mp4 [--amostra]
+
+--amostra gera só um quadro PNG de cada elemento (para revisar antes de renderizar tudo).
+
+Tipos (campos em plano.json -> "elementos"; "de"/"ate" em segundos do vídeo BRUTO):
+  titulo   tela cheia: "texto", "destaque" (palavra em cor), "rotulo" opcional (ex.: "PASSO 2 DE 5")
+  lista    tela cheia: "texto" (título), "itens" [..], "marca": "check" | "x" | "numero",
+           "tempos" opcional [..] (instante no bruto em que cada item entra)
+  letreiro sobre o rosto: "itens" [..] em pílulas que entram uma a uma, "lado": "esquerda" | "direita"
+  numero   tela cheia: "texto" (o número, ex.: "R$ 12 mil"), "legenda", "contar_de" opcional (conta até o número)
+  sumario  tela cheia: "texto" (título), "itens" [etapas], "atual" (índice da etapa que começa agora)
+  dividido rosto num cartão + texto ao lado: "texto", "destaque", "itens" opcional, "lado": "esquerda" | "direita"
+  progresso série em blocos: "total" (ex.: 30), "feito" (ex.: 10, acende por último), "rotulo", "texto", "destaque"
+  selo     marcador discreto no canto que fica o trecho todo: "texto" (ex.: "Dia 10/30 · 07:06"), "canto"
+Em lista, letreiro e dividido, "tempos" [..] (instantes no bruto) faz cada item entrar quando é falado.
+Em "itens" do letreiro, "~texto~" sai riscado (ex.: "~Premiere~").
+  transicao em volta de um corte (troca de lugar/hora): "estilo" roda | rota | relogio | cortina | flash e "em"
+           (s no bruto do 1º quadro da cena nova); campos de cada estilo em ferramentas/transicoes.py
+Feitos direto no montar.py, com o próprio vídeo (sem clipe):
+  tela     gravação de tela em tela cheia + rosto em miniatura: "arquivo" (ex.: "bruto/tela.mp4"), "inicio" (s no
+           arquivo), "pip": "esquerda" | "direita"
+  foco     holofote: escurece fora de "area" [x, y, w, h] (frações da tela)
+  popup    recorta "area" [x, y, w, h] e mostra ampliada ("escala", padrão 1.6)
+  vertical clipe vertical gravado com faixas pretas: preenche as laterais com o próprio quadro desfocado
+           ("largura": fração da tela ocupada pelo vídeo vertical, padrão 0.316 = 9:16 dentro de 16:9).
+           Celular deitado que gravou em pé (a imagem sai de lado na faixa): "girar": "anti-horario" | "horario"
+           gira a faixa 90° e a põe em tela cheia na horizontal, sem laterais desfocadas
+"""
+import argparse
+import math
+import os
+import re
+import subprocess
+
+import cairo
+import numpy as np
+
+import transicoes
+from comum import ler, pasta_trabalho, preparar, sonda
+from planejar import saida
+from tapas import aplicar, detectar
+
+FPS = 30
+def hexrgb(h):
+    return tuple(int(h[i:i + 2], 16) / 255 for i in (1, 3, 5))
+
+
+# Paleta do canal (28/10/2026): marinho #01103A, creme #F8EDD9, cinza-azulado #919FA8, taupe #B19F92.
+# Fundo marinho com texto creme, como na referência; taupe e cinza-azulado têm contraste sobre o marinho
+# (não sobre o creme), por isso são destaque e cor secundária, e nunca texto em fundo claro.
+MARINHO, CREME, CINZA, TAUPE = "#01103A", "#F8EDD9", "#919FA8", "#B19F92"
+PALETA = {
+    "fundo": hexrgb(MARINHO), "tinta": hexrgb(CREME), "suave": hexrgb(CINZA), "destaque": hexrgb(TAUPE),
+    "ok": hexrgb(CINZA), "nao": hexrgb(TAUPE), "cartao": hexrgb("#0E2152"),  # marinho um tom acima, p/ cartões
+}
+ESTILOS = {
+    "editorial": dict(PALETA, titulo=("Source Serif 4 Semibold", False), corpo=("Inter", True)),  # Marcos Lemos
+    "dinamico": dict(PALETA, titulo=("Poppins ExtraBold", False), corpo=("Poppins SemiBold", False)),  # Matheus F.
+}
+# Temas por episódio (plano.json: "tema"). Trocam paleta e fontes por cima do estilo.
+# retro80 (episódio 13): anos 80 / VHS / fliperama: roxo-noite, rosa e ciano neon, títulos Audiowide, brilho de neon.
+TEMAS = {
+    "retro80": {"fundo": hexrgb("#120626"), "cartao": hexrgb("#24104A"), "tinta": hexrgb("#FFF4FB"),
+                "suave": hexrgb("#3EE8FF"), "destaque": hexrgb("#FF3EA5"), "ok": hexrgb("#3EE8FF"),
+                "nao": hexrgb("#FF3EA5"), "titulo": ("Audiowide", False), "corpo": ("Poppins SemiBold", False),
+                "pixel": "Press Start 2P", "neon": True},
+}
+
+
+def estilo_do_plano(plano):
+    return dict(ESTILOS[plano["estilo"]], **TEMAS.get(plano.get("tema", ""), {}))
+
+
+def fonte(ctx, familia, negrito, tam):
+    ctx.select_font_face(familia, cairo.FONT_SLANT_NORMAL, cairo.FONT_WEIGHT_BOLD if negrito else cairo.FONT_WEIGHT_NORMAL)
+    ctx.set_font_size(tam)
+
+
+def ease(x):
+    x = min(1.0, max(0.0, x))
+    return 1 - (1 - x) ** 3
+
+
+def rr(ctx, x, y, w, h, r):
+    ctx.new_sub_path()
+    ctx.arc(x + w - r, y + r, r, -math.pi / 2, 0)
+    ctx.arc(x + w - r, y + h - r, r, 0, math.pi / 2)
+    ctx.arc(x + r, y + h - r, r, math.pi / 2, math.pi)
+    ctx.arc(x + r, y + r, r, math.pi, 3 * math.pi / 2)
+    ctx.close_path()
+
+
+def quebrar(ctx, palavras, largura):
+    linhas, cur = [], []
+    for w in palavras:
+        if cur and ctx.text_extents(" ".join(cur + [w])).x_advance > largura:
+            linhas.append(cur)
+            cur = [w]
+        else:
+            cur.append(w)
+    return linhas + ([cur] if cur else [])
+
+
+def titulo_com_destaque(ctx, st, texto, destaque, x, y, tam, largura, centro=False):
+    """Título que quebra linha; as palavras do destaque saem na cor de destaque. Retorna o y final."""
+    fam, neg = st["titulo"]
+    fonte(ctx, fam, neg, tam)
+    alvo = set(norm(destaque or ""))
+    linhas = quebrar(ctx, texto.split(), largura)
+    for ln in linhas:
+        frase = " ".join(ln)
+        xx = x - ctx.text_extents(frase).x_advance / 2 if centro else x
+        for w in ln:
+            ctx.set_source_rgb(*(st["destaque"] if norm(w) and set(norm(w)) <= alvo else st["tinta"]))
+            ctx.move_to(xx, y)
+            ctx.show_text(w)
+            xx += ctx.text_extents(w + " ").x_advance
+        y += tam * 1.18
+    return y
+
+
+def inicio_item(e, i, padrao):
+    """Quando o item i entra (s desde o início do elemento): no instante falado ("tempos") ou no ritmo padrão."""
+    tempos = e.get("tempos")
+    return tempos[i] - e["de"] if tempos and i < len(tempos) else padrao
+
+
+def norm(t):
+    return [p for p in "".join(c if c.isalnum() or c == " " else " " for c in t.lower()).split()]
+
+
+def icone(ctx, st, marca, x, y, r, n):
+    if marca == "numero":
+        ctx.arc(x, y, r, 0, 2 * math.pi)
+        ctx.set_source_rgb(*st["destaque"])
+        ctx.fill()
+        fonte(ctx, *st["corpo"], r * 1.1)
+        s = str(n)
+        e = ctx.text_extents(s)
+        ctx.set_source_rgb(*st["fundo"])
+        ctx.move_to(x - e.x_bearing - e.width / 2, y - e.y_bearing - e.height / 2)
+        ctx.show_text(s)
+        return
+    ctx.arc(x, y, r, 0, 2 * math.pi)
+    ctx.set_source_rgb(*(st["ok"] if marca == "check" else st["nao"]))
+    ctx.fill()
+    ctx.set_source_rgb(*st["fundo"])
+    ctx.set_line_width(r * 0.28)
+    ctx.set_line_cap(cairo.LINE_CAP_ROUND)
+    if marca == "check":
+        ctx.move_to(x - r * 0.45, y)
+        ctx.line_to(x - r * 0.1, y + r * 0.38)
+        ctx.line_to(x + r * 0.5, y - r * 0.35)
+    else:
+        for s in (1, -1):
+            ctx.move_to(x - r * 0.38, y - s * r * 0.38)
+            ctx.line_to(x + r * 0.38, y + s * r * 0.38)
+    ctx.stroke()
+
+
+# ---------- tipos ----------
+
+def d_titulo(ctx, st, e, t, W, H):
+    ctx.set_source_rgb(*st["fundo"])
+    ctx.paint()
+    k = ease(t / 0.5)
+    ctx.translate(0, 24 * (1 - k))
+    tam = H * (0.085 if W > H else 0.055)
+    y = H * 0.44
+    if e.get("rotulo"):
+        fonte(ctx, *st["corpo"], tam * 0.32)
+        s = e["rotulo"].upper()
+        ctx.set_source_rgba(*st["destaque"], k)
+        ctx.move_to(W / 2 - ctx.text_extents(s).x_advance / 2, y - tam * 1.1)
+        ctx.show_text(s)
+    ctx.push_group()
+    y2 = titulo_com_destaque(ctx, st, e["texto"], e.get("destaque"), W / 2, y, tam, W * 0.8, centro=True)
+    ctx.pop_group_to_source()
+    ctx.paint_with_alpha(k)
+    if e.get("rotulo"):  # o traço curto sob o título, como nos cards "PASSO 2 DE 5"
+        ctx.set_source_rgba(*st["destaque"], k)
+        ctx.rectangle(W / 2 - 60 * k, y2 - tam * 0.55, 120 * k, 5)
+        ctx.fill()
+
+
+def d_lista(ctx, st, e, t, W, H):
+    ctx.set_source_rgb(*st["fundo"])
+    ctx.paint()
+    itens, marca = e.get("itens", []), e.get("marca", "check")
+    dur = e["ate"] - e["de"]
+    tam = H * (0.062 if W > H else 0.042)
+    x0 = W * (0.12 if W > H else 0.09)
+    y = titulo_com_destaque(ctx, st, e.get("texto", ""), e.get("destaque"), x0, H * 0.2, tam, W * 0.76)
+    passo = max(0.35, min(1.2, (dur * 0.6) / max(1, len(itens))))
+    fam, neg = st["corpo"]
+    ti = tam * 0.62
+    y += ti * 0.8
+    for i, it in enumerate(itens):
+        ini = inicio_item(e, i, 0.4 + i * passo)
+        k = ease((t - ini) / 0.35)
+        if k <= 0:
+            break
+        ctx.save()
+        ctx.translate(30 * (1 - k), 0)
+        ctx.push_group()
+        h = ti * 2.1
+        rr(ctx, x0, y, W - 2 * x0, h, 16)
+        ctx.set_source_rgb(*st["cartao"])
+        ctx.fill()
+        riscado = it.startswith("~") and it.endswith("~")  # o que ficou de fora: ✗ e traço
+        txt = it.strip("~")
+        icone(ctx, st, "x" if riscado else marca, x0 + h * 0.5, y + h / 2, ti * 0.55, i + 1)
+        fonte(ctx, fam, neg, ti)
+        ctx.set_source_rgb(*(st["suave"] if riscado else st["tinta"]))
+        ctx.move_to(x0 + h * 1.05, y + h / 2 + ti * 0.36)
+        ctx.show_text(txt)
+        if riscado:
+            r = ease((t - ini - 0.35) / 0.35)
+            ctx.set_source_rgb(*st["nao"])
+            ctx.set_line_width(ti * 0.1)
+            ctx.move_to(x0 + h * 0.95, y + h / 2)
+            ctx.line_to(x0 + h * 0.95 + (ctx.text_extents(txt).x_advance + ti * 0.3) * r, y + h / 2)
+            ctx.stroke()
+        ctx.pop_group_to_source()
+        ctx.paint_with_alpha(k)
+        ctx.restore()
+        y += h + ti * 0.55
+
+
+def d_letreiro(ctx, st, e, t, W, H):
+    itens = e.get("itens", [])
+    dur = e["ate"] - e["de"]
+    passo = max(0.3, min(1.0, (dur * 0.5) / max(1, len(itens))))
+    tam = H * (0.03 if W > H else 0.022)
+    fam, neg = st["corpo"]
+    fonte(ctx, fam, neg, tam)
+    y = H * 0.06
+    for i, it in enumerate(itens):
+        ini = inicio_item(e, i, 0.15 + i * passo)
+        k = ease((t - ini) / 0.3)
+        if k <= 0:
+            break
+        w = ctx.text_extents(it.strip("~")).x_advance + tam * 2.6
+        h = tam * 2.0
+        x = W * 0.03 if e.get("lado", "esquerda") == "esquerda" else W * 0.97 - w
+        ctx.save()
+        ctx.translate(-20 * (1 - k), 0)
+        ctx.push_group()
+        rr(ctx, x + 3, y + 5, w, h, 12)
+        ctx.set_source_rgba(0, 0, 0, 0.18)
+        ctx.fill()
+        rr(ctx, x, y, w, h, 12)
+        ctx.set_source_rgb(*st["cartao"])
+        ctx.fill()
+        ctx.arc(x + tam * 1.0, y + h / 2, tam * 0.28, 0, 2 * math.pi)
+        ctx.set_source_rgb(*st["destaque"])
+        ctx.fill()
+        riscado = it.startswith("~") and it.endswith("~")
+        txt = it.strip("~")
+        ctx.set_source_rgb(*(st["suave"] if riscado else st["tinta"]))
+        fonte(ctx, fam, neg, tam)
+        ctx.move_to(x + tam * 1.8, y + h / 2 + tam * 0.36)
+        ctx.show_text(txt)
+        if riscado:  # o traço atravessa a palavra logo depois que ela entra
+            r = ease((t - ini - 0.35) / 0.3)
+            ctx.set_source_rgb(*st["nao"])
+            ctx.set_line_width(tam * 0.12)
+            ctx.move_to(x + tam * 1.6, y + h / 2)
+            ctx.line_to(x + tam * 1.6 + (ctx.text_extents(txt).x_advance + tam * 0.4) * r, y + h / 2)
+            ctx.stroke()
+        ctx.pop_group_to_source()
+        ctx.paint_with_alpha(k)
+        ctx.restore()
+        y += h + tam * 0.6
+
+
+def d_numero(ctx, st, e, t, W, H):
+    ctx.set_source_rgb(*st["fundo"])
+    ctx.paint()
+    k = ease(t / 0.6)
+    tam = H * (0.2 if W > H else 0.11)
+    fam, neg = st["titulo"]
+    fonte(ctx, fam, neg, tam)
+    s = e["texto"]
+    if "contar_de" in e:
+        s = contando(s, e["contar_de"], ease(t / 1.4))
+    ctx.set_source_rgba(*st["destaque"], k)
+    ctx.move_to(W / 2 - ctx.text_extents(s).x_advance / 2, H * 0.52 + 20 * (1 - k))
+    ctx.show_text(s)
+    if e.get("legenda"):
+        fonte(ctx, *st["corpo"], tam * 0.22)
+        ctx.set_source_rgba(*st["suave"], ease((t - 0.3) / 0.5))
+        s = e["legenda"]
+        ctx.move_to(W / 2 - ctx.text_extents(s).x_advance / 2, H * 0.52 + tam * 0.5)
+        ctx.show_text(s)
+
+
+def contando(texto, de, k):
+    """'R$ 12.500' contando a partir de `de`: troca só o número, mantém prefixo, sufixo e separadores."""
+    m = re.search(r"\d[\d.]*(,\d+)?", texto)
+    if not m:
+        return texto
+    bruto = m.group(0)
+    dec = len(bruto.split(",")[1]) if "," in bruto else 0
+    alvo = float(bruto.replace(".", "").replace(",", "."))
+    v = de + (alvo - de) * k
+    num = f"{v:,.{dec}f}".replace(",", "X").replace(".", ",").replace("X", ".")
+    return texto[:m.start()] + num + texto[m.end():]
+
+
+def d_sumario(ctx, st, e, t, W, H):
+    """Mapa do vídeo com a etapa atual em destaque (as anteriores marcadas, as próximas apagadas)."""
+    ctx.set_source_rgb(*st["fundo"])
+    ctx.paint()
+    itens, atual = e.get("itens", []), e.get("atual", 0)
+    tam = H * (0.05 if W > H else 0.034)
+    x0 = W * (0.3 if W > H else 0.12)
+    y = H * 0.5 - (len(itens) - 1) * tam * 0.85 + tam * 0.35  # bloco centrado na tela
+    if e.get("texto"):
+        fonte(ctx, *st["corpo"], tam * 0.5)
+        ctx.set_source_rgb(*st["destaque"])
+        ctx.move_to(x0, y - tam * 1.4)
+        ctx.show_text(e["texto"].upper())
+    k = ease((t - 0.3) / 0.5)
+    for i, it in enumerate(itens):
+        fam, neg = st["titulo"] if i == atual else st["corpo"]
+        fonte(ctx, fam, neg, tam * (1 + 0.18 * k if i == atual else 0.8))
+        if i < atual:
+            ctx.set_source_rgba(*st["suave"], 0.55)
+        elif i == atual:
+            ctx.set_source_rgb(*st["tinta"])
+        else:
+            ctx.set_source_rgba(*st["suave"], 0.35)
+        ctx.move_to(x0 + (tam * 0.9 * k if i == atual else 0), y)
+        ctx.show_text(it)
+        if i == atual:
+            ctx.set_source_rgba(*st["destaque"], k)
+            ctx.move_to(x0 - tam * 0.4, y)
+            ctx.show_text("→")
+        elif i < atual:
+            icone(ctx, st, "check", x0 - tam * 0.55, y - tam * 0.3, tam * 0.28, 0)
+        y += tam * 1.7
+
+
+def cartao_rect(W, H, lado="esquerda"):
+    """Onde fica o rosto na tela dividida (x, y, w, h). O montar.py coloca o vídeo exatamente aqui."""
+    if W > H:
+        w, h = W * 0.30, H * 0.74
+        x = W * 0.07 if lado == "esquerda" else W * 0.93 - w
+        return x, (H - h) / 2, w, h
+    w, h = W * 0.78, H * 0.42
+    return (W - w) / 2, H * 0.09, w, h
+
+
+def d_dividido(ctx, st, e, t, W, H):
+    ctx.set_source_rgb(*st["fundo"])
+    ctx.paint()
+    x, y, w, h = cartao_rect(W, H, e.get("lado", "esquerda"))
+    for k in range(6):  # sombra macia em volta do cartão
+        rr(ctx, x - k * 3, y - k * 3 + 10, w + k * 6, h + k * 6, 28 + k * 3)
+        ctx.set_source_rgba(0, 0, 0, 0.025)
+        ctx.fill()
+    ctx.save()
+    ctx.set_operator(cairo.OPERATOR_CLEAR)  # buraco: o vídeo aparece por baixo
+    rr(ctx, x, y, w, h, 28)
+    ctx.fill()
+    ctx.restore()
+    if W > H:
+        tx = x + w + W * 0.06 if e.get("lado", "esquerda") == "esquerda" else W * 0.07
+        larg, ty, tam = W * 0.5, H * 0.38, H * 0.075
+    else:
+        tx, larg, ty, tam = W * 0.1, W * 0.8, y + h + H * 0.1, H * 0.045
+    k = ease((t - 0.2) / 0.5)
+    ctx.push_group()
+    yy = titulo_com_destaque(ctx, st, e.get("texto", ""), e.get("destaque"), tx, ty, tam, larg)
+    ctx.pop_group_to_source()
+    ctx.paint_with_alpha(k)
+    fam, neg = st["corpo"]
+    ti = tam * 0.5
+    yy += ti
+    for i, it in enumerate(e.get("itens", [])):
+        a = ease((t - inicio_item(e, i, 0.8 + i * 0.6)) / 0.35)
+        if a <= 0:
+            break
+        riscado = it.startswith("~") and it.endswith("~")
+        fonte(ctx, fam, neg, ti)
+        ctx.set_source_rgba(*(st["suave"] if riscado else st["tinta"]), a)
+        ctx.move_to(tx + 20 * (1 - a), yy)
+        ctx.show_text("· " + it.strip("~"))
+        if riscado:
+            ctx.set_source_rgba(*st["nao"], a)
+            ctx.set_line_width(ti * 0.1)
+            ctx.move_to(tx + ti * 0.6, yy - ti * 0.32)
+            ctx.line_to(tx + ti * 0.6 + ctx.text_extents(it.strip("~")).x_advance, yy - ti * 0.32)
+            ctx.stroke()
+        yy += ti * 1.7
+
+
+def d_progresso(ctx, st, e, t, W, H):
+    """Progresso de uma série: N blocos, os já feitos acesos e o de hoje acendendo ("feito" de "total")."""
+    ctx.set_source_rgb(*st["fundo"])
+    ctx.paint()
+    total, feito = e.get("total", 30), e.get("feito", 1)
+    tam = H * (0.05 if W > H else 0.035)
+    fonte(ctx, *st["corpo"], tam * 0.55)
+    s = (e.get("rotulo") or "").upper()
+    ctx.set_source_rgba(*st["suave"], ease(t / 0.4))
+    ctx.move_to(W / 2 - ctx.text_extents(s).x_advance / 2, H * 0.36)
+    ctx.show_text(s)
+    fam, neg = st["titulo"]
+    fonte(ctx, fam, neg, tam * 2.6)
+    s = e.get("texto") or f"Dia {feito}"
+    k = ease((t - 0.1) / 0.5)
+    ctx.push_group()
+    titulo_com_destaque(ctx, st, s, e.get("destaque"), W / 2, H * 0.36 + tam * 2.9, tam * 2.6, W * 0.9, centro=True)
+    ctx.pop_group_to_source()
+    ctx.paint_with_alpha(k)
+    cols = 30 if total <= 30 else 50
+    larg = W * (0.62 if W > H else 0.84)
+    gap = larg * 0.006
+    bw = (larg - gap * (cols - 1)) / cols
+    x0, y0 = (W - larg) / 2, H * 0.62
+    for i in range(total):
+        x = x0 + (i % cols) * (bw + gap)
+        y = y0 + (i // cols) * (bw * 2.6)
+        if i < feito - 1:
+            cor, a = st["destaque"], 1.0
+        elif i == feito - 1:  # o bloco de hoje acende depois que o resto já está na tela
+            cor, a = st["destaque"], ease((t - 0.9) / 0.5)
+        else:
+            cor, a = st["cartao"], 1.0
+        rr(ctx, x, y, bw, bw * 2.2, min(6, bw * 0.3))
+        ctx.set_source_rgba(*st["cartao"], 1)
+        ctx.fill()
+        if a > 0:
+            rr(ctx, x, y + bw * 2.2 * (1 - a), bw, bw * 2.2 * a, min(6, bw * 0.3))
+            ctx.set_source_rgb(*cor)
+            ctx.fill()
+    fonte(ctx, *st["corpo"], tam * 0.55)
+    s = f"{feito} de {total}"
+    ctx.set_source_rgba(*st["tinta"], ease((t - 1.2) / 0.4))
+    ctx.move_to(W / 2 - ctx.text_extents(s).x_advance / 2, y0 + bw * 2.2 + tam * 1.3)
+    ctx.show_text(s)
+
+
+def d_selo(ctx, st, e, t, W, H):
+    """Marcador fixo e discreto no canto (ex.: "DIA 10/30 · 07:06"), que acompanha o trecho inteiro."""
+    if st.get("pixel"):  # tema retrô: mostrador de filmadora VHS ("▶ PLAY" piscando + texto), sem pílula
+        tam = H * (0.027 if W > H else 0.019)
+        k = ease(t / 0.35)
+        ctx.select_font_face(st["pixel"], cairo.FONT_SLANT_NORMAL, cairo.FONT_WEIGHT_NORMAL)
+        ctx.set_font_size(tam)
+        x, y = W * 0.045, H * 0.88  # embaixo, como a data de uma filmadora (em cima ficam os letreiros)
+        for dx, dy, cor in ((3, 3, (0, 0, 0)), (0, 0, (1, 1, 1))):
+            ctx.set_source_rgba(*cor, (0.6 if dx else 0.95) * k)
+            ctx.move_to(x + dx, y + dy)
+            ctx.show_text("PLAY")
+            if int(t * 1.5) % 2 == 0:  # triângulo do "play" piscando (a fonte de pixel não tem o glifo)
+                tx = x + dx + ctx.text_extents("PLAY ").x_advance
+                ctx.move_to(tx, y + dy - tam)
+                ctx.line_to(tx + tam * 0.9, y + dy - tam / 2)
+                ctx.line_to(tx, y + dy)
+                ctx.close_path()
+                ctx.fill()
+            ctx.move_to(x + dx, y + dy + tam * 1.9)
+            ctx.show_text(e["texto"].upper().replace("·", "-").replace("Ã", "A").replace("Á", "A").replace("É", "E")
+                          .replace("Í", "I").replace("Ó", "O").replace("Ú", "U").replace("Ç", "C").replace("Ê", "E"))
+        return
+    tam = H * (0.024 if W > H else 0.018)
+    fonte(ctx, *st["corpo"], tam)
+    s = e["texto"].upper()
+    w, h = ctx.text_extents(s).x_advance + tam * 1.6, tam * 1.9
+    canto = e.get("canto", "direita")
+    x = W * 0.97 - w if canto == "direita" else W * 0.03
+    y = H * 0.05
+    k = ease(t / 0.35)
+    ctx.push_group()
+    rr(ctx, x, y, w, h, h / 2)
+    ctx.set_source_rgba(*st["fundo"], 0.82)
+    ctx.fill()
+    ctx.set_source_rgb(*st["tinta"])
+    ctx.move_to(x + tam * 0.8, y + h / 2 + tam * 0.36)
+    ctx.show_text(s)
+    ctx.pop_group_to_source()
+    ctx.paint_with_alpha(k)
+
+
+def d_barras(ctx, st, e, t, W, H):
+    """Gráfico de barras que cresce barra por barra ("itens" rótulos, "valores" números, "tempos" de cada barra,
+    "unidade", "texto" título com "destaque"). A última barra vem na cor de destaque (o recorde)."""
+    ctx.set_source_rgb(*st["fundo"])
+    ctx.paint()
+    tam = H * (0.07 if W > H else 0.045)
+    titulo_com_destaque(ctx, st, e.get("texto", ""), e.get("destaque"), W / 2, H * 0.18, tam, W * 0.85, centro=True)
+    vals, rot = e["valores"], e.get("itens", [""] * len(e["valores"]))
+    n = len(vals)
+    x0, x1, yb, ytop = W * 0.14, W * 0.86, H * 0.82, H * 0.32
+    larg = (x1 - x0) / n
+    vmax = max(vals)
+    ctx.set_source_rgba(*st["suave"], 0.5)  # chão do gráfico
+    ctx.rectangle(x0 - 10, yb, x1 - x0 + 20, 3)
+    ctx.fill()
+    for i, (v, r) in enumerate(zip(vals, rot)):
+        t0 = (e["tempos"][i] - e["de"]) if e.get("tempos") else 0.3 + i * 0.5
+        k = ease((t - t0) / 0.7)
+        if t < t0:
+            continue
+        h = (yb - ytop) * v / vmax * k
+        cx = x0 + larg * (i + 0.5)
+        bw = larg * 0.56
+        cor = st["destaque"] if i == n - 1 else st["suave"]
+        g = cairo.LinearGradient(0, yb, 0, yb - h)
+        g.add_color_stop_rgba(0, *cor, 0.35)
+        g.add_color_stop_rgba(1, *cor, 1.0)
+        ctx.rectangle(cx - bw / 2, yb - h, bw, h)
+        ctx.set_source(g)
+        ctx.fill()
+        ctx.set_source_rgb(*st["tinta"])
+        ctx.rectangle(cx - bw / 2, yb - h, bw, 4)
+        ctx.fill()
+        fonte(ctx, *st["titulo"], tam * 0.62)
+        s = f"{v * k:.0f}{e.get('unidade', '')}"
+        ctx.set_source_rgba(*st["tinta"], k)
+        ctx.move_to(cx - ctx.text_extents(s).x_advance / 2, yb - h - tam * 0.3)
+        ctx.show_text(s)
+        fonte(ctx, *st["corpo"], tam * 0.3)
+        ctx.set_source_rgba(*st["suave"], k)
+        ctx.move_to(cx - ctx.text_extents(r).x_advance / 2, yb + tam * 0.55)
+        ctx.show_text(r)
+
+
+TIPOS = {"titulo": d_titulo, "barras": d_barras, "lista": d_lista, "letreiro": d_letreiro, "numero": d_numero,
+         "sumario": d_sumario, "dividido": d_dividido, "progresso": d_progresso, "selo": d_selo,
+         "transicao": transicoes.desenhar}
+TELA_CHEIA = {"titulo", "lista", "numero", "sumario", "dividido", "progresso", "barras"}
+SO_MONTAR = {"tela", "foco", "popup", "vertical"}  # não geram clipe: o montar.py faz com o próprio vídeo
+FADE = 0.4
+COM_DESFOQUE = TELA_CHEIA | {"transicao"}  # o montar.py desfoca o vídeo por baixo destes ("vidro")
+VEU_GRANDE, VEU_PEQUENO = 0.42, 0.72
+
+
+def vidro(px, st, veu):
+    """Efeito vidro: as áreas grandes de marinho chapado ficam translúcidas (o vídeo desfocado aparece por baixo).
+    Perto de textos e ícones o marinho volta aos poucos (degradê suave), para a leitura continuar boa."""
+    from scipy import ndimage
+    meio = px[::2, ::2]
+    marinho = np.zeros(meio.shape[:2], bool)
+    # nos cards grandes só o fundo vira vidro (blocos e faixas "cartao" continuam); nas pílulas pequenas, as duas cores
+    for cor in ((st["fundo"],) if veu < 0.6 else (st["fundo"], st["cartao"])):  # px vem em BGRA
+        marinho |= np.abs(meio[..., :3] - np.array(cor[::-1]) * 255).max(axis=2) < 10
+    marinho &= meio[..., 3] > 200
+    longe = ndimage.binary_erosion(marinho, iterations=6 if veu < 0.6 else 3, border_value=1)
+    suave = ndimage.gaussian_filter(longe.astype(np.float32), 5)
+    fator = 1 - (1 - veu) * np.repeat(np.repeat(suave, 2, 0), 2, 1)[:px.shape[0], :px.shape[1]]
+    px[..., 3] *= fator
+
+
+def neon(px, sigma=12.0, forca=1.0):
+    """Brilho de néon: as cores claras e saturadas "vazam" luz em volta (px em BGRA, cor não pré-multiplicada)."""
+    from scipy import ndimage
+    a = px[..., 3:4] / 255.0
+    cor = px[..., :3] * a
+    luz = (cor.max(axis=2) - cor.min(axis=2) > 60).astype(np.float32)[..., None] * cor  # só o que é colorido brilha
+    pequeno = luz[::2, ::2]
+    b = np.stack([ndimage.gaussian_filter(pequeno[..., i], sigma / 2) for i in range(3)], 2)
+    b = np.repeat(np.repeat(b, 2, 0), 2, 1)[:px.shape[0], :px.shape[1]] * forca
+    ab = np.clip(b.max(axis=2, keepdims=True) / 255.0, 0, 1)
+    novo_a = a + ab * (1 - a)
+    novo = (cor + b * (1 - a)) / np.maximum(novo_a, 1e-4)
+    px[..., :3] = novo
+    px[..., 3:4] = novo_a * 255
+
+
+def quadro(st, e, t, W, H):
+    surf = cairo.ImageSurface(cairo.FORMAT_ARGB32, W, H)
+    ctx = cairo.Context(surf)
+    ctx.push_group()
+    TIPOS[e["tipo"]](ctx, st, e, t, W, H)
+    ctx.pop_group_to_source()
+    dur = e["ate"] - e["de"]
+    if e["tipo"] == "transicao":  # cobre a tela no corte: sem esmaecer
+        ctx.paint()
+    else:
+        ctx.paint_with_alpha(min(1.0, t / FADE, (dur - t) / FADE) if e["tipo"] in TELA_CHEIA
+                             else min(1.0, (dur - t) / FADE))
+    surf.flush()
+    return surf
+
+
+def no_editado(plano, e):
+    """Elemento com os tempos convertidos para o vídeo editado (os cortes encolhem a duração)."""
+    if e["tipo"] == "transicao":
+        return transicoes.tempos(e, saida(plano, e["em"]))
+    e = dict(e, de=saida(plano, e["de"]), ate=saida(plano, e["ate"]))
+    if e.get("tempos"):
+        e["tempos"] = [saida(plano, t) for t in e["tempos"]]
+    return e
+
+
+def ajustar(plano, avisar=False):
+    """Tira do plano o que vem depois de um tapa na câmera (tapas.py), igual para elementos e montagem."""
+    info, fim = detectar(plano["fonte"]), sonda(plano["fonte"])["dur"]
+    for chave in ("manter", "abertura"):
+        plano[chave], tirados = aplicar(plano.get(chave, []), info, fim)
+        if avisar:
+            for x, y, m in tirados:
+                print(f"  {chave}: tirado {x:.2f}-{y:.2f} s ({m})")
+
+
+def resolucao(plano):
+    return (1080, 1920) if plano["formato"] == "vertical" else (1920, 1080)
+
+
+def renderizar(fonte_video, amostra=False):
+    preparar()
+    pasta = pasta_trabalho(fonte_video)
+    plano = ler(os.path.join(pasta, "plano.json"))
+    ajustar(plano)
+    st = estilo_do_plano(plano)
+    W, H = resolucao(plano)
+    out_dir = os.path.join(pasta, "elementos")
+    os.makedirs(out_dir, exist_ok=True)
+    for i, e in enumerate(plano["elementos"], 1):
+        if e["tipo"] in SO_MONTAR:
+            continue
+        e = no_editado(plano, e)
+        nome = f"E{i:02d}_{e['tipo']}"
+        dur = e["ate"] - e["de"]
+        if amostra:
+            quadro(st, e, min(dur * 0.8, 2.5), W, H).write_to_png(os.path.join(out_dir, nome + ".png"))
+            continue
+        enc = subprocess.Popen(["ffmpeg", "-v", "error", "-y", "-f", "rawvideo", "-pix_fmt", "bgra", "-s", f"{W}x{H}",
+                                "-r", str(FPS), "-i", "-", "-c:v", "qtrle", os.path.join(out_dir, nome + ".mov")],
+                               stdin=subprocess.PIPE)
+        ultimo = (None, None)
+        for f in range(int(math.ceil(dur * FPS))):
+            t = f / FPS
+            if e["tipo"] == "selo":  # o selo é estático fora da entrada/saída: repete o quadro (o tema retrô só pisca)
+                chave = (min(f, 12), int(t * 1.5) % 2 if st.get("pixel") else 0,
+                         round(min(1.0, (dur - t) / FADE), 2))
+                if chave == ultimo[0]:
+                    enc.stdin.write(ultimo[1])
+                    continue
+            s = quadro(st, e, t, W, H)
+            px = np.frombuffer(s.get_data(), np.uint8).reshape(H, W, 4).astype(np.float32)
+            a = px[..., 3:4]
+            px[..., :3] = np.where(a > 0, px[..., :3] * 255 / np.maximum(a, 1), 0)  # cairo é pré-multiplicado
+            if plano.get("vidro"):
+                vidro(px, st, VEU_GRANDE if e["tipo"] in COM_DESFOQUE else VEU_PEQUENO)
+            if st.get("neon") and e["tipo"] != "selo":
+                neon(px)
+            dados = px.clip(0, 255).astype(np.uint8).tobytes()
+            enc.stdin.write(dados)
+            if e["tipo"] == "selo":
+                ultimo = (chave, dados)
+        enc.stdin.close()
+        enc.wait()
+        print(f"  {nome}: {dur:.1f}s")
+    print(f"{len(plano['elementos'])} elementos -> {out_dir}")
+
+
+if __name__ == "__main__":
+    ap = argparse.ArgumentParser()
+    ap.add_argument("fonte")
+    ap.add_argument("--amostra", action="store_true")
+    a = ap.parse_args()
+    renderizar(a.fonte, a.amostra)

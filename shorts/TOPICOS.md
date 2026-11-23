@@ -1,0 +1,140 @@
+# Top 10 tópicos em alta + agenda da semana
+
+> Arquivo vivo: a rotina diária o atualiza (ranking completo todo domingo; troca no meio da semana se um tópico despencar).
+> Última atualização: **22/11/2026** (agenda storytelling 23–29/11). Anterior: **15/11/2026** (ranking remedido e agenda 16–22/11). Anterior: **08/11/2026**: ranking remedido e agenda de 09–15/11 (fim do teste de 2/dia; comparação em
+> `tendencias/2026-11-08.md`). Nicho estreitado em 31/10.
+
+## Ampliação de 20/11/2026: storytelling
+
+Pedido do usuário: além da ciência visual, histórias curtas e bem contadas sobre **história do mundo, atualidades,
+como as coisas funcionam e como são construídas**, em 2D ou 3D (ver bloco no topo de `ROTINA.md`). Demanda medida em
+20/11: "what happened to" 4.49M, "how it's made" 3.44M, "history explained" 940k, "how were skyscrapers built" 35k.
+O espectador continua o mesmo curioso que gosta de ver a coisa acontecer na tela.
+
+### Agenda 23–29/11/2026 (storytelling; definida em 22/11)
+
+Três por dia, um de cada tipo, com trilha variando pelo tom:
+1. **How it's made** (comida/objeto do dia a dia, maior demanda): aço 375k, lápis 255k, giz de cera 41k, espelho 33k,
+   chiclete, pasta de dente, pneus, latas, vidro temperado (medir antes).
+2. **How it was built / como funciona** (épica ou lofi): arranha-céus 35k, Estátua da Liberdade 32k, Torre Eiffel 27k,
+   Canal do Panamá, túnel sob o mar, Golden Gate 19k.
+3. **História ou atualidade contada como história** (cinema/suspense): escolher pelo que estiver em alta no dia em
+   "explained"/"what happened to"; evitar temas com mediana < 5k.
+Reavaliar no domingo 29/11 com a retenção dos vídeos novos (ver `tendencias/2026-11-22.md`).
+
+## Nicho do canal (decidido em 31/10/2026): **ciência visual e simulações satisfatórias**
+
+O algoritmo testa cada vídeo com uma amostra de ~200 pessoas parecidas com quem já gostou do canal (`ESTRATEGIA.md`,
+seções 7 e 8). Tópicos espalhados confundem essa amostra. Por isso todos os tópicos ficam sob um guarda-chuva só, para
+o mesmo espectador: curioso por ciência, que gosta de ver a coisa acontecer na tela.
+
+- **Dentro:** ilusões de ótica, espaço, simulações de física, "como funciona" em 3D (mecanismos), Terra e natureza em
+  simulação (vulcões, terremotos, oceanos, clima), comparação de tamanho e escala, satisfying (loops, encaixes,
+  simulações).
+- **Fora (mesmo se estiverem em alta):** história e impérios, mitologia, dinossauros, países ranqueados por dado
+  político ou cultural, comida, celebridades, esporte. Mapas só entram como ciência de escala (ex.: projeção de
+  Mercator, tamanho real).
+- Candidatos novos no ranking de domingo só se couberem no guarda-chuva.
+
+## Ranking atual (medido em 08/11/2026, `pesquisa.py`, últimos 30 dias)
+
+| # | Tópico | Mediana de views | Desempenho no canal (02–08/11) | Formato original possível |
+|---|---|---:|---|---|
+| 1 | **Ilusões de ótica** | 2,40 mi | ranking 1.256; quizzes 169 | Ilusões geradas por código (ranking, não quiz) |
+| 2 | **3D "What happens if…"** | 1,75 mi | 1.085–1.150 (4 vídeos) | three.js (`pipeline/tres.py`, `cenas3d/`) |
+| 3 | **Simulações de física** | 1,46 mi | Quark da moeda 1.350 | Integração numérica de verdade |
+| 4 | **Como funciona em 3D** | 1,15 mi | "how it works" 29–322 | Só com gancho de "what happens if" |
+| 5 | **Espaço** | 968 mil | Quark Júpiter 621 | Órbitas, planetas, escalas |
+| 6 | **Comparação de tamanho e escala** | 805 mil | animais 38 (< 1 dia) | Escala real |
+| 7 | **Satisfying** | 715 mil | quiz 358 | `pipeline/satisfying.py` |
+| 8 | **Terra e natureza em simulação** | 98 mil (terremoto) | quiz 62 | Terremotos; vulcão e oceano medem pouco |
+
+## Agenda da semana (09–15/11)
+
+O teste de 2/dia terminou (comparação em `tendencias/2026-11-08.md`). Até o usuário decidir, ficam **3 vídeos por
+dia** (padrão do `upload.py`), com a mistura que funcionou e **sem quizzes**:
+- **A** (12h NY): Quark what-if do tópico do dia (ou de física/espaço quando o tópico não render um what-if);
+- **B** (15h NY): ranking do tópico do dia;
+- **C** (19h NY): 3D cinematográfico com título "What happens if/when…", da fila abaixo.
+Roteiros: 1ª frase ≤ 2,5 s já mostrando o perigo ou o resultado; conflito antes dos 5 s (vazamento medido em 08/11).
+
+| Dia | Tópico do dia | A: Quark what-if | B: ranking | C: 3D "what happens if" |
+|---|---|---|---|---|
+| Seg 09/11 | Ilusões de ótica + espaço | Pular em cada planeta ✅ agendado | 5 formas impossíveis ✅ agendado | Prédio no terremoto ✅ agendado |
+| Ter 10/11 | Simulações de física | — | — | — (disparo atrasou, dia sem vídeos; tomada passa para depois) |
+| Qua 11/11 | Espaço | O Sol sumir ✅ agendado | 5 maiores estrelas ✅ agendado | Freada no molhado (ABS) ✅ agendado |
+| Qui 12/11 | Como funciona | Cair no vulcão ✅ agendado | 5 coisas mais quentes ✅ agendado | Descarga do vaso (sifão) ✅ agendado |
+| Sex 13/11 | Tamanho e escala | Terra do tamanho de Júpiter ✅ agendado | Coisas minúsculas em escala ✅ agendado | Submarino (lastro) ✅ agendado (troca com sábado) |
+| Sáb 14/11 | Satisfying | Looping na bola gigante ✅ agendado | Padrões da natureza ✅ agendado | Dominós 1,5x maiores ✅ agendado (máquina de escrever caiu para 1,3 mil) |
+| Dom 15/11 | Terra e natureza | E se a Terra parasse de girar ✅ | Ventos mais rápidos ✅ | Tsunami chegando ✅ |
+
+No domingo 08/11 a rotina compara a semana de 2/dia com a semana anterior (3/dia), olhando a média de views por vídeo,
+a taxa de engajamento, a % assistida e o desempenho do 3D cinematográfico contra os outros formatos. Ela registra o
+resultado em `tendencias/` e no relatório, e recomenda ao usuário: manter 2, voltar para 3 ou testar 1. **Quem decide
+é o usuário.** Até ele decidir, o `upload.py` volta sozinho para 3 slots a partir de 09/11.
+
+## Agenda da semana (16–22/11)
+
+3 vídeos por dia (A Quark what-if, B ranking, C 3D "what happens if"), sem quizzes. 1º segmento com 2 frases e a
+mesma cena (6–7 s); palavra-chave da busca nas primeiras palavras do título. No 3D, no máximo 1 tema de aviação a
+cada 3 dias.
+
+| Dia | Tópico do dia | A: Quark what-if | B: ranking | C: 3D |
+|---|---|---|---|---|
+| Seg 16/11 | Ilusões de ótica | Espiral + pós-efeito ✅ | Ilusões que o olho cria ✅ | Quarto de Ames ✅ |
+| Ter 17/11 | Simulações de física | a definir | a definir | a definir |
+| Qua 18/11 | Espaço | a definir | a definir | a definir |
+| Qui 19/11 | Como funciona | a definir | a definir | como a tomada funciona |
+| Sex 20/11 | Tamanho e escala | a definir | a definir | a definir |
+| Sáb 21/11 | Satisfying (dominós em alta) | a definir | a definir | a definir |
+| Dom 22/11 | Terra e natureza | a definir | a definir | tornado |
+
+## Fila do 3D cinematográfico
+
+Pesquisa de 31/10 (`pesquisa.py`, Shorts em inglês dos últimos 30 dias): a busca **"how it works 3d animation"** tem
+mediana de **1 milhão** de views. Os maiores são objetos do dia a dia ("How Electrical Outlets Work" 5,7 mi,
+"mechanical typewriter" 4,8 mi), veículos e cenários de "o que acontece se" ("What Happens If an Elevator Cable
+Snaps?" 1,85 mi; "Why Doesn't Lightning Bring Down an Airliner?" 855 mil). Nossa versão: **cenário real primeiro**
+(o avião no céu, o carro na estrada), a câmera entra, o mecanismo é mostrado por dentro (corte, câmera lenta ou
+raio-x), a câmera volta e o Quark faz a pergunta.
+
+| # | Tema | Demanda medida | Cenário de abertura → mecanismo |
+|---|---|---|---|
+| 1 | ✅ (02/11) Como o foguete chega à órbita (vai de lado) | foguetes 53 mil; "why rockets go sideways" 490 mil | Base de lançamento → subida, separação dos estágios, curva para a órbita |
+| 2 | ✅ (03/11) E se o cabo do elevador arrebentar? | 1 vídeo com 1,85 mi (busca 02/11: mediana 27,6 mil) | Prédio de vidro de dia → poço panorâmico, cabo arrebenta, freio de segurança trava nos trilhos |
+| 3 | ✅ (06/11) E se o motor do helicóptero parar? (autorrotação) | mediana 207 mil; busca 05/11 "helicopter engine fails": mediana 30,7 mil, topo 8,2 mi | Helicóptero sobre o campo → raio-x do motor e da roda livre, ar subindo pelo rotor, planeio, flare, pouso |
+| 4 | ✅ (07/11) E se o trem de pouso não descer? (descida por gravidade) | 1 vídeo com 832 mil; busca 06/11: mediana 34,4 mil | Avião na aproximação → hidráulica abrindo as portas e baixando o trem |
+| 5 | Como a eletricidade chega à tomada | 1 vídeo com 5,7 mi | Casa à noite → fiação na parede, fase/neutro/terra, disjuntor |
+| 6 | Turbo do carro | 445 mil e 908 mil | Carro acelerando → turbina do escape girando o compressor da admissão |
+| 7 | ✅ (08/11) E se um raio atingir o avião? | 855 mil | Tempestade → raio entra na fuselagem e sai pela cauda (gaiola de Faraday) |
+| 8 | Como o submarino mergulha | mediana 58 mil | Superfície do mar → tanques de lastro enchendo, mergulho |
+| 9 | Prédio contra terremoto (isolamento de base) | mediana 22 mil; vídeos de 345 mil | Cidade → terremoto, prédio comum × prédio sobre isoladores |
+| 10 | Como a descarga do vaso funciona (sifão) | mediana 20 mil; encanamento 136 mil | Banheiro → caixa acoplada, sifão, ventilação |
+| 11 | Freio ABS em pista molhada | a medir | Carro freando na chuva → roda travando × ABS pulsando |
+| 12 | Máquina de escrever mecânica | 4,8 mi | Escritório antigo → tecla, alavanca, tipo batendo na fita |
+
+**Medidos e fracos agora** (não entram por enquanto): vulcão em 3D (mediana 1,7 mil), dentro do tornado (1,9 mil),
+geladeira (5,5 mil), reator nuclear (6,5 mil), represa (9,9 mil). **Fora do nicho e das regras:** armas e mísseis
+(estão em alta, mas não fazemos), medicina e anestesia (risco de desinformação).
+
+## Os vídeos do dia: sempre diferentes entre si
+
+São do mesmo tópico, mas cada um tem **subtema e formato diferentes**. O catálogo de formatos (ranking, what if/why com o
+Quark, interativo, 3D) e as receitas estão no `PLANO.md`, seção 3. Todo vídeo termina com o Quark fazendo a pergunta
+final. Nenhum subtema se repete em 30 dias (controle em `historico.md`), nem o padrão de título em dias seguidos.
+
+## Cuidados por tópico
+
+- **Mascote:** o personagem é desenho animado, mas o tom do roteiro é de ciência para adolescentes e adultos (piadas
+  secas, números reais), nunca infantil. Conteúdo com cara de "para crianças" pode ser marcado como *made for kids*,
+  o que corta anúncios e comentários. O mascote nunca morre nem se machuca de verdade: o perigo é mostrado com humor
+  e ele sempre escapa.
+- **Terra e natureza:** desastres sem vítimas reais nem eventos recentes com mortes. Só a física do fenômeno.
+- **Ilusões de ótica:** as clássicas são domínio público como ideia, mas a arte precisa ser gerada pelo nosso código.
+
+## Como o ranking é atualizado
+
+- **Todo domingo:** a rotina mede de novo os 10 tópicos e mais 5 candidatos novos (temas que aparecerem nas buscas da semana), reordena o top 10 e refaz a agenda da semana seguinte.
+- **Todo dia:** 1 a 3 buscas dentro do tópico de amanhã, para achar os subtemas e formatos que estão subindo agora.
+- **Troca no meio da semana:** se um tópico da agenda cair pela metade e uma reserva estiver bem acima, a reserva entra no lugar dele.
+- **Dados do próprio canal:** depois de 2 semanas de vídeos, a média de views do Fun Stuff em cada tópico passa a valer metade da nota.

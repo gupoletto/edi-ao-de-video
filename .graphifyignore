@@ -1,0 +1,6 @@
+# lotes de upload e saídas: só JSON de metadados, sem código
+shorts/lote-*/
+shorts/saidas/
+edicao/bruto/
+edicao/final/
+edicao/trabalho/
