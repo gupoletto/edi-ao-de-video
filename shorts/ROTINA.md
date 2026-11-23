@@ -1,3 +1,32 @@
+# PADRÃO "CAPRICHADO" (pedido do usuário em 23/11/2026: qualidade das animações e gatilhos de atenção)
+
+Vale para todo vídeo a partir de 24/11. Referência completa: `pipeline/episodes/story_aco.py` (aço).
+Dados que motivaram: os storytellings com abertura lenta foram assistidos só 15–21 % (saída em 6–7 s); o LEGO,
+com movimento desde o 1º quadro, voltou à faixa de ~900 views.
+
+**Ferramentas:**
+- `core.render` já aplica sozinho: transição em "soco" (zoom + flash + swish) em cada cena, câmera viva (aproximação
+  lenta), cabeçalho com mola, e toca os sons que o desenho dispara (`core.evento_som`).
+- `pipeline/anim.py`: `fundo_vivo` (gradiente + bokeh + vinheta), `esfera`, `cilindro`, `bloco_3d`, `sombra_chao`,
+  `brilho`, `faiscas`, `estouro`, `confete`, `fumaca`, `bolhas`, `anel_destaque`, `seta`, `contador`, `texto_pop`,
+  `tremor`. Cada um recebe `t` desde que começa e já toca o som certo (pop, tique, thud, swish).
+- `pipeline/previa.py <episodio> seg:t …` gera a folha de prévia com os mesmos efeitos do vídeo final.
+
+**Checklist de cada vídeo (conferir na prévia antes do render):**
+1. **Quadro 0 em movimento** e com um número ou objeto marcante (ex.: contador "1,600 °C" correndo). Nada de cena
+   parada esperando a voz.
+2. **Gancho = fato-choque + promessa** em 2 frases curtas na mesma cena ("This river is hotter than lava. And soon
+   it'll be part of a car."). A 2ª frase revela algo novo na tela (pop + anel).
+3. **Uma batida visual a cada 2–3 s:** objeto entrando com mola, anel/seta no detalhe que a voz cita, contador,
+   tremor num impacto, troca de cena. Divida a narração em frases (`Seg([...])`) e sincronize com `s.mark(i)`.
+4. **Números viram momento:** `contador` grande (com tique e pop), nunca só texto parado numa caixa.
+5. **Acabamento:** objetos com volume (`esfera`, `cilindro`, `bloco_3d`), `sombra_chao` sob tudo que pousa,
+   `brilho` em fontes de luz, fundo com `fundo_vivo`. Proibido retângulo chapado como objeto principal.
+6. **Pouco texto na tela:** a legenda já carrega a fala; use palavras gigantes (`texto_pop`) só para a ideia-chave.
+7. **Final com recompensa** (número grande, revelação, confete) e depois a pergunta do Quark (≤ 9 palavras).
+8. 25–40 s; trilha pelo tom (`core.MUSICA`); fatos conferidos na docstring.
+9. Prefira temas de objeto conhecido/divertido com procura alta ("how X is made"), que foi o que funcionou.
+
 # A PARTIR DE 20/11/2026: STORYTELLING ANIMADO (decisão do usuário em 20/11; GTA 6 pausado)
 
 Os cortes de GTA 6 estão **pausados** (`GTA6.md` fica só como referência). O canal volta às animações, agora com

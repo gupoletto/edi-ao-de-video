@@ -135,8 +135,20 @@ def mola(t, dur=0.5):
     return 1 - math.exp(-6 * x) * math.cos(9 * x)
 
 
-def pop_caixa(ctx, t, cx, cy, desenha, dur=0.5):
-    """Desenha algo (função sem argumentos) com entrada de mola, escalando em volta de (cx, cy)."""
+_AGORA = [0.0]      # tempo global do quadro em render (para sincronizar sons disparados pelo desenho)
+_EVENTOS = []       # (tempo global, nome do efeito)
+
+
+def evento_som(nome, t_local):
+    """Chame no desenho: toca o efeito `nome` no quadro em que t_local cruza 0 (uma vez só)."""
+    if 0 <= t_local < 1.0 / FPS:
+        _EVENTOS.append((_AGORA[0], nome))
+
+
+def pop_caixa(ctx, t, cx, cy, desenha, dur=0.5, som="pop"):
+    """Desenha algo (função sem argumentos) com entrada de mola, escalando em volta de (cx, cy); toca `som` na entrada."""
+    if som:
+        evento_som(som, t)
     k = mola(t, dur)
     if k <= 0.001:
         return
@@ -302,7 +314,38 @@ def tone(freq, dur, amp, attack=0.01, decay=None, kind="sine"):
     return (amp * w * env).astype(np.float32)
 
 
+def _pop():
+    n = int(0.09 * SR)
+    t = np.arange(n) / SR
+    f = 500 + 900 * t / t[-1]
+    return (0.22 * np.sin(2 * np.pi * np.cumsum(f) / SR) * np.exp(-t * 35)).astype(np.float32)
+
+
+def _swish():
+    n = int(0.28 * SR)
+    r = np.random.default_rng(3).standard_normal(n)
+    r = np.convolve(r, np.ones(6) / 6, mode="same")
+    env = np.sin(np.linspace(0, np.pi, n)) ** 2
+    return (0.05 * r * env).astype(np.float32)
+
+
+def _thud():
+    return _kick(0.30)
+
+
+def _riser():
+    n = int(0.9 * SR)
+    t = np.arange(n) / SR
+    f = 200 + 900 * (t / t[-1]) ** 2
+    r = np.random.default_rng(5).standard_normal(n) * 0.3
+    return ((0.05 * np.sin(2 * np.pi * np.cumsum(f) / SR) + 0.02 * r) * (t / t[-1])).astype(np.float32)
+
+
 SFX = {
+    "pop": lambda: _pop(),
+    "swish": lambda: _swish(),
+    "thud": lambda: _thud(),
+    "riser": lambda: _riser(),
     "ding": lambda: tone(1318.5, 1.2, 0.30, decay=0.35) + tone(1975.5, 1.2, 0.12, decay=0.25),
     "tick": lambda: tone(880, 0.12, 0.25, decay=0.03),
     "whoosh": lambda: (np.random.default_rng(1).standard_normal(int(0.4 * SR)) *
@@ -512,7 +555,64 @@ def background():
     return s
 
 
+def desenhar_quadro(ctx, segs, t, bg=None):
+    """Desenha o quadro do tempo global t (segs já com .t0), com os gatilhos de atenção de render()."""
+    _AGORA[0] = t
+    k = 0
+    while k < len(segs) - 1 and t >= segs[k].t0 + segs[k].dur:
+        k += 1
+    s, lt = segs[k], t - segs[k].t0
+    cont = getattr(s, "continuo", False)
+    if bg is not None:
+        ctx.set_source_surface(bg)
+    else:
+        ctx.set_source_rgb(0, 0, 0)
+    ctx.paint()
+    ctx.push_group()
+    ctx.save()
+    if not cont:
+        soco = 0.10 * (1 - min(1.0, lt / 0.3)) ** 2 if k else 0.0
+        esc = 1 + soco + 0.035 * min(1.0, lt / max(s.dur, 0.1))
+        ctx.translate(W / 2, 900)
+        ctx.scale(esc, esc)
+        ctx.translate(-W / 2, -900)
+    s.draw(ctx, lt, s)
+    ctx.restore()
+    if s.header and not cont and k:
+        hk = max(mola(lt, 0.45), 0.001)
+        ctx.save()
+        ctx.translate(W / 2, 300)
+        ctx.scale(hk, hk)
+        ctx.translate(-W / 2, -300)
+        draw_header(ctx, s.header)
+        ctx.restore()
+    else:
+        draw_header(ctx, s.header)
+    ctx.pop_group_to_source()
+    ctx.paint()
+    if k and not cont and lt < 0.2:   # flash da transição
+        ctx.set_source_rgba(1, 1, 1, 0.28 * (1 - lt / 0.2))
+        ctx.paint()
+    draw_captions(ctx, s, lt)
+    text_center(ctx, HANDLE, W / 2, 1840, 28, GRAY, "SemiBold")
+
+
+def preparar(segments):
+    """build() + tempos de início, sem renderizar (para prévias)."""
+    segs = [s.build() for s in segments]
+    t0 = 0.0
+    for s in segs:
+        s.t0, t0 = t0, t0 + s.dur
+    return segs
+
+
 def render(segments, out, music_on=True, preparo=None):
+    """Monta o Short. Desde 23/11/2026 todo vídeo ganha gatilhos de atenção automáticos:
+    - transição "soco": cada cena nova entra com zoom de 10 % caindo para 0 em 0,3 s, um flash leve e um swish;
+    - câmera viva: aproximação lenta de 3,5 % ao longo de cada cena (nada fica parado);
+    - cabeçalho com mola na entrada de cada cena;
+    - sons disparados pelo desenho (core.evento_som / pop_caixa) sincronizados com o quadro em que acontecem.
+    Cenas contínuas (3D, `continuo = True`) não recebem soco nem câmera, porque têm câmera própria."""
     setup()
     segs = [s.build() for s in segments]
     total = sum(s.dur for s in segs)
@@ -523,34 +623,11 @@ def render(segments, out, music_on=True, preparo=None):
     if preparo:  # ex.: renderizar os quadros 3D agora que os tempos da narração são conhecidos
         preparo(segs, total)
     print(f"{out}: {total:.1f}s, {len(segs)} segments")
-
-    # audio
-    n = int((total + 0.2) * SR)
-    voice = np.zeros(n, np.float32)
-    fx = np.zeros(n, np.float32)
-    t0 = 0.0
-    for s in segs:
-        for st, a in s.audio:
-            i = int((t0 + st) * SR)
-            voice[i:i + len(a)] += a[:n - i]
-        for idx, off, name in s.sfx:
-            a = SFX[name]()
-            i = int((t0 + s.mark(idx) + off) * SR)
-            fx[i:i + len(a)] += a[:max(0, n - i)]
-        t0 += s.dur
-    mix = voice + fx
-    if music_on:
-        m = music(n / SR)[:n]  # pode vir 1 amostra menor por arredondamento
-        env = np.convolve(np.abs(voice[:len(m)]), np.ones(int(0.25 * SR)) / int(0.25 * SR), mode="same")
-        env = np.clip(env / (np.percentile(env, 95) + 1e-6), 0, 1)
-        m = m * (1 - 0.55 * env).astype(np.float32)   # abaixa a trilha enquanto a voz fala
-        mix[:len(m)] += m
     tmp = tempfile.mkdtemp()
     wav, aac, vid = (os.path.join(tmp, f) for f in ("mix.wav", "mix.m4a", "video.mp4"))
-    sf.write(wav, mix, SR)
-    loudnorm(wav, aac)
 
-    # video
+    # video (antes do áudio: o desenho registra os sons em _EVENTOS)
+    del _EVENTOS[:]
     bg = background()
     surf = cairo.ImageSurface(cairo.FORMAT_RGB24, W, H)
     ctx = cairo.Context(surf)
@@ -559,28 +636,45 @@ def render(segments, out, music_on=True, preparo=None):
                             "-preset", "medium", "-crf", "21", "-pix_fmt", "yuv420p", vid],
                            stdin=subprocess.PIPE)
     frames = int(math.ceil(total * FPS))
-    t0, k = 0.0, 0
     for f in range(frames):
-        t = f / FPS
-        while k < len(segs) - 1 and t >= t0 + segs[k].dur:
-            t0 += segs[k].dur
-            k += 1
-        s, lt = segs[k], t - t0
-        ctx.set_source_surface(bg)
-        ctx.paint()
-        ctx.push_group()
-        ctx.save()
-        s.draw(ctx, lt, s)
-        ctx.restore()
-        draw_header(ctx, s.header)
-        ctx.pop_group_to_source()
-        ctx.paint_with_alpha(ramp(lt, 0, 0.25) if k and not getattr(s, "continuo", False) else 1.0)
-        draw_captions(ctx, s, lt)
-        text_center(ctx, HANDLE, W / 2, 1840, 28, GRAY, "SemiBold")
+        desenhar_quadro(ctx, segs, f / FPS, bg)
         surf.flush()
         enc.stdin.write(bytes(surf.get_data()))
     enc.stdin.close()
     enc.wait()
+
+    # audio
+    n = int((total + 0.2) * SR)
+    voice = np.zeros(n, np.float32)
+    fx = np.zeros(n, np.float32)
+
+    def toca(nome, tg):
+        a = SFX[nome]()
+        i = int(tg * SR)
+        if 0 <= i < n:
+            fx[i:i + len(a)] += a[:n - i]
+    for j, s in enumerate(segs):
+        for st, a in s.audio:
+            i = int((s.t0 + st) * SR)
+            voice[i:i + len(a)] += a[:n - i]
+        for idx, off, name in s.sfx:
+            toca(name, s.t0 + s.mark(idx) + off)
+        if j and not getattr(s, "continuo", False) and not getattr(s, "sem_swish", False):
+            toca("swish", s.t0 - 0.05)
+    ultimo = {}
+    for tg, nome in _EVENTOS:   # sons do desenho; evita repetir o mesmo som em menos de 80 ms
+        if tg - ultimo.get(nome, -1) > 0.08:
+            toca(nome, tg)
+            ultimo[nome] = tg
+    mix = voice + fx
+    if music_on:
+        m = music(n / SR)[:n]  # pode vir 1 amostra menor por arredondamento
+        env = np.convolve(np.abs(voice[:len(m)]), np.ones(int(0.25 * SR)) / int(0.25 * SR), mode="same")
+        env = np.clip(env / (np.percentile(env, 95) + 1e-6), 0, 1)
+        m = m * (1 - 0.55 * env).astype(np.float32)   # abaixa a trilha enquanto a voz fala
+        mix[:len(m)] += m
+    sf.write(wav, mix, SR)
+    loudnorm(wav, aac)
     subprocess.run(["ffmpeg", "-v", "error", "-y", "-i", vid, "-i", aac, "-map", "0:v", "-map", "1:a",
                     "-c", "copy", "-shortest", "-movflags", "+faststart", out], check=True)
     print(f"wrote {out} ({os.path.getsize(out) / 1e6:.1f} MB)")
