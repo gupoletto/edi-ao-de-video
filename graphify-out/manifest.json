@@ -870,9 +870,9 @@
     "semantic_hash": ""
   },
   "shorts/historico.md": {
-    "mtime": 1795424040.5146537,
-    "seen": 1795438623.7043915,
-    "ast_hash": "28199a13a01840ebe70b7ee8ab64d8e3",
+    "mtime": 1795510446.7102835,
+    "seen": 1795510458.451933,
+    "ast_hash": "132c8273388fa85d11317a769eed2a97",
     "semantic_hash": ""
   },
   "shorts/pipeline/README.md": {
@@ -1149,6 +1149,24 @@
     "mtime": 1795441541.272738,
     "seen": 1795443400.5749488,
     "ast_hash": "ced817e12a9454d485a63a9f78cdf621",
+    "semantic_hash": ""
+  },
+  "shorts/pipeline/episodes/quark_lava.py": {
+    "mtime": 1795510346.5638986,
+    "seen": 1795510458.4518425,
+    "ast_hash": "3b6631216e5ab84d8b15c7f79fa0198b",
+    "semantic_hash": ""
+  },
+  "shorts/pipeline/episodes/story_pneu.py": {
+    "mtime": 1795510251.2870955,
+    "seen": 1795510458.451881,
+    "ast_hash": "563bf2fb4d02cd4ad74b30257fd84cb5",
+    "semantic_hash": ""
+  },
+  "shorts/tendencias/2026-11-24.md": {
+    "mtime": 1795510446.7155526,
+    "seen": 1795510458.451962,
+    "ast_hash": "d044b748bc723790f687b2688a9e4111",
     "semantic_hash": ""
   },
   "shorts/cartoon/package-lock.json": {
