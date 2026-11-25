@@ -55,13 +55,15 @@ Leia `shorts/PLANO.md` (documento-mestre: nicho, marca, catálogo de formatos, r
 
 ## 0. Preparação
 
+- Container novo (sem `~/.cache/kokoro`)? Reinstale: `pip install --break-system-packages pycairo numpy soundfile kokoro-onnx Pillow` e `uv tool install graphifyy`; o modelo de voz baixa sozinho do GitHub na 1ª prévia.
+
 - Trabalhe na branch `claude/focused-einstein-6l079f` (`git fetch origin claude/focused-einstein-6l079f && git checkout claude/focused-einstein-6l079f`) e faça push só nela.
 - Credenciais (variáveis de ambiente): `YT_CLIENT_ID`, `YT_CLIENT_SECRET`, `YT_REFRESH_TOKEN` (escopos `youtube.upload` + `youtube.readonly`), Opcional: `PIXABAY_API_KEY` para cenas reais (a Pexels suspendeu novas chaves). A rede do ambiente bloqueia Pexels, Pixabay, ElevenLabs, OpenAI e Hugging Face, a menos que o usuário libere o domínio. GitHub, PyPI, npm e googleapis funcionam.
 - Todo o visual é gerado por código. Cenas reais do Pixabay só entram se `PIXABAY_API_KEY` existir e pixabay.com responder, e no máximo 1 vídeo por dia.
 
 ## 1. Pendências
 
-Para cada `shorts/lote-*/` com vídeo que ainda não está no `uploaded.json`, rode `python3 shorts/upload.py <lote>`. O script coloca no próximo horário de pico livre os vídeos sem data ou com data já passada.
+Para cada `shorts/lote-*/` cujo `videos.json` tenha arquivo que ainda não está no `uploaded.json`, rode `python3 shorts/upload.py <lote>`. Compare `videos.json` com `uploaded.json`, não a pasta: os `.mp4` ficam fora do git e somem quando o container é trocado (25/11). O script coloca no próximo horário de pico livre os vídeos sem data ou com data já passada.
 
 ## 2. Pipeline
 

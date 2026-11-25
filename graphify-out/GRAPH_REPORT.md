@@ -1,25 +1,25 @@
-# Graph Report - edi-ao-de-video  (2026-11-24)
+# Graph Report - edi-ao-de-video  (2026-11-25)
 
 ## Corpus Check
-- 193 files · ~232,517 words
+- 197 files · ~236,462 words
 - Verdict: corpus is large enough that graph structure adds value.
 - Unclassified: 5 file(s) not represented in the graph (top: (none) 5)
 
 ## Summary
-- 2378 nodes · 6637 edges · 131 communities (102 shown, 29 thin omitted)
+- 2417 nodes · 6819 edges · 133 communities (106 shown, 27 thin omitted)
 - Extraction: 96% EXTRACTED · 4% INFERRED · 0% AMBIGUOUS · INFERRED: 267 edges (avg confidence: 0.86)
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `f9810b4a`
+- Built from commit: `6f10a213`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
 ## Community Hubs (Navigation)
-- cairo
+- thumb.py
 - numpy
 - round_rect
-- sys
+- json
 - transicoes.py
 - seg_pergunta
 - illusions.py
@@ -27,80 +27,80 @@
 - ramp
 - geo.py
 - countdown
-- sonda
+- vinheta.py
 - elementos.py
 - cast.ts
-- planet
+- text_center
 - core.py
 - quark_oobleck.py
 - fundo_vivo
 - illusions_impossible.py
-- tres.py
-- Seg
+- os
+- bodyFront
 - size_biggest_animals.py
 - tres_elevador.py
-- quark_jupiter.py
+- math
 - physics.py
 - story.ts
 - story_titanic.py
-- personagem.py
+- quark
 - Guia de estilo da edição pessoal
-- texto_pop
+- .ell
 - quark_sun_vanished.py
 - story_burj.py
-- math
-- render
-- quark_loop.py
+- earth_fastest_winds.py
+- draw
+- cena_trilho
 - story_muralha.py
 - quark_penny.py
 - quark_flat_earth.py
 - quark_volcano.py
-- text_center
+- space_hottest.py
 - tres_batida.py
 - Bridge.tsx
 - tres_trem.py
-- anim.py
+- story_gude.py
 - sat_nature_patterns.py
 - build.ts
-- panel
+- satisfying.py
 - illusions_eye_tricks.py
-- physics_impossible.py
+- ball
 - quark_giant_earth.py
 - paint.ts
-- mecanismos.py
+- panel
 - Formatos de anúncio em vídeo: Meta, TikTok, YouTube/Google, Kwai e outras
-- planejar.py
+- comum.py
 - grade.ts
 - toon.ts
 - earth_which_deeper.py
 - quark_black_hole.py
 - quark_earth_stops.py
-- story_chernobyl.py
+- story_vidro.py
 - world.ts
 - space_coldest.py
 - tres_domino.py
 - Top 10 tópicos em alta + agenda da semana
-- renderizar
+- cairo
 - tres_abs.py
 - tres_turbina.py
 - ambiente.js
 - physics_tunnel.py
 - quark_planet_jump.py
 - space_biggest_stars.py
-- .quadro
+- subprocess
 - tres_asteroide.py
 - tres_descarga.py
-- story_pneu.py
+- size_earths_in_sun.py
 - tres_raio.py
-- tres_submarino.py
+- size_tallest_buildings.py
 - package.json
 - tres_foguete.py
-- texto_pop
+- tres_motor.py
 - Fun Stuff → cortes de GTA 6 (a partir de 19/11/2026)
 - turbina.js
 - 21/11/2026
 - 22/11/2026 (domingo)
-- say
+- .poseBridge
 - Tendências — 08/11/2026 (domingo: fim do teste de 2 vídeos por dia)
 - Tendências — 15/11/2026 (domingo: ranking da semana, avaliação do Quark, agenda 16–22/11)
 - ames.js
@@ -140,123 +140,126 @@
 - ink.ts
 - render.mjs
 - 24/11/2026
+- Seg
 - three
 - physics_fastest_made.py
-- ink.ts
+- Inner
+- fill_sim
+- 25/11/2026
 - cartoon/README.md
 
 ## God Nodes (most connected - your core abstractions)
-1. `text_center()` - 204 edges
+1. `text_center()` - 209 edges
 2. `ramp()` - 114 edges
-3. `Seg` - 99 edges
+3. `Seg` - 102 edges
 4. `round_rect()` - 98 edges
-5. `render()` - 81 edges
+5. `render()` - 84 edges
 6. `quark()` - 69 edges
 7. `Pose` - 56 edges
 8. `boca_da_voz()` - 55 edges
 9. `pill()` - 53 edges
-10. `ctex()` - 34 edges
+10. `fundo_vivo()` - 41 edges
 
 ## Surprising Connections (you probably didn't know these)
-- `3f. Trilha e vinheta (pedido do usuário, 29/10/2026)` --references--> `pop()`  [INFERRED]
-  edicao/ESTILO.md → edicao/ferramentas/sons.py
 - `3. Tendências` --references--> `access_token()`  [INFERRED]
   shorts/ROTINA.md → shorts/upload.py
-- `Pipeline de produção` --references--> `Seg`  [INFERRED]
-  shorts/pipeline/README.md → shorts/pipeline/core.py
-- `main()` --calls--> `transcrever()`  [INFERRED]
-  shorts/gta6/cortar.py → edicao/ferramentas/transcrever.py
-- `boca_da_voz()` --indirect_call--> `audio()`  [INFERRED]
-  shorts/pipeline/personagem.py → edicao/ferramentas/vinheta.py
+- `3f. Trilha e vinheta (pedido do usuário, 29/10/2026)` --references--> `pop()`  [INFERRED]
+  edicao/ESTILO.md → edicao/ferramentas/sons.py
+- `PADRÃO "CAPRICHADO" (pedido do usuário em 23/11/2026: qualidade das animações e gatilhos de atenção)` --references--> `render()`  [INFERRED]
+  shorts/ROTINA.md → shorts/pipeline/core.py
+- `2. Pipeline` --references--> `seg_pergunta()`  [INFERRED]
+  shorts/ROTINA.md → shorts/pipeline/personagem.py
+- `5. Produção e conferência (obrigatório para cada vídeo)` --references--> `seg_pergunta()`  [INFERRED]
+  shorts/ROTINA.md → shorts/pipeline/personagem.py
 
 ## Import Cycles
 - None detected.
 
-## Communities (131 total, 29 thin omitted)
+## Communities (133 total, 27 thin omitted)
 
-### Community 0 - "cairo"
-Cohesion: 0.05
-Nodes (73): desenhar(), preparar(), fracao(), importar(), sondar(), argb(), arredondado(), bilhete() (+65 more)
+### Community 0 - "thumb.py"
+Cohesion: 0.09
+Nodes (38): argb(), arredondado(), bilhete(), cartao(), cobrir(), despertador(), montar(), carimbo() (+30 more)
 
 ### Community 1 - "numpy"
 Cohesion: 0.05
-Nodes (78): _acorde(), bipe_filme(), blips(), boing(), _bumbo(), _caixa(), campainha(), chiado() (+70 more)
+Nodes (79): _acorde(), bipe_filme(), blips(), boing(), _bumbo(), _caixa(), campainha(), chiado() (+71 more)
 
 ### Community 2 - "round_rect"
-Cohesion: 0.05
-Nodes (83): pop_caixa(), round_rect(), caixa(), d_concha(), d_fermenta(), d_gancho(), d_moer(), d_tempera() (+75 more)
+Cohesion: 0.06
+Nodes (71): round_rect(), caixa(), d_barras(), d_botao(), d_cidade(), d_explode(), d_gancho(), d_teste() (+63 more)
 
-### Community 3 - "sys"
-Cohesion: 0.07
-Nodes (34): erro(), canal(), enviar(), main(), thumbnail(), token(), analytics(), duracao_s() (+26 more)
+### Community 3 - "json"
+Cohesion: 0.09
+Nodes (29): canal(), enviar(), main(), thumbnail(), token(), analytics(), duracao_s(), formato_curto() (+21 more)
 
 ### Community 4 - "transicoes.py"
 Cohesion: 0.07
 Nodes (36): _anilha(), anilhas(), arcade(), blocos(), _borda_rasgada(), celular(), _centro(), cortina() (+28 more)
 
 ### Community 5 - "seg_pergunta"
-Cohesion: 0.04
-Nodes (42): 10. Mecânica de postagem (C), 11. Conclusão das 4 referências, 12. Os três "presídios" de views e a saída de cada um, 13. O que a curva de retenção do nosso canal mostrou (01/11, `metricas.py --retencao`), 1. Nicho = tema provado + apresentação diferente, 2. Pesquisa de ideias (complementa o passo 3 da ROTINA), 3. Roteiro com arco de conflito (não linear), 4. Execução (+34 more)
+Cohesion: 0.05
+Nodes (38): 10. Mecânica de postagem (C), 11. Conclusão das 4 referências, 12. Os três "presídios" de views e a saída de cada um, 13. O que a curva de retenção do nosso canal mostrou (01/11, `metricas.py --retencao`), 1. Nicho = tema provado + apresentação diferente, 2. Pesquisa de ideias (complementa o passo 3 da ROTINA), 3. Roteiro com arco de conflito (não linear), 4. Execução (+30 more)
 
 ### Community 6 - "illusions.py"
 Cohesion: 0.08
-Nodes (24): d1(), d2(), d3(), d4(), d5(), d_intro(), d_outro(), verdict() (+16 more)
+Nodes (23): d1(), d2(), d3(), d4(), d5(), d_intro(), d_outro(), verdict() (+15 more)
 
 ### Community 7 - "montar.py"
-Cohesion: 0.09
-Nodes (23): cartao_rect(), hexrgb(), no_editado(), ass_cor(), ass_tempo(), audio_trechos(), conferir_sincronia(), sonda() (+15 more)
+Cohesion: 0.08
+Nodes (25): ajustar(), cartao_rect(), hexrgb(), no_editado(), resolucao(), ass_cor(), ass_tempo(), audio_trechos() (+17 more)
 
 ### Community 8 - "ramp"
 Cohesion: 0.13
-Nodes (29): pill(), ramp(), base(), d_fit(), d_intro(), d_outro(), d_sizes(), d_slide() (+21 more)
+Nodes (30): pill(), ramp(), rodada(), base(), d_fit(), d_intro(), d_outro(), d_sizes() (+22 more)
 
 ### Community 9 - "geo.py"
 Cohesion: 0.07
-Nodes (25): true_area(), d_intro(), d_outro(), preparar(), rodada(), draw(), tela(), azimutal() (+17 more)
+Nodes (23): true_area(), preparar(), rodada(), draw(), tela(), azimutal(), circulo_minimo(), continent() (+15 more)
 
 ### Community 10 - "countdown"
-Cohesion: 0.10
-Nodes (31): Seg, d1(), d2(), d3(), d4(), d_intro(), d_outro(), d1() (+23 more)
+Cohesion: 0.16
+Nodes (21): d1(), d2(), d3(), d4(), d_intro(), d_outro(), d1(), d2() (+13 more)
 
-### Community 11 - "sonda"
-Cohesion: 0.22
-Nodes (8): hms(), pasta_trabalho(), sonda(), exportar(), tc(), palavras(), transcrever(), esvaziar()
+### Community 11 - "vinheta.py"
+Cohesion: 0.13
+Nodes (16): centro(), cursor(), ease(), fonte(), gerar(), joinha(), mola(), quadro() (+8 more)
 
 ### Community 12 - "elementos.py"
-Cohesion: 0.17
-Nodes (19): contando(), d_barras(), d_dividido(), d_letreiro(), d_lista(), d_numero(), d_progresso(), d_selo() (+11 more)
+Cohesion: 0.13
+Nodes (24): contando(), d_barras(), d_dividido(), d_letreiro(), d_lista(), d_numero(), d_progresso(), d_selo() (+16 more)
 
 ### Community 13 - "cast.ts"
-Cohesion: 0.06
-Nodes (71): BARE, blank, blob(), BODY, CamInfo, CARD, CHEER, column() (+63 more)
+Cohesion: 0.07
+Nodes (62): BARE, blank, blob(), BODY, CamInfo, CARD, CHEER, column() (+54 more)
 
-### Community 14 - "planet"
+### Community 14 - "text_center"
 Cohesion: 0.11
-Nodes (28): contador(), d_intro(), d_jupiter(), d_outro(), d_sol_jupiter(), d_sol_largura(), d_sol_volume(), enchendo() (+20 more)
+Nodes (27): text_center(), _sombra(), blivet(), d_intro(), d_outro(), cena(), draw(), d1() (+19 more)
 
 ### Community 15 - "core.py"
-Cohesion: 0.09
-Nodes (20): background(), desenhar_quadro(), draw_captions(), draw_header(), font(), _hat(), _kick(), loudnorm() (+12 more)
+Cohesion: 0.08
+Nodes (21): background(), desenhar_quadro(), draw_captions(), draw_header(), font(), _hat(), _kick(), loudnorm() (+13 more)
 
 ### Community 16 - "quark_oobleck.py"
 Cohesion: 0.16
 Nodes (14): cobre(), corrida(), d_afunda(), d_corre(), d_devagar(), d_gancho(), d_prova(), d_soco() (+6 more)
 
 ### Community 17 - "fundo_vivo"
-Cohesion: 0.18
-Nodes (13): brilho(), faiscas(), fundo_vivo(), tremor(), d_alto_forno(), d_fragil(), d_gancho(), d_laminacao() (+5 more)
+Cohesion: 0.06
+Nodes (72): anel_destaque(), bloco_3d(), bolhas(), brilho(), cilindro(), _clarear(), confete(), contador() (+64 more)
 
 ### Community 18 - "illusions_impossible.py"
 Cohesion: 0.16
 Nodes (12): caminho(), cena(), draw(), cubos(), d_intro(), ease(), necker(), painel() (+4 more)
 
-### Community 19 - "tres.py"
-Cohesion: 0.18
-Nodes (7): preparo(), preparo(), preparo(), preparo(), preparo(), preparo(), Filme
+### Community 19 - "os"
+Cohesion: 0.07
+Nodes (28): preparo(), ease(), estado(), mistura(), preparo(), seg(), seg_de(), tela() (+20 more)
 
-### Community 20 - "Seg"
-Cohesion: 0.36
-Nodes (5): estado(), preparo(), seg(), solta(), tela()
+### Community 20 - "bodyFront"
+Cohesion: 0.22
+Nodes (17): blobPts(), bodyFront(), bodySide(), curve(), footStroke(), hatBehind(), hatOn(), headBlob() (+9 more)
 
 ### Community 21 - "size_biggest_animals.py"
 Cohesion: 0.17
@@ -266,53 +269,53 @@ Nodes (16): animal(), baleia_azul(), cena(), draw(), cenario(), d_intro(), ease(
 Cohesion: 0.18
 Nodes (14): altura(), cam_abertura(), cam_cabos(), cam_freio(), cam_gov(), cam_largo(), ease(), estado() (+6 more)
 
-### Community 24 - "quark_jupiter.py"
-Cohesion: 0.25
-Nodes (13): caindo(), d_corda(), d_galileo(), d_gancho(), d_metal(), d_pergunta(), d_sem_chao(), d_velocidade() (+5 more)
+### Community 24 - "math"
+Cohesion: 0.18
+Nodes (16): caindo(), d_corda(), d_galileo(), d_gancho(), d_metal(), d_pergunta(), d_sem_chao(), d_velocidade() (+8 more)
 
 ### Community 25 - "physics.py"
-Cohesion: 0.12
-Nodes (13): d1(), d_intro(), cycloid_race(), _hexagon(), hexagon_sim(), pendulum_race(), pi_blocks(), pi_blocks_sim() (+5 more)
+Cohesion: 0.11
+Nodes (15): d1(), d4(), d_intro(), d_intro(), cycloid_race(), hexagon(), _hexagon(), hexagon_sim() (+7 more)
 
 ### Community 26 - "story.ts"
 Cohesion: 0.06
-Nodes (76): amp(), ANCHOR, boots(), Cam, camAt(), CAMS, COUNT, CRANE (+68 more)
+Nodes (77): amp(), ANCHOR, boots(), Cam, camAt(), CAMS, COUNT, CRANE (+69 more)
 
 ### Community 27 - "story_titanic.py"
 Cohesion: 0.31
 Nodes (13): caixa(), ceu(), compartimentos(), d_alaga(), d_bandeja(), d_botes(), d_comp(), d_fim() (+5 more)
 
-### Community 28 - "personagem.py"
-Cohesion: 0.13
-Nodes (17): d_conta(), d_espiral(), d_explica(), d_mao(), d_olha(), espiral(), fundo_neutro(), _boca() (+9 more)
+### Community 28 - "quark"
+Cohesion: 0.15
+Nodes (10): _boca(), _corpo(), _luva(), _mangueira(), _oculos(), _olho(), piscada_auto(), quark() (+2 more)
 
 ### Community 29 - "Guia de estilo da edição pessoal"
 Cohesion: 0.12
 Nodes (16): 0. Paleta do canal (vale para todos os estilos; definida em 28/10/2026), 1. Ritmo (vale para os dois estilos), 2. Estilo "editorial" (A) — `--estilo editorial`, 3. Estilo "dinâmico" (B) — `--estilo dinamico`, 3b. Estilo "frase-chave" (C, Léo Lamera) — `"legenda_estilo": "frase"`, 3c. Tutorial com tela (D, Felipe Borges) — elemento `tela`, 3d. Motion graphics para Reels (E, LABS), 3e. Fugindo do óbvio (criado no episódio 10, 29/10/2026) (+8 more)
 
-### Community 30 - "texto_pop"
-Cohesion: 0.40
-Nodes (4): 23/11/2026, Buscas (mediana, 30 dias), Desempenho do storytelling (metricas.py --desde 2026-11-20), Publicados
+### Community 30 - ".ell"
+Cohesion: 0.18
+Nodes (19): flotsam(), puddle(), shakoAlone(), dmouth(), eye(), eyeKind(), faceFront(), faceSide() (+11 more)
 
 ### Community 31 - "quark_sun_vanished.py"
-Cohesion: 0.22
-Nodes (11): caixa(), d_escuro(), d_espera(), d_frio(), d_gancho(), d_oceano(), d_orbita(), ease() (+3 more)
+Cohesion: 0.27
+Nodes (10): caixa(), d_escuro(), d_espera(), d_frio(), d_gancho(), d_orbita(), ease(), lua() (+2 more)
 
 ### Community 32 - "story_burj.py"
 Cohesion: 0.35
 Nodes (13): caixa(), ceu(), d_agulha(), d_andares(), d_areia(), d_atrito(), d_concreto(), d_estacas() (+5 more)
 
-### Community 33 - "math"
+### Community 33 - "earth_fastest_winds.py"
 Cohesion: 0.19
 Nodes (8): anemometro(), cena(), draw(), ease(), furacao(), medidor(), tornado(), vento()
 
-### Community 34 - "render"
-Cohesion: 0.33
+### Community 34 - "draw"
+Cohesion: 0.38
 Nodes (6): cena(), draw(), d_intro(), desenha(), ease(), fundo()
 
-### Community 35 - "quark_loop.py"
-Cohesion: 0.21
-Nodes (11): bola(), caminho(), cena_trilho(), tela(), corrida(), draw(), d_gancho(), d_regra() (+3 more)
+### Community 35 - "cena_trilho"
+Cohesion: 0.36
+Nodes (7): bola(), cena_trilho(), tela(), corrida(), draw(), d_gancho(), em()
 
 ### Community 36 - "story_muralha.py"
 Cohesion: 0.33
@@ -327,12 +330,12 @@ Cohesion: 0.30
 Nodes (11): caixa(), ceu(), chao_inclinado(), d_anda(), d_bola(), d_escorrega(), d_gancho(), d_oceano() (+3 more)
 
 ### Community 39 - "quark_volcano.py"
-Cohesion: 0.25
-Nodes (13): d_dentro(), ceu(), d_calor(), d_densidade(), d_flutua(), d_fuga(), d_gancho(), d_queda() (+5 more)
+Cohesion: 0.31
+Nodes (10): ceu(), d_calor(), d_densidade(), d_flutua(), d_fuga(), d_gancho(), d_queda(), ease() (+2 more)
 
-### Community 40 - "text_center"
-Cohesion: 0.12
-Nodes (23): text_center(), blivet(), cena(), draw(), cenario(), contador(), d_intro(), eiffel() (+15 more)
+### Community 40 - "space_hottest.py"
+Cohesion: 0.22
+Nodes (12): cena(), draw(), colisor(), d_intro(), ease(), fmt(), fundo(), raio() (+4 more)
 
 ### Community 41 - "tres_batida.py"
 Cohesion: 0.28
@@ -346,9 +349,9 @@ Nodes (16): remotion, Root(), BRIDGE_FRAMES, BridgeShort(), dprOverride(), fpt, 
 Cohesion: 0.26
 Nodes (10): ease(), estado(), luzes(), mistura(), seg(), seg_de(), t_toque(), tela() (+2 more)
 
-### Community 44 - "anim.py"
+### Community 44 - "story_gude.py"
 Cohesion: 0.24
-Nodes (9): bloco_3d(), bolhas(), cilindro(), _clarear(), confete(), _escurecer(), esfera(), fumaca() (+1 more)
+Nodes (13): pop_caixa(), caixa(), d(), d_cor(), d_forno(), d_gancho(), d_pilha(), d_rolos() (+5 more)
 
 ### Community 45 - "sat_nature_patterns.py"
 Cohesion: 0.25
@@ -356,19 +359,19 @@ Nodes (10): basalto(), cena(), draw(), ease(), favo(), floco(), girassol(), pain
 
 ### Community 46 - "build.ts"
 Cohesion: 0.08
-Nodes (56): addVeg(), BANNER_COL, bannerGeo(), bannerProp(), bannerTex(), barkMat(), Batch, boxes (+48 more)
+Nodes (52): addVeg(), BANNER_COL, bannerGeo(), bannerProp(), bannerTex(), barkMat(), Batch, boxes (+44 more)
 
-### Community 47 - "panel"
-Cohesion: 0.14
+### Community 47 - "satisfying.py"
+Cohesion: 0.16
 Nodes (11): d_intro(), d_outro(), ball_sort(), dominoes(), ease(), _forma(), _gear(), gears() (+3 more)
 
 ### Community 48 - "illusions_eye_tricks.py"
 Cohesion: 0.24
 Nodes (8): cena(), coracao(), cruz(), depois(), fundo(), grade(), lilas(), troxler()
 
-### Community 49 - "physics_impossible.py"
-Cohesion: 0.18
-Nodes (10): d2(), d3(), d4(), d5(), d_intro(), d_outro(), hexagon(), newtons_cradle() (+2 more)
+### Community 49 - "ball"
+Cohesion: 0.16
+Nodes (13): d2(), d3(), d5(), d_outro(), d_intro(), rodada(), draw(), ball() (+5 more)
 
 ### Community 50 - "quark_giant_earth.py"
 Cohesion: 0.36
@@ -378,7 +381,7 @@ Nodes (11): caixa(), chao_terra(), d_foguete(), d_gancho(), d_largo(), d_pesado(
 Cohesion: 0.13
 Nodes (42): beamHD(), bed(), blotch(), brick(), brickCol(), cache, chainHD(), chainTex() (+34 more)
 
-### Community 52 - "mecanismos.py"
+### Community 52 - "panel"
 Cohesion: 0.25
 Nodes (10): catraca(), ease(), engrenagem(), escapamento(), fechadura(), geneva(), planetaria(), _raio_catraca() (+2 more)
 
@@ -386,9 +389,9 @@ Nodes (10): catraca(), ease(), engrenagem(), escapamento(), fechadura(), geneva(
 Cohesion: 0.17
 Nodes (11): 10. Regras e conformidade, 1. Regra de produção: 3 masters, depois as variações, 2. Zonas seguras (onde a interface do app cobre o vídeo), 3. Meta (Facebook e Instagram), 4. TikTok, 5. YouTube e Google Ads, 6. Kwai (forte no Brasil), 7. Outras (sem fonte oficial nesta pesquisa; conferir antes) (+3 more)
 
-### Community 54 - "planejar.py"
-Cohesion: 0.15
-Nodes (13): gravar(), ler(), escrever_md(), norm(), planejar(), regravacoes(), aplicar(), bordas_sem_rosto() (+5 more)
+### Community 54 - "comum.py"
+Cohesion: 0.10
+Nodes (22): erro(), gravar(), hms(), ler(), pasta_trabalho(), preparar(), sonda(), exportar() (+14 more)
 
 ### Community 55 - "grade.ts"
 Cohesion: 0.15
@@ -396,47 +399,47 @@ Nodes (13): E_CB, E_CR, GRADE_DAY, GRADE_DAY2, GRADE_GOLDEN, GRADE_GOLDEN2, GRAD
 
 ### Community 56 - "toon.ts"
 Cohesion: 0.07
-Nodes (67): puddle(), Arms, Blob, blobPts(), bodyFront(), bodySide(), Build, BUILD (+59 more)
+Nodes (32): FOLK, Arms, Blob, Build, BUILD, C3, clamp(), DEF_LIGHT (+24 more)
 
 ### Community 57 - "earth_which_deeper.py"
-Cohesion: 0.33
-Nodes (9): barra(), d_intro(), ease(), fmt(), icone(), painel(), resultado(), rodada() (+1 more)
+Cohesion: 0.36
+Nodes (8): barra(), d_intro(), ease(), fmt(), icone(), painel(), resultado(), draw()
 
 ### Community 58 - "quark_black_hole.py"
-Cohesion: 0.51
-Nodes (8): buraco(), caixa(), d_amigo(), d_estica(), d_gancho(), d_grande(), ease(), espaco()
+Cohesion: 0.44
+Nodes (9): buraco(), caixa(), d_amigo(), d_dentro(), d_estica(), d_gancho(), d_grande(), ease() (+1 more)
 
 ### Community 59 - "quark_earth_stops.py"
 Cohesion: 0.42
 Nodes (10): caixa(), d_ano(), d_gancho(), d_mapa(), d_rapido(), d_ufa(), d_voa(), ease() (+2 more)
 
-### Community 60 - "story_chernobyl.py"
-Cohesion: 0.28
-Nodes (14): caixa(), d_barras(), d_botao(), d_cidade(), d_explode(), d_gancho(), d_teste(), d_vapor() (+6 more)
+### Community 60 - "story_vidro.py"
+Cohesion: 0.34
+Nodes (13): caixa(), d_atomos(), d_estanho(), d_forno(), d_gancho(), d_receita(), d_recozer(), ease() (+5 more)
 
 ### Community 61 - "world.ts"
-Cohesion: 0.09
-Nodes (28): flagTex(), Kit, Ray, C3, LightPreset, LIGHTS, LOOK, WorldLook (+20 more)
+Cohesion: 0.08
+Nodes (35): flagTex(), Kit, Ray, V(), yawQ(), SIGN_AT, Stage, SU_SWING (+27 more)
 
 ### Community 62 - "space_coldest.py"
 Cohesion: 0.30
 Nodes (8): antartida(), bumerangue(), espaco(), estrelas(), fundo(), laboratorio(), neve(), plutao()
 
 ### Community 63 - "tres_domino.py"
-Cohesion: 0.27
-Nodes (9): ease(), ease_in(), estado(), fmt(), preparo(), seg(), seg_de(), tela() (+1 more)
+Cohesion: 0.31
+Nodes (8): ease(), ease_in(), estado(), fmt(), seg(), seg_de(), tela(), tempos()
 
 ### Community 64 - "Top 10 tópicos em alta + agenda da semana"
 Cohesion: 0.17
 Nodes (11): Agenda 23–29/11/2026 (storytelling; definida em 22/11), Agenda da semana (09–15/11), Agenda da semana (16–22/11), Ampliação de 20/11/2026: storytelling, Como o ranking é atualizado, Cuidados por tópico, Fila do 3D cinematográfico, Nicho do canal (decidido em 31/10/2026): **ciência visual e simulações satisfatórias** (+3 more)
 
-### Community 65 - "renderizar"
-Cohesion: 0.20
-Nodes (7): ajustar(), estilo_do_plano(), neon(), quadro(), renderizar(), resolucao(), vidro()
+### Community 65 - "cairo"
+Cohesion: 0.26
+Nodes (9): desenhar(), ceu(), contorno_neon(), cromado(), grade(), letreiro_neon(), montar(), pixel() (+1 more)
 
 ### Community 66 - "tres_abs.py"
-Cohesion: 0.27
-Nodes (9): corrida(), ease(), estado(), mistura(), preparo(), seg(), seg_de(), tela() (+1 more)
+Cohesion: 0.31
+Nodes (8): corrida(), ease(), estado(), mistura(), seg(), seg_de(), tela(), tempos()
 
 ### Community 67 - "tres_turbina.py"
 Cohesion: 0.27
@@ -458,9 +461,9 @@ Nodes (7): altura(), cenario(), d_jupiter(), leitura(), no_ar(), pulo(), draw()
 Cohesion: 0.33
 Nodes (7): cena(), draw(), ceu(), d_intro(), ease(), estrela(), orbita()
 
-### Community 72 - ".quadro"
-Cohesion: 0.29
-Nodes (7): ease(), estado(), mistura(), preparo(), seg(), seg_de(), tela()
+### Community 72 - "subprocess"
+Cohesion: 0.22
+Nodes (8): fracao(), importar(), sondar(), carimbo(), celular(), chave(), fundo(), montar()
 
 ### Community 73 - "tres_asteroide.py"
 Cohesion: 0.33
@@ -470,17 +473,17 @@ Nodes (7): ease(), estado(), mistura(), preparo(), seg(), seg_de(), tela()
 Cohesion: 0.33
 Nodes (7): ease(), estado(), mistura(), preparo(), seg(), seg_de(), tela()
 
-### Community 75 - "story_pneu.py"
-Cohesion: 0.20
-Nodes (11): anel_destaque(), contador(), ease(), estouro(), d_carbono(), d_fim(), d_forno(), d_gancho() (+3 more)
+### Community 75 - "size_earths_in_sun.py"
+Cohesion: 0.29
+Nodes (9): contador(), d_intro(), d_jupiter(), d_outro(), d_sol_jupiter(), d_sol_largura(), d_sol_volume(), enchendo() (+1 more)
 
 ### Community 76 - "tres_raio.py"
 Cohesion: 0.33
 Nodes (7): ease(), estado(), mistura(), preparo(), seg(), seg_de(), tela()
 
-### Community 77 - "tres_submarino.py"
-Cohesion: 0.33
-Nodes (7): ease(), estado(), mistura(), preparo(), seg(), seg_de(), tela()
+### Community 77 - "size_tallest_buildings.py"
+Cohesion: 0.29
+Nodes (7): cena(), draw(), cenario(), contador(), d_intro(), eiffel(), predio()
 
 ### Community 78 - "package.json"
 Cohesion: 0.11
@@ -490,9 +493,9 @@ Nodes (22): react, react-dom, @react-three/fiber, @react-three/postprocessing, @
 Cohesion: 0.39
 Nodes (6): ease(), estado(), mistura(), seg(), seg_de(), tela()
 
-### Community 80 - "texto_pop"
-Cohesion: 0.24
-Nodes (10): seta(), sombra_chao(), texto_pop(), evento_som(), mola(), d_densidade(), d_ingredientes(), d_camadas() (+2 more)
+### Community 80 - "tres_motor.py"
+Cohesion: 0.33
+Nodes (5): ease(), estado(), seg(), tela(), theta()
 
 ### Community 81 - "Fun Stuff → cortes de GTA 6 (a partir de 19/11/2026)"
 Cohesion: 0.33
@@ -505,6 +508,10 @@ Nodes (5): 21/11/2026, Alerta, Buscas (mediana de views, 30 dias), Métricas (me
 ### Community 84 - "22/11/2026 (domingo)"
 Cohesion: 0.33
 Nodes (5): 22/11/2026 (domingo), Buscas da semana para o formato storytelling (mediana de views, 30 dias), Desempenho do formato novo (alerta), Publicados hoje, Retenção (semanal)
+
+### Community 85 - ".poseBridge"
+Cohesion: 0.48
+Nodes (6): BridgeState, deckY(), dropW(), shapeZ(), catY(), chainY()
 
 ### Community 86 - "Tendências — 08/11/2026 (domingo: fim do teste de 2 vídeos por dia)"
 Cohesion: 0.40
@@ -543,16 +550,16 @@ Cohesion: 0.50
 Nodes (3): Desempenho (`metricas.py`, 13/11), Pesquisa (`pesquisa.py`, últimos 30 dias), Tendências — 13/11/2026 (para sex 13/11)
 
 ### Community 119 - "Pose"
-Cohesion: 0.40
-Nodes (9): cenario(), d_boia(), d_calor(), d_gancho(), d_mel(), d_roupa(), ease(), lago() (+1 more)
+Cohesion: 0.22
+Nodes (16): cenario(), d_boia(), d_calor(), d_gancho(), d_mel(), d_roupa(), ease(), lago() (+8 more)
 
 ### Community 120 - "World"
 Cohesion: 0.13
 Nodes (8): linkTemplate(), Strand, blobMaterial(), cardShade(), Actor, Fx, V3, World
 
 ### Community 121 - ".update"
-Cohesion: 0.14
-Nodes (15): creakFx(), makeEntry(), Pool, splashFx(), BridgeState, deckY(), dropW(), easeOut() (+7 more)
+Cohesion: 0.15
+Nodes (13): creakFx(), makeEntry(), Pool, snapFx(), splashFx(), front(), ellPts(), fxBurst() (+5 more)
 
 ### Community 122 - "lensblur.ts"
 Cohesion: 0.12
@@ -570,35 +577,47 @@ Nodes (12): @remotion/bundler, @remotion/renderer, @remotion/bundler@^4.0.546, @
 Cohesion: 0.40
 Nodes (4): 24/11/2026, Buscas (mediana, 30 dias), Métricas (metricas.py --desde 2026-11-21), Publicados
 
+### Community 126 - "Seg"
+Cohesion: 0.08
+Nodes (10): render(), Seg, d_regra(), ease(), d_conta(), d_espiral(), espiral(), pergunta() (+2 more)
+
 ### Community 127 - "three"
 Cohesion: 0.23
 Nodes (10): three, CARD_K, GRAD_K, GRAD_KB, TINT_K, CHAR, LFB, neutral() (+2 more)
 
 ### Community 128 - "physics_fastest_made.py"
-Cohesion: 0.15
-Nodes (5): render(), cena(), draw(), ease(), fundo()
+Cohesion: 0.20
+Nodes (4): cena(), draw(), ease(), fundo()
 
-### Community 129 - "ink.ts"
+### Community 129 - "Inner"
 Cohesion: 0.20
 Nodes (5): Inner(), makeBloom(), toggles(), gradeFor(), InkPass
 
+### Community 130 - "fill_sim"
+Cohesion: 0.33
+Nodes (4): capacidade(), fill_sim(), parede(), 2. Pipeline
+
+### Community 131 - "25/11/2026"
+Cohesion: 0.40
+Nodes (4): 25/11/2026, Buscas (mediana, 30 dias), Métricas (metricas.py --desde 2026-11-22), Publicados
+
 ## Knowledge Gaps
-- **29 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
+- **27 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
-- **Why does `text_center()` connect `text_center` to `physics_fastest_made.py`, `numpy`, `round_rect`, `ramp`, `geo.py`, `countdown`, `sonda`, `planet`, `core.py`, `quark_oobleck.py`, `fundo_vivo`, `illusions_impossible.py`, `Seg`, `size_biggest_animals.py`, `tres_elevador.py`, `quark_jupiter.py`, `physics.py`, `story_titanic.py`, `personagem.py`, `quark_sun_vanished.py`, `story_burj.py`, `math`, `render`, `quark_loop.py`, `story_muralha.py`, `quark_penny.py`, `quark_flat_earth.py`, `quark_volcano.py`, `tres_batida.py`, `tres_trem.py`, `anim.py`, `sat_nature_patterns.py`, `illusions_eye_tricks.py`, `physics_impossible.py`, `quark_giant_earth.py`, `mecanismos.py`, `earth_which_deeper.py`, `quark_black_hole.py`, `quark_earth_stops.py`, `story_chernobyl.py`, `space_coldest.py`, `tres_domino.py`, `tres_abs.py`, `physics_tunnel.py`, `quark_planet_jump.py`, `space_biggest_stars.py`, `tres_asteroide.py`, `story_pneu.py`, `tres_foguete.py`, `texto_pop`, `Pose`?**
-  _High betweenness centrality (0.056) - this node is a cross-community bridge._
-- **Should `cairo` be split into smaller, more focused modules?**
-  _Cohesion score 0.05035315561631351 - nodes in this community are weakly interconnected._
-- **Why does `seg_pergunta()` connect `seg_pergunta` to `countdown`, `personagem.py`, `quark_volcano.py`?**
-  _High betweenness centrality (0.019) - this node is a cross-community bridge._
+- **Why does `text_center()` connect `text_center` to `physics_fastest_made.py`, `numpy`, `round_rect`, `ramp`, `geo.py`, `countdown`, `core.py`, `quark_oobleck.py`, `fundo_vivo`, `illusions_impossible.py`, `os`, `size_biggest_animals.py`, `tres_elevador.py`, `math`, `physics.py`, `story_titanic.py`, `quark_sun_vanished.py`, `story_burj.py`, `earth_fastest_winds.py`, `draw`, `cena_trilho`, `story_muralha.py`, `quark_penny.py`, `quark_flat_earth.py`, `quark_volcano.py`, `space_hottest.py`, `tres_batida.py`, `tres_trem.py`, `story_gude.py`, `sat_nature_patterns.py`, `illusions_eye_tricks.py`, `ball`, `quark_giant_earth.py`, `panel`, `comum.py`, `earth_which_deeper.py`, `quark_black_hole.py`, `quark_earth_stops.py`, `story_vidro.py`, `space_coldest.py`, `tres_domino.py`, `tres_abs.py`, `physics_tunnel.py`, `quark_planet_jump.py`, `space_biggest_stars.py`, `tres_asteroide.py`, `size_earths_in_sun.py`, `size_tallest_buildings.py`, `tres_foguete.py`, `Pose`, `Seg`?**
+  _High betweenness centrality (0.048) - this node is a cross-community bridge._
+- **Should `thumb.py` be split into smaller, more focused modules?**
+  _Cohesion score 0.08729081863410222 - nodes in this community are weakly interconnected._
+- **Why does `Seg` connect `Seg` to `physics_fastest_made.py`, `numpy`, `round_rect`, `seg_pergunta`, `illusions.py`, `ramp`, `geo.py`, `countdown`, `text_center`, `core.py`, `quark_oobleck.py`, `fundo_vivo`, `illusions_impossible.py`, `os`, `size_biggest_animals.py`, `tres_elevador.py`, `math`, `story_titanic.py`, `quark_sun_vanished.py`, `story_burj.py`, `earth_fastest_winds.py`, `story_muralha.py`, `quark_penny.py`, `quark_flat_earth.py`, `quark_volcano.py`, `space_hottest.py`, `tres_batida.py`, `tres_trem.py`, `story_gude.py`, `sat_nature_patterns.py`, `illusions_eye_tricks.py`, `quark_giant_earth.py`, `earth_which_deeper.py`, `quark_black_hole.py`, `quark_earth_stops.py`, `story_vidro.py`, `space_coldest.py`, `tres_domino.py`, `tres_abs.py`, `tres_turbina.py`, `physics_tunnel.py`, `quark_planet_jump.py`, `space_biggest_stars.py`, `tres_asteroide.py`, `tres_descarga.py`, `size_earths_in_sun.py`, `tres_raio.py`, `size_tallest_buildings.py`, `tres_foguete.py`, `tres_motor.py`, `Pose`?**
+  _High betweenness centrality (0.022) - this node is a cross-community bridge._
 - **Should `numpy` be split into smaller, more focused modules?**
-  _Cohesion score 0.05343993267410057 - nodes in this community are weakly interconnected._
-- **Why does `Seg` connect `countdown` to `physics_fastest_made.py`, `numpy`, `round_rect`, `sys`, `seg_pergunta`, `illusions.py`, `ramp`, `geo.py`, `planet`, `core.py`, `quark_oobleck.py`, `fundo_vivo`, `illusions_impossible.py`, `Seg`, `size_biggest_animals.py`, `tres_elevador.py`, `quark_jupiter.py`, `story_titanic.py`, `personagem.py`, `quark_sun_vanished.py`, `story_burj.py`, `math`, `render`, `quark_loop.py`, `story_muralha.py`, `quark_penny.py`, `quark_flat_earth.py`, `quark_volcano.py`, `text_center`, `tres_batida.py`, `tres_trem.py`, `sat_nature_patterns.py`, `panel`, `illusions_eye_tricks.py`, `physics_impossible.py`, `quark_giant_earth.py`, `earth_which_deeper.py`, `quark_black_hole.py`, `quark_earth_stops.py`, `story_chernobyl.py`, `space_coldest.py`, `tres_domino.py`, `tres_abs.py`, `tres_turbina.py`, `physics_tunnel.py`, `quark_planet_jump.py`, `space_biggest_stars.py`, `.quadro`, `tres_asteroide.py`, `tres_descarga.py`, `story_pneu.py`, `tres_raio.py`, `tres_submarino.py`, `tres_foguete.py`, `say`, `Pose`, `how_mechanisms_ranking.py`?**
-  _High betweenness centrality (0.019) - this node is a cross-community bridge._
+  _Cohesion score 0.05256648113790971 - nodes in this community are weakly interconnected._
+- **Why does `seg_pergunta()` connect `seg_pergunta` to `countdown`, `fill_sim`, `Seg`, `Pose`?**
+  _High betweenness centrality (0.017) - this node is a cross-community bridge._
 - **Should `round_rect` be split into smaller, more focused modules?**
-  _Cohesion score 0.051344286781179985 - nodes in this community are weakly interconnected._
-- **Should `sys` be split into smaller, more focused modules?**
-  _Cohesion score 0.074034902168165 - nodes in this community are weakly interconnected._
+  _Cohesion score 0.06046511627906977 - nodes in this community are weakly interconnected._
+- **Should `json` be split into smaller, more focused modules?**
+  _Cohesion score 0.09049773755656108 - nodes in this community are weakly interconnected._
