@@ -870,9 +870,9 @@
     "semantic_hash": ""
   },
   "shorts/historico.md": {
-    "mtime": 1795596935.7717295,
-    "seen": 1795596938.7406056,
-    "ast_hash": "f0c6d18f063d7b695aeec68f22e579a5",
+    "mtime": 1795683291.2623112,
+    "seen": 1795683297.9029899,
+    "ast_hash": "3ac020680e74e2d033e05a90dc13d0f5",
     "semantic_hash": ""
   },
   "shorts/pipeline/README.md": {
@@ -1191,6 +1191,30 @@
     "mtime": 1795596935.7905667,
     "seen": 1795596938.740632,
     "ast_hash": "d2a906e0c64fb3d3d29727db48eea73f",
+    "semantic_hash": ""
+  },
+  "shorts/pipeline/episodes/story_cafe.py": {
+    "mtime": 1795683176.7795312,
+    "seen": 1795683297.9028711,
+    "ast_hash": "798094cc8dfb79a51176472cf60e9405",
+    "semantic_hash": ""
+  },
+  "shorts/pipeline/episodes/story_queijo.py": {
+    "mtime": 1795683017.7115943,
+    "seen": 1795683297.9029016,
+    "ast_hash": "45139c16601f1926d175476f6e6c56ce",
+    "semantic_hash": ""
+  },
+  "shorts/pipeline/episodes/story_sabao.py": {
+    "mtime": 1795683098.699385,
+    "seen": 1795683297.902904,
+    "ast_hash": "022fe5d0ed0118760c9e9ca3496370f4",
+    "semantic_hash": ""
+  },
+  "shorts/tendencias/2026-11-26.md": {
+    "mtime": 1795683291.266221,
+    "seen": 1795683297.903028,
+    "ast_hash": "6468e5dedc02f417349b090d58f177a8",
     "semantic_hash": ""
   },
   "shorts/cartoon/package-lock.json": {
