@@ -870,9 +870,9 @@
     "semantic_hash": ""
   },
   "shorts/historico.md": {
-    "mtime": 1795683291.2623112,
-    "seen": 1795683297.9029899,
-    "ast_hash": "3ac020680e74e2d033e05a90dc13d0f5",
+    "mtime": 1795769669.6514819,
+    "seen": 1795769675.5566232,
+    "ast_hash": "d824310ca217e89a6652c06fdf378379",
     "semantic_hash": ""
   },
   "shorts/pipeline/README.md": {
@@ -1215,6 +1215,30 @@
     "mtime": 1795683291.266221,
     "seen": 1795683297.903028,
     "ast_hash": "6468e5dedc02f417349b090d58f177a8",
+    "semantic_hash": ""
+  },
+  "shorts/pipeline/episodes/story_massa.py": {
+    "mtime": 1795769479.947818,
+    "seen": 1795769675.5565176,
+    "ast_hash": "680043003b9f897d0dfd20d06608a67a",
+    "semantic_hash": ""
+  },
+  "shorts/pipeline/episodes/story_pao.py": {
+    "mtime": 1795769394.4063401,
+    "seen": 1795769675.5565207,
+    "ast_hash": "0fe4a5cfd6ce976dfbe9244c0437354d",
+    "semantic_hash": ""
+  },
+  "shorts/pipeline/episodes/story_pasta_dente.py": {
+    "mtime": 1795769571.0770817,
+    "seen": 1795769675.5565221,
+    "ast_hash": "070a760b13f9974fbfd4fdf3e6e4e466",
+    "semantic_hash": ""
+  },
+  "shorts/tendencias/2026-11-27.md": {
+    "mtime": 1795769669.6554818,
+    "seen": 1795769675.5566547,
+    "ast_hash": "ac4bf26957241d6a48374a2aafc1dac3",
     "semantic_hash": ""
   },
   "shorts/cartoon/package-lock.json": {
